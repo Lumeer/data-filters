@@ -18,7 +18,7 @@
  */
 
 import {resetUnusedMomentPart} from './date.utils';
-import * as moment from 'moment';
+import moment from 'moment';
 
 describe('resetUnusedMomentPart', () => {
   it('should keep everything', () => {

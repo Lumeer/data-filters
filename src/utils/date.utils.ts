@@ -17,13 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {createDateTimeOptions} from './date-time-options';
 import {DurationUnit} from '../data/constraint-config';
 import {DurationInputArg2} from 'moment';
-import {DateTimeConstraint} from '../constraint/datetime.constraint';
-import {ConstraintData, ConstraintType} from '../data/constraint';
-import {Constraint} from '../constraint';
 
 export function isDateValid(date: Date): boolean {
   return date && date.getTime && !isNaN(date.getTime());

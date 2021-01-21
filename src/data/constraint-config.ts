@@ -21,6 +21,7 @@ import Big from 'big.js';
 import {LanguageTag} from './language-tag';
 import {AttributeFilterEquation} from "./attribute-filter";
 import {AddressField} from '../model/address';
+import {Role} from '../model/role';
 
 export interface AddressConstraintConfig {
   fields: AddressField[];
@@ -145,7 +146,7 @@ export interface ActionConstraintConfig {
   background: string;
   title: string;
   icon: string;
-  role: string;
+  role: Role;
 }
 
 export type ConstraintConfig =

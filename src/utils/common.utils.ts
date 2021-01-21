@@ -110,3 +110,7 @@ function removeUndefinedPropertiesFromObject(object: any): any {
     });
     return returnObj;
 }
+
+export function objectsByIdMap<T extends {id?: string}>(objects: T[]): Record<string, T> {
+    return (objects || []).reduce((map, object) => ({...map, [object.id]: object}), {});
+}

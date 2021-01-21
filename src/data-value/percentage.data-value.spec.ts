@@ -20,7 +20,7 @@
 import {PercentageConstraintConfig} from '../data/constraint-config';
 import {PercentageDataValue} from './percentage.data-value';
 
-fdescribe('PercentageDataValue', () => {
+describe('PercentageDataValue', () => {
   const basicPercentage = {} as PercentageConstraintConfig;
 
   it('undefined value', () => {

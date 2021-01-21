@@ -17,12 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as Coordinates from 'coordinate-parser';
+import Coordinates from 'coordinate-parser';
 import {CoordinatesFormat} from '../data/constraint-config';
 import {isNumeric} from './number.utils';
 import {isNotNullOrUndefined} from './common.utils';
 import {MapCoordinates} from '../model/coordinates';
-
 
 export function parseCoordinates(value: any): MapCoordinates {
   if (value && isNotNullOrUndefined(value.lat) && isNotNullOrUndefined(value.lng)) {

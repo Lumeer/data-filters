@@ -25,6 +25,8 @@
   },
   "devDependencies": {
     "@types/jasmine": "^3.6.3",
+    "@types/lodash": "^4.14.168",
+    "@types/big.js": "^6.0.2",
     "jasmine": "^3.6.4",
     "jasmine-spec-reporter": "^6.0.0",
     "jasmine-ts": "^0.3.0",

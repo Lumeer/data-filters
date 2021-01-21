@@ -17,7 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface User {
-    name?: string;
-    email: string;
+export const enum Role {
+  Read = 'READ',
+  Manage = 'MANAGE',
+  Write = 'WRITE',
+  Share = 'SHARE',
+  Clone = 'CLONE',
+  Comment = 'COMMENT',
+  Empty = 'EMPTY',
 }

@@ -17,7 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface User {
-    name?: string;
-    email: string;
+export interface AllowedPermissions {
+    readWithView?: boolean;
+    writeWithView?: boolean;
+    manageWithView?: boolean;
+    read?: boolean;
+    write?: boolean;
+    manage?: boolean;
+    share?: boolean;
 }

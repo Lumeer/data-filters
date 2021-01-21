@@ -19,7 +19,7 @@
 
 import {DateTimeConstraintConfig} from '../data/constraint-config';
 import {DateTimeDataValue} from './datetime.data-value';
-import * as moment from 'moment';
+import moment from 'moment';
 import {DateTimeConstraintConditionValue} from '../data/constraint-condition';
 import {ConditionType} from '../data/attribute-filter';
 

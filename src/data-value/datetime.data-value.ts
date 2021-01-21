@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {DateTimeConstraintConfig} from '../data/constraint-config';
 import {DataValue} from './index';
 import {ConstraintConditionValue, DateTimeConstraintConditionValue} from '../data/constraint-condition';

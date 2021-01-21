@@ -38,7 +38,7 @@ export class NumberDataValue implements NumericDataValue {
     public readonly config: NumberConstraintConfig,
     public readonly inputValue?: string
   ) {
-    this.setLanguage(config?.currency);
+    this.setLanguage(config?.currency || LanguageTag.England);
     const parsedValue = this.parseValue(value, config, inputValue);
     const unformatted = numbro.unformat(parsedValue, parseNumbroConfig(config));
     this.bigNumber = convertToBig(unformatted);

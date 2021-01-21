@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as unorm from 'unorm';
+import unorm from 'unorm';
 import {CaseStyle} from '../data/constraint-config';
 
 export function padStart(value: string, num: number, character: string): string {

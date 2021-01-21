@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 import {ConditionType, ConditionValue} from '../data/attribute-filter';
 import {ConstraintType} from '../data/constraint';
 import {createRange} from './array.utils';
-import {Query} from '../model/query';
+import {Query, QueryStem} from '../model/query';
 import {isNullOrUndefined} from './common.utils';
+import {AttributesResource, Collection, LinkType, Resource} from '../model/attributes-resource';
 
 export function areConditionValuesDefined(
   condition: ConditionType,
@@ -81,4 +81,38 @@ export function isSingleCollectionQuery(query: Query): boolean {
 
 export function isAnyCollectionQuery(query: Query): boolean {
   return query && query.stems && query.stems.length > 0;
+}
+
+export function queryStemAttributesResourcesOrder(
+    stem: QueryStem,
+    collections: Collection[],
+    linkTypes: LinkType[]
+): AttributesResource[] {
+  const baseCollection = stem && (collections || []).find(collection => collection.id === stem.collectionId);
+  if (!baseCollection) {
+    return [];
+  }
+  const chain: AttributesResource[] = [{...baseCollection}];
+  let previousCollection = baseCollection;
+  for (let i = 0; i < (stem.linkTypeIds || []).length; i++) {
+    const linkType = (linkTypes || []).find(lt => lt.id === stem.linkTypeIds[i]);
+    const otherCollectionId = linkType && getOtherLinkedCollectionId(linkType, previousCollection.id);
+    const otherCollection =
+        otherCollectionId && (collections || []).find(collection => collection.id === otherCollectionId);
+
+    if (otherCollection && linkType) {
+      chain.push({...linkType, collections: [previousCollection, otherCollection]});
+      chain.push({...otherCollection});
+      previousCollection = otherCollection;
+    } else {
+      break;
+    }
+  }
+
+  return chain;
+}
+
+function getOtherLinkedCollectionId(linkType: LinkType, collectionId: string): string {
+  const collectionIds = linkType?.collectionIds;
+  return collectionIds[0] === collectionId ? collectionIds[1] : collectionIds[0];
 }
