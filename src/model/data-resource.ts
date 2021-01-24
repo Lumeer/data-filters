@@ -1,5 +1,5 @@
 export interface DataResource {
-    id: string;
+    id?: string;
     data: Record<string, any>;
 }
 

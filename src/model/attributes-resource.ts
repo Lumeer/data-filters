@@ -1,8 +1,8 @@
 import {Constraint} from '../constraint';
 
 export interface Resource {
-    id: string;
-    attributes: Attribute[];
+    id?: string;
+    attributes?: Attribute[];
 }
 
 export interface Collection extends Resource {
@@ -15,7 +15,7 @@ export interface LinkType extends Resource {
 }
 
 export interface Attribute {
-    id: string;
+    id?: string;
     name: string;
     constraint?: Constraint;
 }
