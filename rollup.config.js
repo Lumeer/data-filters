@@ -29,4 +29,23 @@ export default [
         },
         plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), terser()],
     },
+    {
+        input: './src/index.ts',
+        output: {
+            file: './dist/index.umd.js',
+            format: 'umd',
+            name: "Filter"
+        },
+        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs()],
+    },
+    {
+        input: './src/index.ts',
+        output: {
+            file: './dist/index.umd.min.js',
+            format: 'umd',
+            name: "Filter",
+            sourcemap: true,
+        },
+        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), terser()],
+    },
 ]
