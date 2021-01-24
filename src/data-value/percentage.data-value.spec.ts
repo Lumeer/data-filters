@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {PercentageConstraintConfig} from '../data/constraint-config';
+import {PercentageConstraintConfig} from '../model';
 import {PercentageDataValue} from './percentage.data-value';
 
 describe('PercentageDataValue', () => {

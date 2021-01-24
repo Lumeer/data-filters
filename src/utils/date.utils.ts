@@ -18,9 +18,10 @@
  */
 
 import moment from 'moment';
-import {createDateTimeOptions} from './date-time-options';
-import {DurationUnit} from '../data/constraint-config';
 import {DurationInputArg2} from 'moment';
+
+import {createDateTimeOptions} from './date-time-options';
+import {DurationUnit} from '../model';
 
 export function isDateValid(date: Date): boolean {
   return date && date.getTime && !isNaN(date.getTime());

@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {NumberDataValue} from '../data-value/number.data-value';
-import {ConstraintType} from '../data/constraint';
-import {NumberConstraintConfig} from '../data/constraint-config';
-import {Constraint} from './index';
+import {NumberDataValue} from '../data-value';
+import {Constraint} from './constraint';
 import {
   avgNumericValues,
   countValues,
@@ -29,8 +27,9 @@ import {
   minInNumericValues,
   sumNumericValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ConditionType} from '../data/attribute-filter';
+} from '../utils';
+import {ConditionType, NumberConstraintConfig, ConstraintType} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class NumberConstraint implements Constraint {
   public readonly type = ConstraintType.Number;
@@ -39,12 +38,12 @@ export class NumberConstraint implements Constraint {
 
   constructor(public readonly config: NumberConstraintConfig) {}
 
-  public createDataValue(value: any): NumberDataValue {
-    return new NumberDataValue(value, this.config);
+  public createDataValue(value: any, constraintData?: ConstraintData): NumberDataValue {
+    return new NumberDataValue(value, this.config, constraintData);
   }
 
-  public createInputDataValue(inputValue: string, value: any): NumberDataValue {
-    return new NumberDataValue(value, this.config, inputValue);
+  public createInputDataValue(inputValue: string, value: any, constraintData?: ConstraintData): NumberDataValue {
+    return new NumberDataValue(value, this.config, constraintData, inputValue);
   }
 
   public conditions(): ConditionType[] {

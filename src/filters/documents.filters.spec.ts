@@ -17,18 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DocumentModel, LinkInstance} from '../model/data-resource';
-import {Collection, LinkType} from '../model/attributes-resource';
-import {UserConstraint} from '../constraint/user.constraint';
-import {DateTimeConstraintConfig, NumberConstraintConfig, UserConstraintConfig} from '../data/constraint-config';
-import {NumberConstraint} from '../constraint/number.constraint';
-import {DateTimeConstraint} from '../constraint/datetime.constraint';
-import {User} from '../model/user';
-import {ConstraintData} from '../data/constraint';
+import {DateTimeConstraintConfig, NumberConstraintConfig, UserConstraintConfig, Query, UserConstraintConditionValue, ConditionType, User, Collection, LinkType, DocumentModel, LinkInstance} from '../model';
+import {ConstraintData, UserConstraint, NumberConstraint, DateTimeConstraint} from '../constraint';
 import {filterDocumentsAndLinksByQuery} from './documents.filters';
-import {ConditionType} from '../data/attribute-filter';
-import {UserConstraintConditionValue} from '../data/constraint-condition';
-import {Query} from '../model/query';
 
 const documents: DocumentModel[] = [
   {

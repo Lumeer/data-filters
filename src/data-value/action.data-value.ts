@@ -17,10 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ActionConstraintConfig} from '../data/constraint-config';
-import {DataValue} from './index';
-import {valueMeetFulltexts} from './data-value.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
+import {DataValue} from './data-value';
+import {valueMeetFulltexts} from '../utils';
+import {ConditionType, ConditionValue, ActionConstraintConfig} from '../model';
 
 export class ActionDataValue implements DataValue {
   public readonly value = null;

@@ -17,11 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DateTimeConstraintConfig} from '../data/constraint-config';
-import {DateTimeDataValue} from './datetime.data-value';
 import moment from 'moment';
-import {DateTimeConstraintConditionValue} from '../data/constraint-condition';
-import {ConditionType} from '../data/attribute-filter';
+
+import {DateTimeDataValue} from './datetime.data-value';
+import {DateTimeConstraintConditionValue, ConditionType, DateTimeConstraintConfig} from '../model';
 
 describe('DateTimeDataValue', () => {
   const yearConfig: DateTimeConstraintConfig = {format: 'Y'};

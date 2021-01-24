@@ -17,12 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DataValue} from './index';
-import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts} from './data-value.utils';
-import {escapeHtml, isNotNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {formatUnknownDataValue} from '../utils/data.utils';
-import {isNumeric, toNumber} from '../utils/number.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
+import {DataValue} from './data-value';
+import {isNumeric, toNumber, formatUnknownDataValue, dataValuesMeetConditionByText, valueByConditionText,escapeHtml, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts} from '../utils';
+import {ConditionType, ConditionValue} from '../model';
 
 export class UnknownDataValue implements DataValue {
   public readonly config: any = {};

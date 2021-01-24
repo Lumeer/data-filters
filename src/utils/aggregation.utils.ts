@@ -18,10 +18,9 @@
  */
 
 import Big from 'big.js';
-import {Constraint} from './index';
-import {isNumeric, toNumber} from '../utils/number.utils';
-import {convertToBig} from '../utils/data.utils';
-import {uniqueValues} from '../utils/array.utils';
+import {isNumeric, toNumber} from './number.utils';
+import {convertToBig} from './data.utils';
+import {uniqueValues} from './array.utils';
 
 export function medianInNumericValues(values: any[], onlyNumeric: boolean): any {
   const bigValues = transformToBigValues(values).sort((a, b) => a.cmp(b));
@@ -69,14 +68,6 @@ function median(values: number[], onlyNumeric?: boolean): number {
   }
 
   return valuesSorted[middle];
-}
-
-function valuesAreNumeric(values: any[]): boolean {
-  return values.every(value => isNumeric(value));
-}
-
-function formattedValues(values: any[], constraint: Constraint): any[] {
-  return values.map(value => constraint.createDataValue(value).format());
 }
 
 export function sumNumericValues(values: any[], onlyNumeric: boolean): any {

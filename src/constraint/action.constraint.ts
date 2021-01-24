@@ -17,8 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConstraintType} from '../data/constraint';
-import {Constraint} from './index';
+import {Constraint} from './constraint';
 import {
   avgAnyValues,
   countValues,
@@ -27,10 +26,9 @@ import {
   minInAnyValues,
   sumAnyValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ActionConstraintConfig} from '../data/constraint-config';
-import {ActionDataValue} from '../data-value/action-data.value';
-import {ConditionType} from "../data/attribute-filter";
+} from '../utils';
+import {ActionDataValue} from '../data-value';
+import {ConditionType, ActionConstraintConfig, ConstraintType} from '../model';
 
 export class ActionConstraint implements Constraint {
   public readonly type = ConstraintType.Action;

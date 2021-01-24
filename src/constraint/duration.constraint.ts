@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DurationDataValue} from '../data-value/duration.data-value';
-import {ConstraintData, ConstraintType} from '../data/constraint';
-import {DurationConstraintConfig} from '../data/constraint-config';
-import {Constraint} from './index';
+import {DurationDataValue} from '../data-value';
+import {Constraint} from './constraint';
 import {
   avgNumericValues,
   countValues,
@@ -29,8 +27,9 @@ import {
   minInNumericValues,
   sumNumericValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ConditionType} from '../data/attribute-filter';
+} from '../utils';
+import {ConstraintType, ConditionType, DurationConstraintConfig} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class DurationConstraint implements Constraint {
   public readonly type = ConstraintType.Duration;

@@ -17,14 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ColorConstraintConfig} from '../data/constraint-config';
-import {DataValue} from './index';
-import {dataValuesMeetConditionByText, valueMeetFulltexts} from './data-value.utils';
-import {escapeHtml, isNotNullOrUndefined, objectValues, unescapeHtml} from '../utils/common.utils';
-import {formatUnknownDataValue} from '../utils/data.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {convertHslColorToHex, convertRgbColorToHex, prolongShortHexColor} from '../utils/color.utils';
-import {validDataColors} from '../utils/valid-data-colors';
+import {DataValue} from './data-value';
+import {dataValuesMeetConditionByText, valueMeetFulltexts, validDataColors, formatUnknownDataValue, escapeHtml, isNotNullOrUndefined, objectValues, unescapeHtml, convertHslColorToHex, convertRgbColorToHex, prolongShortHexColor} from '../utils';
+import {ConditionType, ConditionValue, ColorConstraintConfig} from '../model';
 
 export class ColorDataValue implements DataValue {
   public readonly hexCode: string;

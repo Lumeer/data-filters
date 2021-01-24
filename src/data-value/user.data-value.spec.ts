@@ -17,11 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {UserConstraintConfig} from '../data/constraint-config';
+import {ConstraintData} from '../constraint';
 import {UserDataValue} from './user.data-value';
-import {ConstraintData} from '../data/constraint';
-import {UserConstraintConditionValue} from '../data/constraint-condition';
-import {ConditionType} from '../data/attribute-filter';
+import {ConditionType, UserConstraintConfig, UserConstraintConditionValue} from '../model';
 
 describe('UserDataValue', () => {
   const config: UserConstraintConfig = {

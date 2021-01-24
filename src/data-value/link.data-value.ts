@@ -17,10 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DataValue} from './index';
-import {LinkConstraintConfig} from '../data/constraint-config';
-import {dataValuesMeetConditionByText, valueByConditionText} from './data-value.utils';
-import {ConditionType, ConditionValue} from '../attribute-filter';
+import {DataValue} from './data-value';
+import {dataValuesMeetConditionByText, valueByConditionText} from '../utils';
+import {ConditionType, ConditionValue, LinkConstraintConfig} from '../model';
 
 /*
  * Saved value is formatted as 'Link [Text]'

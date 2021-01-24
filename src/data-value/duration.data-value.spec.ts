@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DurationUnitsMap} from '../data/constraint';
-import {DurationConstraintConfig, DurationType, DurationUnit} from '../data/constraint-config';
+import {DurationUnitsMap} from '../constraint';
 import {DurationDataValue} from './duration.data-value';
+import {DurationConstraintConfig, DurationType, DurationUnit} from '../model';
 
 describe('DurationDataValue', () => {
   const durationUnitsMap: DurationUnitsMap = {

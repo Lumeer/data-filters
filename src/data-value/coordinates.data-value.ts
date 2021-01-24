@@ -17,14 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {CoordinatesConstraintConfig, CoordinatesFormat} from '../data/constraint-config';
-import {DataValue} from './index';
-import {dataValuesMeetConditionByText, valueMeetFulltexts} from './data-value.utils';
-import {deepObjectsEquals, isNotNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {formatUnknownDataValue} from '../utils/data.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {MapCoordinates} from '../model/coordinates';
-import {formatCoordinates, parseCoordinates} from '../utils/coordinates.utils';
+import {DataValue} from './data-value';
+import {deepObjectsEquals, isNotNullOrUndefined, unescapeHtml, dataValuesMeetConditionByText, valueMeetFulltexts, formatUnknownDataValue, formatCoordinates, parseCoordinates} from '../utils';
+import {ConditionType, ConditionValue, MapCoordinates, CoordinatesConstraintConfig, CoordinatesFormat} from '../model';
 
 export class CoordinatesDataValue implements DataValue {
   public readonly coordinates: MapCoordinates;

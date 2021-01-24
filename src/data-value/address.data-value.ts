@@ -17,13 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConstraintData} from '../data/constraint';
-import {AddressConstraintConfig} from '../data/constraint-config';
-import {DataValue} from './index';
-import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts} from './data-value.utils';
-import {Address, AddressField} from '../model/address';
-import {deepObjectsEquals, escapeHtml, isNotNullOrUndefined, isObject, unescapeHtml} from '../utils/common.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
+import {DataValue} from './data-value';
+import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts, deepObjectsEquals, escapeHtml, isNotNullOrUndefined, isObject, unescapeHtml} from '../utils';
+import {Address, AddressField, AddressConstraintConfig} from '../model';
+import {ConditionType, ConditionValue} from '../model';
+import {ConstraintData} from '../constraint';
 
 export class AddressDataValue implements DataValue {
   public readonly address: Address;

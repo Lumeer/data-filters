@@ -17,19 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DataResource, DocumentModel, LinkInstance} from '../model/data-resource';
-import {AttributeFilter, ConditionType, EquationOperator} from '../data/attribute-filter';
-import {queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder} from '../utils/query.util';
-import {ConstraintData, ConstraintType} from '../data/constraint';
-import {Query, QueryStem} from '../model/query';
-import {Attribute, AttributesResourceType, Collection, LinkType, Resource} from '../model/attributes-resource';
-import {AllowedPermissions} from '../model/permissions';
-import {escapeHtml, isNullOrUndefined, objectsByIdMap, objectValues} from '../utils/common.utils';
-import {filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, mergeDocuments, mergeLinkInstances} from '../utils/data-resource.utils';
+import {DataResource, DocumentModel, LinkInstance, AttributeFilter, ConditionType, EquationOperator} from '../model';
+import {hasRoleByPermissions, escapeHtml, isNullOrUndefined, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, mergeDocuments, mergeLinkInstances} from '../utils';
+import {ConstraintData, UnknownConstraint} from '../constraint';
+import {ConstraintType, Query, AllowedPermissions, QueryStem, Attribute, AttributesResourceType, Collection, LinkType, Resource, ActionConstraintConfig} from '../model';
 import {DataValue} from '../data-value';
-import {UnknownConstraint} from '../constraint/unknown.constraint';
-import {ActionConstraintConfig} from '../data/constraint-config';
-import {hasRoleByPermissions} from '../utils/permissions.utils';
 
 interface FilteredDataResources {
   allDocuments: DocumentModel[];

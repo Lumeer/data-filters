@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConstraintType} from '../data/constraint';
-import {Constraint} from './index';
-import {LinkDataValue} from '../data-value/link.data-value';
-import {LinkConstraintConfig} from '../data/constraint-config';
+import {Constraint} from './constraint';
+import {LinkDataValue} from '../data-value';
 import {
   avgAnyValues,
   countValues,
@@ -29,8 +27,8 @@ import {
   minInAnyValues,
   sumAnyValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ConditionType} from '../data/attribute-filter';
+} from '../utils';
+import {ConditionType, LinkConstraintConfig, ConstraintType} from '../model';
 
 export class LinkConstraint implements Constraint {
   public readonly type = ConstraintType.Link;

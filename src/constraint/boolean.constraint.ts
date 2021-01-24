@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {BooleanDataValue} from '../data-value/boolean.data-value';
-import {ConstraintType} from '../data/constraint';
-import {Constraint} from './index';
+import {BooleanDataValue} from '../data-value';
+import {Constraint} from './constraint';
 import {
   avgAnyValues,
   countValues,
@@ -28,8 +27,8 @@ import {
   minInAnyValues,
   sumAnyValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ConditionType} from '../data/attribute-filter';
+} from '../utils';
+import {ConditionType, ConstraintType} from '../model';
 
 export class BooleanConstraint implements Constraint {
   public readonly type = ConstraintType.Boolean;

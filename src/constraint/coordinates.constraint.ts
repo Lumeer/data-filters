@@ -17,13 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {CoordinatesDataValue} from '../data-value/coordinates.data-value';
-import {ConstraintType} from '../data/constraint';
-import {CoordinatesConstraintConfig} from '../data/constraint-config';
-import {Constraint} from './index';
-import {avgAnyValues, countValues, medianInAnyValues, sumAnyValues, uniqueValuesCount} from './aggregation';
-import {DataValue} from '../data-value';
-import {ConditionType} from '../data/attribute-filter';
+import {CoordinatesDataValue} from '../data-value';
+import {Constraint} from './constraint';
+import {avgAnyValues, countValues, medianInAnyValues, sumAnyValues, uniqueValuesCount} from '../utils';
+import {ConditionType, CoordinatesConstraintConfig, ConstraintType} from '../model';
 
 export class CoordinatesConstraint implements Constraint {
   public readonly type = ConstraintType.Coordinates;
@@ -60,7 +57,7 @@ export class CoordinatesConstraint implements Constraint {
     return this.sortedValues(values)[0]?.serialize();
   }
 
-  private sortedValues(values: any[], desc?: boolean): DataValue[] {
+  private sortedValues(values: any[], desc?: boolean): CoordinatesDataValue[] {
     return values.map(value => this.createDataValue(value)).sort((a, b) => a.compareTo(b) * (desc ? -1 : 1));
   }
 

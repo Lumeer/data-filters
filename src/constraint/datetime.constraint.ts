@@ -17,13 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DateTimeDataValue} from '../data-value/datetime.data-value';
-import {ConstraintType} from '../data/constraint';
-import {DateTimeConstraintConfig} from '../data/constraint-config';
-import {Constraint} from './index';
-import {avgAnyValues, countValues, medianInAnyValues, sumAnyValues, uniqueValuesCount} from './aggregation';
-import {DataValue} from '../data-value';
-import {ConditionType} from '../data/attribute-filter';
+import {DateTimeDataValue} from '../data-value';
+import {Constraint} from './constraint';
+import {avgAnyValues, countValues, medianInAnyValues, sumAnyValues, uniqueValuesCount} from '../utils';
+import {ConstraintType, ConditionType, DateTimeConstraintConfig} from '../model';
 
 export class DateTimeConstraint implements Constraint {
   public readonly type = ConstraintType.DateTime;
@@ -63,7 +60,7 @@ export class DateTimeConstraint implements Constraint {
     return this.sortedValues(values, true)[0]?.serialize();
   }
 
-  private sortedValues(values: any[], desc?: boolean): DataValue[] {
+  private sortedValues(values: any[], desc?: boolean): DateTimeDataValue[] {
     return values.map(value => this.createDataValue(value)).sort((a, b) => a.compareTo(b) * (desc ? -1 : 1));
   }
 

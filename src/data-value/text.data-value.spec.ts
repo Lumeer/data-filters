@@ -18,8 +18,7 @@
  */
 
 import {TextDataValue} from './text.data-value';
-import {CaseStyle, TextConstraintConfig} from '../data/constraint-config';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
+import {ConditionType, ConditionValue, CaseStyle, TextConstraintConfig} from '../model';
 
 describe('TextDataValue', () => {
   const config: TextConstraintConfig = {minLength: 2, maxLength: 4, caseStyle: CaseStyle.SentenceCase};

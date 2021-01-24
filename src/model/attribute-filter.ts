@@ -17,8 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-import {ConstraintConditionValue} from "./constraint-condition";
+import {ConstraintConditionValue} from './constraint-condition';
 
 export interface AttributeFilterEquation {
   equations?: AttributeFilterEquation[];

@@ -18,8 +18,7 @@
  */
 
 import {ColorDataValue} from './color.data-value';
-import {ColorConstraintConfig} from '../data/constraint-config';
-import {ConditionType} from '../data/attribute-filter';
+import {ConditionType, ColorConstraintConfig} from '../model';
 
 describe('ColorDataValue', () => {
   const config: ColorConstraintConfig = {};

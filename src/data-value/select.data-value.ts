@@ -17,13 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SelectConstraintConfig, SelectConstraintOption} from '../data/constraint-config';
-import {DataValue} from './index';
-import {valueMeetFulltexts} from './data-value.utils';
-import {isNotNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {formatUnknownDataValue} from '../utils/data.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {arrayIntersection, isArray} from '../utils/array.utils';
+import {DataValue} from './data-value';
+import {arrayIntersection, isArray, formatUnknownDataValue, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts} from '../utils';
+import {ConditionType, ConditionValue, SelectConstraintConfig, SelectConstraintOption} from '../model';
 
 export class SelectDataValue implements DataValue {
   public readonly options: SelectConstraintOption[];

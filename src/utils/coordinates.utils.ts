@@ -18,10 +18,9 @@
  */
 
 import Coordinates from 'coordinate-parser';
-import {CoordinatesFormat} from '../data/constraint-config';
 import {isNumeric} from './number.utils';
 import {isNotNullOrUndefined} from './common.utils';
-import {MapCoordinates} from '../model/coordinates';
+import {MapCoordinates, CoordinatesFormat} from '../model';
 
 export function parseCoordinates(value: any): MapCoordinates {
   if (value && isNotNullOrUndefined(value.lat) && isNotNullOrUndefined(value.lng)) {

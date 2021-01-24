@@ -17,122 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Big from 'big.js';
-
-import {ConstraintData} from '../data/constraint';
-import {ConstraintConfig} from '../data/constraint-config';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-
-export interface DataValue {
-  /**
-   * Constraint definition based on which the value is formatted, serialized, checked for validity, etc.
-   */
-  config: Partial<ConstraintConfig>;
-
-  /**
-   * External data that is needed to format the value.
-   */
-  constraintData?: ConstraintData;
-
-  /**
-   * Raw value stored in the DB. Either serialized or entered by user before the constraint was used on the attribute.
-   */
-  value: any;
-
-  /**
-   * Raw value enter by user.
-   */
-  inputValue?: string;
-
-  /**
-   * Generates a string that will be shown to a user.
-   *
-   * @return stringified value or empty string if the value is `null` or `undefined`
-   */
-  format(): string;
-
-  /**
-   * Generates a shortened preview string that will be shown to a user.
-   *
-   * @return stringified value or empty string if the value is `null` or `undefined`
-   */
-  preview(): string;
-
-  /**
-   * Generates a title string that will be shown to a user.
-   *
-   * @return stringified value or empty string if the value is `null` or `undefined`
-   */
-  title(): string;
-
-  /**
-   * Generates a string that will be edited by user.
-   *
-   * @return stringified value or empty string if the value is `null` or `undefined`
-   */
-  editValue(): string;
-
-  /**
-   * Serializes the value to a format in which it is sent to backend and most probably also stored in the DB.
-   */
-  serialize(): any;
-
-  /**
-   * Checks if the value is valid based on constraint definition. It should return true for empty values.
-   */
-  isValid(ignoreConfig?: boolean): boolean;
-
-  /**
-   * Increments the value by the smallest possible unit based on the constraint.
-   *
-   * @return greater value, otherwise `null` if it does not exist or `undefined` if the operation is not supported
-   */
-  increment(): DataValue;
-
-  /**
-   * Decrements the value by the smallest possible unit based on the constraint.
-   *
-   * @return smaller value, otherwise `null` if it does not exist or `undefined` if the operation is not supported
-   */
-  decrement(): DataValue;
-
-  /**
-   * Compares this value to the other value.
-   *
-   * @return negative number if this value is less than the other value, positive number if this value is greater than
-   * the other value or zero if the values are equal
-   */
-  compareTo(otherValue: DataValue): number;
-
-  /**
-   * Creates a copy of this data value either with the current value or a new value if provided.
-   */
-  copy(newValue?: any): DataValue;
-
-  /**
-   * Parses a text from a user input and creates a new value from it.
-   */
-  parseInput(inputValue: string): DataValue;
-
-  /**
-   * Check if the value meet specific condition and values
-   */
-  meetCondition(condition: ConditionType, values: ConditionValue[]): boolean;
-
-  /**
-   * Check if the value meet all provided fulltexts
-   */
-  meetFullTexts(fulltexts: string[]): boolean;
-
-  /**
-   * Create value that meets condition
-   */
-  valueByCondition(condition: ConditionType, values: ConditionValue[]): any;
-}
-
-export interface NumericDataValue extends DataValue {
-  /**
-   * Value stored as big number
-   */
-  bigNumber: Big;
-}
+export * from './data-value';
+export * from './action.data-value';
+export * from './address.data-value';
+export * from './boolean.data-value';
+export * from './color.data-value';
+export * from './coordinates.data-value';
+export * from './datetime.data-value';
+export * from './duration.data-value';
+export * from './files.data-value';
+export * from './link.data-value';
+export * from './number.data-value';
+export * from './percentage.data-value';
+export * from './select.data-value';
+export * from './text.data-value';
+export * from './unknown.data-value';
+export * from './user.data-value';

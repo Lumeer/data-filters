@@ -17,16 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConstraintData} from '../data/constraint';
-import {UserConstraintConfig} from '../data/constraint-config';
-import {DataValue} from './index';
-import {valueMeetFulltexts} from './data-value.utils';
-import {UserConstraintConditionValue} from '../data/constraint-condition';
-import {isNotNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {arrayIntersection, isArray} from '../utils/array.utils';
-import {formatUnknownDataValue, isEmailValid} from '../utils/data.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {User} from '../model/user';
+import {ConstraintData} from '../constraint';
+import {DataValue} from './data-value';
+import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts} from '../utils';
+import {ConditionType, ConditionValue, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
 
 export class UserDataValue implements DataValue {
   public readonly users: User[];

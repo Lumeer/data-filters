@@ -18,7 +18,8 @@
  */
 
 import unorm from 'unorm';
-import {CaseStyle} from '../data/constraint-config';
+
+import {CaseStyle} from '../model/';
 
 export function padStart(value: string, num: number, character: string): string {
     let text = value || '';

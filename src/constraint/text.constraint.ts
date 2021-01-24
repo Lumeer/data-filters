@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TextDataValue} from '../data-value/text.data-value';
-import {ConstraintType} from '../data/constraint';
-import {TextConstraintConfig} from '../data/constraint-config';
-import {Constraint} from './index';
+import {TextDataValue} from '../data-value';
+import {Constraint} from './constraint';
 import {
   avgAnyValues,
   countValues,
@@ -29,8 +27,8 @@ import {
   minInAnyValues,
   sumAnyValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ConditionType} from '../data/attribute-filter';
+} from '../utils';
+import {ConditionType, TextConstraintConfig, ConstraintType} from '../model';
 
 export class TextConstraint implements Constraint {
   public readonly type = ConstraintType.Text;

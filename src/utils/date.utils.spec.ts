@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {resetUnusedMomentPart} from './date.utils';
 import moment from 'moment';
+
+import {resetUnusedMomentPart} from './date.utils';
 
 describe('resetUnusedMomentPart', () => {
   it('should keep everything', () => {

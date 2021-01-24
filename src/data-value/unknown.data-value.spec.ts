@@ -18,7 +18,7 @@
  */
 
 import {UnknownDataValue} from './unknown.data-value';
-import {ConditionType} from '../data/attribute-filter';
+import {ConditionType} from '../model';
 
 describe('UnknownDataValue', () => {
   describe('meet condition', () => {

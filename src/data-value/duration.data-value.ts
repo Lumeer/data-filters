@@ -18,15 +18,11 @@
  */
 
 import Big from 'big.js';
-import {ConstraintData, DurationUnitsMap} from '../data/constraint';
-import {DurationConstraintConfig, DurationUnit} from '../data/constraint-config';
-import {NumericDataValue} from './index';
-import {dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts} from './data-value.utils';
-import {createDurationUnitsCountsMap, formatDurationDataValue, getDurationSaveValue, getDurationUnitToMillisMap, isDurationDataValueValid, sortedDurationUnits} from '../utils/duration.utils';
-import {convertToBig, formatUnknownDataValue} from '../utils/data.utils';
-import {escapeHtml, isNotNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {compareBigNumbers, convertBigToNumberSafely, isNumeric, toNumber} from '../utils/number.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
+
+import {NumericDataValue} from './data-value';
+import {compareBigNumbers, convertBigToNumberSafely, isNumeric, toNumber, escapeHtml, isNotNullOrUndefined, unescapeHtml, convertToBig, formatUnknownDataValue, dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts, createDurationUnitsCountsMap, formatDurationDataValue, getDurationSaveValue, getDurationUnitToMillisMap, isDurationDataValueValid, sortedDurationUnits} from '../utils';
+import {ConditionType, ConditionValue, DurationConstraintConfig, DurationUnit} from '../model';
+import {ConstraintData, DurationUnitsMap} from '../constraint';
 
 export class DurationDataValue implements NumericDataValue {
   public bigNumber: Big;

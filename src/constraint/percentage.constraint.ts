@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {PercentageDataValue} from '../data-value/percentage.data-value';
-import {ConstraintType} from '../data/constraint';
-import {PercentageConstraintConfig} from '../data/constraint-config';
-import {Constraint} from './index';
+import {PercentageDataValue} from '../data-value';
+import {Constraint} from './constraint';
 import {
   avgNumericValues,
   countValues,
@@ -29,8 +27,8 @@ import {
   minInNumericValues,
   sumNumericValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ConditionType} from '../data/attribute-filter';
+} from '../utils';
+import {ConditionType, PercentageConstraintConfig, ConstraintType} from '../model';
 
 export class PercentageConstraint implements Constraint {
   public readonly type = ConstraintType.Percentage;

@@ -17,89 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DataValue} from '../data-value';
-import {ConstraintData, ConstraintType} from '../data/constraint';
-import {ConstraintConfig} from '../data/constraint-config';
-import {ConditionType} from '../data/attribute-filter';
-
-export interface Constraint {
-  /**
-   * Type of this constraint
-   */
-  type: ConstraintType;
-
-  /**
-   * Config used for data value formatting, serialization, validation, etc.
-   */
-  config: Partial<ConstraintConfig>;
-
-  /**
-   * Determine if constraint is visualized simply by text in readonly mode.
-   */
-  isTextRepresentation?: boolean;
-
-  /**
-   * Determine if constraint can be edited directly (i.e. on simple click).
-   */
-  isDirectlyEditable?: boolean;
-
-  /**
-   * Determine if constraint can contain and end function.
-   */
-  allowEditFunction?: boolean;
-
-  /**
-   * Creates data value based on this constraint.
-   */
-  createDataValue(value: any, constraintData?: ConstraintData): DataValue;
-
-  /**
-   * Creates data value based on this constraint.
-   */
-  createInputDataValue(inputValue: string, value: any, constraintData?: ConstraintData): DataValue;
-
-  /**
-   * Calculates a sum of the given values.
-   */
-  sum(values: any[], onlyNumeric?: boolean): any;
-
-  /**
-   * Calculates an average of the given values.
-   */
-  avg(values: any[], onlyNumeric?: boolean): any;
-
-  /**
-   * Calculates a minimum of the given values.
-   */
-  min(values: any[], onlyNumeric?: boolean): any;
-
-  /**
-   * Calculates a maximum of the given values.
-   */
-  max(values: any[], onlyNumeric?: boolean): any;
-
-  /**
-   * Calculates a median of the given values.
-   */
-  median(values: any[], onlyNumeric?: boolean): any;
-
-  /**
-   * Calculates a median of the given values.
-   */
-  median(values: any[], onlyNumeric?: boolean): any;
-
-  /**
-   * Calculates a count of the given values.
-   */
-  count(values: any[]): number;
-
-  /**
-   * Calculates a unique count of the given values.
-   */
-  unique(values: any[]): number;
-
-  /**
-   * Supported conditions
-   */
-  conditions(): ConditionType[];
-}
+export * from './constraint';
+export * from './constraint-data';
+export * from './action.constraint';
+export * from './address.constraint';
+export * from './boolean.constraint';
+export * from './color.constraint';
+export * from './coordinates.constraint';
+export * from './datetime.constraint';
+export * from './duration.constraint';
+export * from './files.constraint';
+export * from './link.constraint';
+export * from './number.constraint';
+export * from './percentage.constraint';
+export * from './select.constraint';
+export * from './text.constraint';
+export * from './unknown.constraint';
+export * from './user.constraint';

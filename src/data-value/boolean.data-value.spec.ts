@@ -18,7 +18,7 @@
  */
 
 import {BooleanDataValue} from './boolean.data-value';
-import {ConditionType} from '../data/attribute-filter';
+import {ConditionType} from '../model';
 
 describe('BooleanDataValue', () => {
   describe('meet condition', () => {

@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {UserDataValue} from '../data-value/user.data-value';
-import {ConstraintData, ConstraintType} from '../data/constraint';
-import {UserConstraintConfig} from '../data/constraint-config';
-import {Constraint} from './index';
+import {UserDataValue} from '../data-value';
+import {Constraint} from './constraint';
 import {
   avgAnyValues,
   countValues,
@@ -29,8 +27,9 @@ import {
   minInAnyValues,
   sumAnyValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ConditionType} from '../data/attribute-filter';
+} from '../utils';
+import {ConditionType, UserConstraintConfig, ConstraintType} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class UserConstraint implements Constraint {
   public readonly type = ConstraintType.User;

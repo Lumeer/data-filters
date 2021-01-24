@@ -19,11 +19,11 @@
 
 import Big, {Comparison, RoundingMode} from 'big.js';
 import numbro from 'numbro';
-import {DurationConstraintConfig, DurationType, DurationUnit} from '../data/constraint-config';
-import {DurationUnitsMap} from '../data/constraint';
+import {DurationUnitsMap} from '../constraint';
 import {isNumeric, toNumber} from './number.utils';
 import {convertToBig} from './data.utils';
 import {objectValues} from './common.utils';
+import {DurationConstraintConfig, DurationType, DurationUnit} from '../model';
 
 export const sortedDurationUnits = [
     DurationUnit.Weeks,

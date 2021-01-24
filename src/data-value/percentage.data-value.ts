@@ -18,13 +18,10 @@
  */
 
 import Big from 'big.js';
-import {PercentageConstraintConfig} from '../data/constraint-config';
-import {NumericDataValue} from './index';
-import {dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts} from './data-value.utils';
-import {escapeHtml, isNotNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {convertToBig, decimalStoreToUser, decimalUserToStore, formatUnknownDataValue} from '../utils/data.utils';
-import {compareBigNumbers, convertBigToNumberSafely, createBigWithoutTrailingZeros, isNumeric, toNumber} from '../utils/number.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
+
+import {NumericDataValue} from './data-value';
+import {compareBigNumbers, convertBigToNumberSafely, createBigWithoutTrailingZeros, isNumeric, toNumber, convertToBig, decimalStoreToUser, decimalUserToStore, formatUnknownDataValue, dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts, escapeHtml, isNotNullOrUndefined, unescapeHtml} from '../utils';
+import {ConditionType, ConditionValue, PercentageConstraintConfig} from '../model';
 
 export class PercentageDataValue implements NumericDataValue {
   public readonly bigNumber: Big;

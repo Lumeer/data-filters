@@ -17,11 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {BooleanConstraintConfig} from '../data/constraint-config';
-import {DataValue} from './index';
-import {valueMeetFulltexts} from './data-value.utils';
-import {isArray} from '../utils/array.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
+import {DataValue} from './data-value';
+import {isArray, valueMeetFulltexts} from '../utils';
+import {BooleanConstraintConfig, ConditionType, ConditionValue} from '../model';
 
 const truthyValues = [true, 'true', 'yes', 'ja', 'ano', 'áno', 'sí', 'si', 'sim', 'да', '是', 'はい', 'vâng', 'כן'];
 

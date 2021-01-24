@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "description": "Data filters",
   "main": "dist/index.js",
+  "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && rollup -c",
+    "prepare": "npm run build",
+    "prepublish": "npm test && npm run preversion",
+    "preversion": "eslint --ext .ts .",
     "test": "jasmine-ts --config=jasmine.json"
   },
   "keywords": [
@@ -24,12 +28,20 @@
     "unorm": "^1.6.0"
   },
   "devDependencies": {
+    "@types/big.js": "^6.0.2",
     "@types/jasmine": "^3.6.3",
     "@types/lodash": "^4.14.168",
-    "@types/big.js": "^6.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
+    "eslint": "^7.18.0",
+    "eslint-plugin-import": "^2.22.1",
     "jasmine": "^3.6.4",
     "jasmine-spec-reporter": "^6.0.0",
     "jasmine-ts": "^0.3.0",
+    "rollup": "^2.38.0",
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-typescript": "^8.1.0",
+    "@rollup/plugin-node-resolve": "^11.1.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
   }

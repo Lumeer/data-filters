@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {AttributeFilter} from '../data/attribute-filter';
+import {AttributeFilter} from './attribute-filter';
 
 export interface Query {
   stems?: QueryStem[];

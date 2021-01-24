@@ -17,11 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {FilesConstraintConfig} from '../data/constraint-config';
-import {DataValue} from './index';
-import {valueMeetFulltexts} from './data-value.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {escapeHtml, unescapeHtml} from '../utils/common.utils';
+import {DataValue} from './data-value';
+import {valueMeetFulltexts, escapeHtml, unescapeHtml} from '../utils';
+import {FilesConstraintConfig, ConditionType, ConditionValue} from '../model';
 
 export class FilesDataValue implements DataValue {
   constructor(public readonly value: any, public readonly config: FilesConstraintConfig) {}

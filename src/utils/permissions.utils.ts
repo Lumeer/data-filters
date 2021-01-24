@@ -1,5 +1,4 @@
-import {Role} from '../model/role';
-import {AllowedPermissions} from '../model/permissions';
+import {Role, AllowedPermissions} from '../model';
 
 export function hasRoleByPermissions(role: Role, permissions: AllowedPermissions): boolean {
     switch (role) {

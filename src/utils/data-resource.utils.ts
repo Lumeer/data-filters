@@ -17,12 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DocumentModel, LinkInstance} from '../model/data-resource';
-import {Attribute, AttributesResource, AttributesResourceType, LinkType} from '../model/attributes-resource';
+import {ConstraintType, ActionConstraintConfig, Attribute, AttributesResource, AttributesResourceType, LinkType, DocumentModel, LinkInstance, AttributeFilter} from '../model';
 import {objectsByIdMap, objectValues} from './common.utils';
-import {ActionConstraintConfig} from '../data/constraint-config';
-import {ConstraintType} from '../data/constraint';
-import {AttributeFilter} from '../data/attribute-filter';
 
 export function groupDocumentsByCollection(documents: DocumentModel[]): Record<string, DocumentModel[]> {
     return (documents || []).reduce((map, document) => {

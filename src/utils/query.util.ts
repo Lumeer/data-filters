@@ -17,27 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {ConstraintType} from '../data/constraint';
-import {createRange} from './array.utils';
-import {Query, QueryStem} from '../model/query';
-import {isNullOrUndefined} from './common.utils';
-import {AttributesResource, Collection, LinkType, Resource} from '../model/attributes-resource';
-
-export function areConditionValuesDefined(
-  condition: ConditionType,
-  conditionValues: ConditionValue[],
-  constraintType: ConstraintType
-): boolean {
-  return (
-    condition &&
-    createRange(0, conditionNumInputs(condition)).every(
-      index =>
-        conditionValues[index] &&
-        (conditionValues[index].type || conditionValues[index].value || constraintType === ConstraintType.Boolean)
-    )
-  );
-}
+import {ConditionType, Query, QueryStem, AttributesResource, Collection, LinkType} from '../model';
 
 export function conditionNumInputs(condition: ConditionType): number {
   switch (condition) {
@@ -54,33 +34,12 @@ export function conditionNumInputs(condition: ConditionType): number {
   }
 }
 
-export function queryIsNotEmpty(query: Query): boolean {
-  return (
-    (query.stems && query.stems.length > 0) ||
-    (query.fulltexts && query.fulltexts.length > 0) ||
-    !isNullOrUndefined(query.page) ||
-    !!query.pageSize
-  );
-}
-
-export function queryIsEmpty(query: Query): boolean {
-  return !queryIsNotEmpty(query);
-}
-
 export function queryIsNotEmptyExceptPagination(query: Query): boolean {
   return (query.stems && query.stems.length > 0) || (query.fulltexts && query.fulltexts.length > 0);
 }
 
 export function queryIsEmptyExceptPagination(query: Query): boolean {
   return !queryIsNotEmptyExceptPagination(query);
-}
-
-export function isSingleCollectionQuery(query: Query): boolean {
-  return query && query.stems && query.stems.length === 1;
-}
-
-export function isAnyCollectionQuery(query: Query): boolean {
-  return query && query.stems && query.stems.length > 0;
 }
 
 export function queryStemAttributesResourcesOrder(

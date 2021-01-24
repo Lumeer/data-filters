@@ -18,27 +18,26 @@
  */
 
 import Big from 'big.js';
-import {NumberConstraintConfig} from '../data/constraint-config';
-import {NumericDataValue} from './index';
-import {dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts} from './data-value.utils';
 import numbro from 'numbro';
-import languages from 'numbro/dist/languages.min';
-import {convertToBig, decimalStoreToUser, decimalUserToStore, formatUnknownDataValue} from '../utils/data.utils';
-import {LanguageTag} from '../data/language-tag';
-import {escapeHtml, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {compareBigNumbers, isNumeric, removeNonNumberCharacters, toNumber} from '../utils/number.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
+
+import {NumericDataValue} from './data-value';
+import {compareBigNumbers, isNumeric, removeNonNumberCharacters, toNumber, escapeHtml, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts, convertToBig, decimalStoreToUser, decimalUserToStore, formatUnknownDataValue} from '../utils';
+import {ConditionType, ConditionValue, LanguageTag, NumberConstraintConfig} from '../model';
+import {registerAndSetLanguage} from '../state/language-state';
+import {ConstraintData} from '../constraint';
 
 export class NumberDataValue implements NumericDataValue {
-  private static languages: LanguageTag[] = [];
   public readonly bigNumber: Big;
+  private readonly locale: LanguageTag;
 
   constructor(
     public readonly value: any,
     public readonly config: NumberConstraintConfig,
-    public readonly inputValue?: string
+    public readonly constraintData?: ConstraintData,
+    public readonly inputValue?: string,
   ) {
-    this.setLanguage(config?.currency || LanguageTag.England);
+    this.locale = config?.locale || LanguageTag.USA;
+    registerAndSetLanguage(config?.currency || this.locale, this.locale, this.constraintData?.currencyData);
     const parsedValue = this.parseValue(value, config, inputValue);
     const unformatted = numbro.unformat(parsedValue, parseNumbroConfig(config));
     this.bigNumber = convertToBig(unformatted);
@@ -71,24 +70,12 @@ export class NumberDataValue implements NumericDataValue {
   private formatBigNumber(big: Big, overrideConfig?: Partial<NumberConstraintConfig>): string {
     const numbroConfig = parseNumbroConfig(this.config, overrideConfig);
     if (this.config?.currency) {
-      this.setLanguage(LanguageTag.USA);
+      registerAndSetLanguage(LanguageTag.USA, this.locale, this.constraintData?.currencyData);
       const numbroObject = numbro(this.bigNumber.toFixed());
-      this.setLanguage(this.config.currency);
+      registerAndSetLanguage(this.config.currency, this.locale, this.constraintData?.currencyData);
       return numbroObject.formatCurrency(numbroConfig);
     }
     return numbro(big.toFixed()).format(numbroConfig);
-  }
-
-  private setLanguage(tag: LanguageTag) {
-    if (NumberDataValue.languages.indexOf(tag) < 0) {
-      if (!numbro.languages()[tag]) {
-        numbro.registerLanguage(languages[tag]);
-      }
-      NumberDataValue.languages.push(tag);
-    }
-    if (numbro.language() !== tag) {
-      numbro.setLanguage(tag);
-    }
   }
 
   public preview(overrideConfig?: Partial<NumberConstraintConfig>): string {
@@ -140,11 +127,11 @@ export class NumberDataValue implements NumericDataValue {
   }
 
   public increment(): NumberDataValue {
-    return this.bigNumber && new NumberDataValue(this.bigNumber.add(1), this.config);
+    return this.bigNumber && new NumberDataValue(this.bigNumber.add(1), this.config, this.constraintData);
   }
 
   public decrement(): NumberDataValue {
-    return this.bigNumber && new NumberDataValue(this.bigNumber.sub(1), this.config);
+    return this.bigNumber && new NumberDataValue(this.bigNumber.sub(1), this.config, this.constraintData);
   }
 
   public compareTo(otherValue: NumberDataValue): number {
@@ -153,15 +140,15 @@ export class NumberDataValue implements NumericDataValue {
 
   public copy(newValue?: any): NumberDataValue {
     const value = newValue !== undefined ? newValue : this.value;
-    return new NumberDataValue(value, this.config);
+    return new NumberDataValue(value, this.config, this.constraintData);
   }
 
   public parseInput(inputValue: string): NumberDataValue {
-    return new NumberDataValue(inputValue, this.config, inputValue);
+    return new NumberDataValue(inputValue, this.config, this.constraintData, inputValue);
   }
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
-    const dataValues = (values || []).map(value => new NumberDataValue(value.value, this.config));
+    const dataValues = (values || []).map(value => new NumberDataValue(value.value, this.config, this.constraintData));
     const otherBigNumbers = dataValues.map(value => value.bigNumber);
     const otherValues = dataValues.map(value => value.value);
 

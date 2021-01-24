@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SelectDataValue} from '../data-value/select.data-value';
-import {ConstraintType} from '../data/constraint';
-import {SelectConstraintConfig} from '../data/constraint-config';
-import {Constraint} from './index';
+import {SelectDataValue} from '../data-value';
+import {Constraint} from './constraint';
 import {
   avgAnyValues,
   countValues,
@@ -29,8 +27,8 @@ import {
   minInAnyValues,
   sumAnyValues,
   uniqueValuesCount,
-} from './aggregation';
-import {ConditionType} from '../data/attribute-filter';
+} from '../utils';
+import {ConditionType, SelectConstraintConfig, ConstraintType} from '../model';
 
 export class SelectConstraint implements Constraint {
   public readonly type = ConstraintType.Select;

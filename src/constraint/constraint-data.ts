@@ -17,24 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function uniqueValues<T>(array: T[]): T[] {
-  return Array.from(new Set(array));
+import {DurationUnit, User, AddressesMap} from '../model';
+
+export interface ConstraintData {
+  addressesMap?: AddressesMap;
+  users?: User[];
+  currentUser?: User;
+  durationUnitsMap?: DurationUnitsMap;
+  currencyData?: CurrencyData;
 }
 
-export function isArray<T>(input?: any): input is T[] {
-  return Array.isArray(input);
-}
+export type DurationUnitsMap = Record<DurationUnit, string>;
 
-export function arrayIntersection<T>(array1: T[], array2: T[]): T[] {
-  const a = array1 || [];
-  const b = array2 || [];
-  return a.filter(x => b.includes(x));
-}
-
-export function createRange(from: number, to: number): number[] {
-  const range = [];
-  for (let i = from; i < to ; i++) {
-    range.push(i);
-  }
-  return range;
+export interface CurrencyData {
+  abbreviations: string[];
+  ordinals: string[];
 }

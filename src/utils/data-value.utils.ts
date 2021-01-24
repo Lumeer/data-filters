@@ -18,14 +18,13 @@
  */
 
 import Big from 'big.js';
-import {NumericDataValue} from './index';
-import {ConstraintType} from '../data/constraint';
+import {NumericDataValue} from '../data-value';
 import {Constraint} from '../constraint';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {setCharAt} from '../utils/string.utils';
-import {isNotNullOrUndefined, isNullOrUndefined} from '../utils/common.utils';
-import {conditionNumInputs} from '../utils/query.util';
-import {createRange} from '../utils/array.utils';
+import {ConditionType, ConditionValue, ConstraintType} from '../model';
+import {setCharAt} from './string.utils';
+import {isNotNullOrUndefined, isNullOrUndefined} from './common.utils';
+import {conditionNumInputs} from './query.util';
+import {createRange} from './array.utils';
 
 export function dataValuesMeetConditionByText(condition: ConditionType, value: string, otherValues: string[]): boolean {
   switch (condition) {

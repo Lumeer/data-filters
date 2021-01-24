@@ -1,5 +1,3 @@
-import {Collection, LinkType} from './attributes-resource';
-
 export interface DataResource {
     id: string;
     data: Record<string, any>;

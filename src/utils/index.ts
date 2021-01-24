@@ -17,24 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function uniqueValues<T>(array: T[]): T[] {
-  return Array.from(new Set(array));
-}
-
-export function isArray<T>(input?: any): input is T[] {
-  return Array.isArray(input);
-}
-
-export function arrayIntersection<T>(array1: T[], array2: T[]): T[] {
-  const a = array1 || [];
-  const b = array2 || [];
-  return a.filter(x => b.includes(x));
-}
-
-export function createRange(from: number, to: number): number[] {
-  const range = [];
-  for (let i = from; i < to ; i++) {
-    range.push(i);
-  }
-  return range;
-}
+export * from './aggregation.utils';
+export * from './color.utils';
+export * from './array.utils';
+export * from './common.utils';
+export * from './coordinates.utils';
+export * from './currency.utils';
+export * from './date.utils';
+export * from './data.utils';
+export * from './data-resource.utils';
+export * from './duration.utils';
+export * from './number.utils';
+export * from './permissions.utils';
+export * from './query.util';
+export * from './string.utils';
+export * from './valid-data-colors';
+export * from './data-value.utils';

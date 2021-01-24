@@ -18,7 +18,7 @@
  */
 
 import {formatDurationDataValue, getDurationSaveValue, isDurationDataValueValid} from './duration.utils';
-import {DurationConstraintConfig, DurationType, DurationUnit} from '../data/constraint-config';
+import {DurationConstraintConfig, DurationType, DurationUnit} from '../model';
 
 describe('duration utils', () => {
   const durationMap = {

@@ -19,7 +19,7 @@
 
 import Big from 'big.js';
 
-import {isNotNullOrUndefined, isNullOrUndefined} from './common.utils';
+import {isNotNullOrUndefined} from './common.utils';
 
 const formattingTags = [
     'strong',

@@ -18,16 +18,10 @@
  */
 
 import moment from 'moment';
-import {DateTimeConstraintConfig} from '../data/constraint-config';
-import {DataValue} from './index';
-import {ConstraintConditionValue, DateTimeConstraintConditionValue} from '../data/constraint-condition';
-import {valueMeetFulltexts} from './data-value.utils';
-import {getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek} from '../utils/date.utils';
-import {isNotNullOrUndefined, isNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {formatUnknownDataValue} from '../utils/data.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {createRange} from '../utils/array.utils';
-import {conditionNumInputs} from '../utils/query.util';
+
+import {DataValue} from './data-value';
+import {DateTimeConstraintConfig, ConstraintConditionValue, DateTimeConstraintConditionValue, ConditionType, ConditionValue} from '../model';
+import {conditionNumInputs, createRange, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, valueMeetFulltexts, getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek, formatUnknownDataValue} from '../utils';
 
 export class DateTimeDataValue implements DataValue {
   public readonly momentDate: moment.Moment;
@@ -54,7 +48,7 @@ export class DateTimeDataValue implements DataValue {
   }
 
   private parseMoment(value: any): moment.Moment {
-    return this.config?.asUtc ? moment.utc(this.value) : moment(this.value);
+    return this.config?.asUtc ? moment.utc(value) : moment(value);
   }
 
   public serialize(): any {

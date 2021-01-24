@@ -17,13 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TextConstraintConfig} from '../data/constraint-config';
-import {DataValue} from './index';
-import {dataValuesMeetConditionByText, valueByConditionText} from './data-value.utils';
-import {formatUnknownDataValue, stripTextHtmlTags} from '../utils/data.utils';
-import {isNotNullOrUndefined, unescapeHtml} from '../utils/common.utils';
-import {ConditionType, ConditionValue} from '../data/attribute-filter';
-import {replaceNbsp, transformTextBasedOnCaseStyle} from '../utils/string.utils';
+import {DataValue} from './data-value';
+import {isNotNullOrUndefined, unescapeHtml, formatUnknownDataValue, replaceNbsp, transformTextBasedOnCaseStyle, stripTextHtmlTags, dataValuesMeetConditionByText, valueByConditionText} from '../utils';
+import {ConditionType, ConditionValue, TextConstraintConfig} from '../model';
 
 export class TextDataValue implements DataValue {
   constructor(

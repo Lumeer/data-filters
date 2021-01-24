@@ -34,7 +34,6 @@ export function prolongShortHexColor(shortHex: string): string {
     );
 }
 
-
 export function convertRgbColorToHex(rgb: string): string {
     if (!rgb) {
         return '';

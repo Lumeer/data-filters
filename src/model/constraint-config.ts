@@ -18,10 +18,7 @@
  */
 
 import Big from 'big.js';
-import {LanguageTag} from './language-tag';
-import {AttributeFilterEquation} from "./attribute-filter";
-import {AddressField} from '../model/address';
-import {Role} from '../model/role';
+import {LanguageTag, AddressField, AttributeFilterEquation, Role} from './index';
 
 export interface AddressConstraintConfig {
   fields: AddressField[];
@@ -82,6 +79,7 @@ export interface NumberConstraintConfig {
   forceSign?: boolean; // +350
   negative?: boolean; // (100)
   currency?: LanguageTag;
+  locale?: LanguageTag;
 }
 
 export interface PercentageConstraintConfig {
