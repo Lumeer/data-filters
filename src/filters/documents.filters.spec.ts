@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DateTimeConstraintConfig, NumberConstraintConfig, UserConstraintConfig, Query, UserConstraintConditionValue, ConditionType, User, Collection, LinkType, DocumentModel, LinkInstance} from '../model';
-import {ConstraintData, UserConstraint, NumberConstraint, DateTimeConstraint} from '../constraint';
+import {Collection, ConditionType, DateTimeConstraintConfig, DocumentModel, LanguageTag, LinkInstance, LinkType, Query, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
+import {ConstraintData, DateTimeConstraint, NumberConstraint, UserConstraint} from '../constraint';
 import {filterDocumentsAndLinksByQuery} from './documents.filters';
 
 const documents: DocumentModel[] = [
@@ -116,7 +116,7 @@ const collections: Collection[] = [
     attributes: [
       {id: 'a1', name: 'a1'},
       {id: 'a2', name: 'a2', constraint: new UserConstraint({} as UserConstraintConfig)},
-      {id: 'a100', name: 'a100', constraint: new NumberConstraint({} as NumberConstraintConfig)},
+      {id: 'a100', name: 'a100', constraint: new NumberConstraint({locale: LanguageTag.USA})},
       {id: 'a101', name: 'a101', constraint: new DateTimeConstraint({} as DateTimeConstraintConfig)},
     ],
   },
