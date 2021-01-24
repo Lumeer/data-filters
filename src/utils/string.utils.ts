@@ -21,7 +21,7 @@ import unorm from 'unorm';
 
 import {CaseStyle} from '../model/';
 
-export function padStart(value: string, num: number, character: string): string {
+export function completeStringWithCharacter(value: string, num: number, character: string): string {
     let text = value || '';
     while (text.length < num) {
         text = character + text;
@@ -29,8 +29,7 @@ export function padStart(value: string, num: number, character: string): string 
     return text;
 }
 
-
-export function removeTrailingZeroes(value: string): string {
+export function removeTrailingZeroesFromString(value: string): string {
     if (!value) {
         return value;
     }
@@ -52,7 +51,7 @@ export function removeTrailingZeroes(value: string): string {
 }
 
 
-export function removeAccent(value: string, lowerCase = true): string {
+export function removeAccentFromString(value: string, lowerCase = true): string {
     return unorm.nfd(lowerCase ? (value || '').toLowerCase() : value || '').replace(/[\u0300-\u036f]/g, '');
 }
 
@@ -104,6 +103,6 @@ export function setCharAt(value: string, position: number, char: string): string
     return value.substring(0, position) + char + value.substring(position + 1, value.length);
 }
 
-export function replaceNbsp(value: string): string {
+export function replaceNbspFromString(value: string): string {
     return (value || '').replace(/&nbsp;/g, ' ');
 }

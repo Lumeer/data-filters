@@ -19,7 +19,7 @@
 
 import Big, {BigSource} from 'big.js';
 import {isNotNullOrUndefined, isNullOrUndefined} from './common.utils';
-import {removeTrailingZeroes} from './string.utils';
+import {removeTrailingZeroesFromString} from './string.utils';
 
 export function isNumeric(value: any): boolean {
     if (isNullOrUndefined(value) || typeof value === 'boolean' || String(value).trim() === '') {
@@ -35,7 +35,7 @@ export function toNumber(value: any): number {
 }
 
 export function convertBigToNumberSafely(big: Big, decimals = 0): number | string {
-    const value = big && removeTrailingZeroes(big.toFixed(decimals > 0 ? decimals : 0));
+    const value = big && removeTrailingZeroesFromString(big.toFixed(decimals > 0 ? decimals : 0));
     return value && !value.includes('.') ? convertStringToNumberSafely(value) : value;
 }
 

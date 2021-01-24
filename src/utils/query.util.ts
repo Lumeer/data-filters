@@ -19,7 +19,7 @@
 
 import {ConditionType, Query, QueryStem, AttributesResource, Collection, LinkType} from '../model';
 
-export function conditionNumInputs(condition: ConditionType): number {
+export function conditionTypeNumberOfInputs(condition: ConditionType): number {
   switch (condition) {
     case ConditionType.IsEmpty:
     case ConditionType.NotEmpty:

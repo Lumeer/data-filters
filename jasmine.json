@@ -7,6 +7,7 @@
       }
     }
   ],
+  "helpers": ["../node_modules/@babel/register/lib/node.js"],
   "spec_dir": "src",
-  "spec_files": ["**/*[sS]pecs.ts"]
+  "spec_files": ["**/*[sS]pec.ts"]
 }

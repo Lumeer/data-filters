@@ -3,7 +3,7 @@
     "declaration": true,
     "declarationDir": "./dist",
     "emitDeclarationOnly": true,
-    "module": "esnext",
+    "module": "commonjs",
     "lib": ["es2017", "es7", "es6", "dom"],
     "target": "es5",
     "outDir": "./dist",

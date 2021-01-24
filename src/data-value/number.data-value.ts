@@ -100,10 +100,7 @@ export class NumberDataValue implements NumericDataValue {
   }
 
   private getCurrencyDecimalSeparator(): string {
-    if (this.config?.currency) {
-      return numbro.languages()[this.config.currency]?.delimiters?.decimal;
-    }
-    return null;
+    return numbro.languageData()?.delimiters?.decimal;
   }
 
   public serialize(): any {

@@ -21,7 +21,7 @@ import moment from 'moment';
 
 import {DataValue} from './data-value';
 import {DateTimeConstraintConfig, ConstraintConditionValue, DateTimeConstraintConditionValue, ConditionType, ConditionValue} from '../model';
-import {conditionNumInputs, createRange, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, valueMeetFulltexts, getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek, formatUnknownDataValue} from '../utils';
+import {conditionTypeNumberOfInputs, createRange, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, valueMeetFulltexts, getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek, formatUnknownDataValue} from '../utils';
 
 export class DateTimeDataValue implements DataValue {
   public readonly momentDate: moment.Moment;
@@ -183,7 +183,7 @@ export class DateTimeDataValue implements DataValue {
       }
     }
 
-    const allMomentDatesDefined = createRange(0, conditionNumInputs(condition)).every(
+    const allMomentDatesDefined = createRange(0, conditionTypeNumberOfInputs(condition)).every(
       index => momentDates[index] && otherMomentValues[index].moment
     );
     if (!allMomentDatesDefined) {

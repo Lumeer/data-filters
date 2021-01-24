@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {padStart} from './string.utils';
+import {completeStringWithCharacter} from './string.utils';
 
 export function prolongShortHexColor(shortHex: string): string {
     if (!shortHex) {
@@ -44,7 +44,7 @@ export function convertRgbColorToHex(rgb: string): string {
         rgb
             .slice(4, -1)
             .split(',')
-            .map(val => padStart(Number(val.trim()).toString(16), 2, '0'))
+            .map(val => completeStringWithCharacter(Number(val.trim()).toString(16), 2, '0'))
             .join('');
     return /^#?[0-9a-f]{6}$/.test(value) ? value : '';
 }
@@ -89,7 +89,7 @@ function hueToRgb(p: number, q: number, t: number): number {
 }
 
 function colorToHex(x: number) {
-    return padStart(Math.round(x * 255).toString(16), 2, '0');
+    return completeStringWithCharacter(Math.round(x * 255).toString(16), 2, '0');
 }
 
 

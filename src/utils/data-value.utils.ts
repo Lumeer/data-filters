@@ -23,7 +23,7 @@ import {Constraint} from '../constraint';
 import {ConditionType, ConditionValue, ConstraintType} from '../model';
 import {setCharAt} from './string.utils';
 import {isNotNullOrUndefined, isNullOrUndefined} from './common.utils';
-import {conditionNumInputs} from './query.util';
+import {conditionTypeNumberOfInputs} from './query.util';
 import {createRange} from './array.utils';
 
 export function dataValuesMeetConditionByText(condition: ConditionType, value: string, otherValues: string[]): boolean {
@@ -187,7 +187,7 @@ export function initialConditionType(constraint: Constraint): ConditionType {
 }
 
 export function initialConditionValues(condition: ConditionType, constraint: Constraint): ConditionValue[] {
-  const numInputs = conditionNumInputs(condition);
+  const numInputs = conditionTypeNumberOfInputs(condition);
   switch (constraint.type) {
     case ConstraintType.Boolean:
       return createRange(0, numInputs).map(() => ({value: true}));

@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {isNotNullOrUndefined, unescapeHtml, formatUnknownDataValue, replaceNbsp, transformTextBasedOnCaseStyle, stripTextHtmlTags, dataValuesMeetConditionByText, valueByConditionText} from '../utils';
+import {isNotNullOrUndefined, unescapeHtml, formatUnknownDataValue, replaceNbspFromString, transformTextBasedOnCaseStyle, stripTextHtmlTags, dataValuesMeetConditionByText, valueByConditionText} from '../utils';
 import {ConditionType, ConditionValue, TextConstraintConfig} from '../model';
 
 export class TextDataValue implements DataValue {
@@ -99,7 +99,7 @@ export class TextDataValue implements DataValue {
   }
 
   public parseInput(inputValue: string): TextDataValue {
-    return new TextDataValue(inputValue, this.config, replaceNbsp(inputValue));
+    return new TextDataValue(inputValue, this.config, replaceNbspFromString(inputValue));
   }
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
@@ -128,7 +128,7 @@ function numberOfTags(value: string): number {
   return match ? match.length : 0;
 }
 
-export function numberOfPTags(value: string): number {
+function numberOfPTags(value: string): number {
   const match = value.match(/<p.*?>.+?<\/p>/g);
   return match ? match.length : 0;
 }
