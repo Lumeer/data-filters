@@ -1,7 +1,7 @@
 {
   "name": "@lumeer/data-filters",
   "version": "0.1.0",
-  "description": "Data filters",
+  "description": "Helper library to filter data values",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -11,6 +11,10 @@
     "prepublish": "npm test && npm run preversion",
     "preversion": "eslint --ext .ts .",
     "test": "jasmine-ts --config=jasmine.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lumeer/data-filters.git"
   },
   "keywords": [
     "data",
