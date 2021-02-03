@@ -19,7 +19,7 @@
 
 import {DurationUnitsMap} from '../constraint';
 import {DurationDataValue} from './duration.data-value';
-import {DurationConstraintConfig, DurationType, DurationUnit} from '../model';
+import {ConditionType, DurationConstraintConfig, DurationType, DurationUnit} from '../model';
 
 describe('DurationDataValue', () => {
   const durationUnitsMap: DurationUnitsMap = {
@@ -47,10 +47,47 @@ describe('DurationDataValue', () => {
   const dayToMillis = 8 * hourToMillis;
   const weekToMillis = 5 * dayToMillis;
 
+  describe('meet condition', () => {
+    it('equals', () => {
+      expect(new DurationDataValue('5w', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: 'wwwww'}])).toBeTruthy();
+
+      expect(new DurationDataValue('5w10d4h300m', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: '7w1d1h'}])).toBeTruthy();
+
+      expect(new DurationDataValue('', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: null}])).toBeTruthy();
+
+      expect(new DurationDataValue(undefined, config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: null}])).toBeTruthy();
+
+      expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: null}])).toBeFalsy();
+
+      expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: 'xyz'}])).toBeTruthy();
+    });
+
+      it('empty', () => {
+          expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+
+          expect(new DurationDataValue(' ', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+
+          expect(new DurationDataValue('dd', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+      });
+
+      it('is not empty', () => {
+          expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+
+          expect(new DurationDataValue(' ', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+
+          expect(new DurationDataValue('dd', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+      });
+  });
+
   describe('format()', () => {
     it('should format duration value weeks', () => {
       const dataValue = new DurationDataValue('10w', config, {durationUnitsMap});
       expect(dataValue.format()).toEqual('10t');
+    });
+
+    it('should equals with conversion', () => {
+      const dataValue = new DurationDataValue('10w', config, {durationUnitsMap});
+      expect(dataValue.meetCondition(ConditionType.Equals, [{value:'10t'}])).toBeTrue();
     });
 
     it('should format duration value weeks group with days', () => {

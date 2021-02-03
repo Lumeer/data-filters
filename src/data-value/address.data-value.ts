@@ -35,8 +35,8 @@ export class AddressDataValue implements DataValue {
     if (isObject(value)) {
       this.address = value;
     } else {
-      const addressesMap = (constraintData && constraintData.addressesMap) || {};
-      this.address = addressesMap[value] && addressesMap[value][0];
+      const addressesMap = constraintData?.addressesMap || {};
+      this.address = addressesMap?.[value]?.[0];
     }
   }
 
@@ -49,7 +49,7 @@ export class AddressDataValue implements DataValue {
       return this.value || '';
     }
 
-    const fields = (this.config && this.config.fields) || [];
+    const fields = this.config?.fields || [];
     const nonEmptyFields = fields.filter(fieldName => !!this.address[fieldName]);
     const streetFields: string[] = [AddressField.HouseNumber, AddressField.Street];
 

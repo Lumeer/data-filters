@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {dataValuesMeetConditionByText, valueByConditionText} from '../utils';
+import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, LinkConstraintConfig} from '../model';
 
 /*
@@ -90,11 +90,7 @@ export class LinkDataValue implements DataValue {
   }
 
   public meetFullTexts(fulltexts: string[]): boolean {
-    const linkFormattedValue = this.linkValue?.toLowerCase().toString() || '';
-    const titleFormattedValue = this.titleValue?.toLowerCase().toString() || '';
-    return (fulltexts || [])
-      .map(fulltext => fulltext.toLowerCase().trim())
-      .every(fulltext => linkFormattedValue.includes(fulltext) || titleFormattedValue.includes(fulltext));
+    return valueMeetFulltexts(this.titleValue || this.linkValue, fulltexts);
   }
 
   public parseInput(inputValue: string): LinkDataValue {
@@ -158,14 +154,16 @@ export function formatLinkValue(link: string, title: string): string {
 }
 
 export function parseLinkValue(value: string): {link?: string; title?: string} {
-  if (value && value[value.length - 1] === ']') {
-    const titleStartIndex = value.lastIndexOf('[');
+  const trimmedValue = value ? value.trim() : value;
+  if (trimmedValue && trimmedValue[trimmedValue.length - 1] === ']') {
+    const titleStartIndex = trimmedValue.lastIndexOf('[');
     if (titleStartIndex !== -1) {
+      const title = trimmedValue.substring(titleStartIndex + 1, trimmedValue.length - 1);
       return {
-        link: value.substring(0, titleStartIndex).trim(),
-        title: value.substring(titleStartIndex + 1, value.length - 1),
+        link: trimmedValue.substring(0, titleStartIndex).trim() || title,
+        title,
       };
     }
   }
-  return {link: value};
+  return {link: trimmedValue};
 }

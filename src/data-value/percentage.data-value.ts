@@ -20,18 +20,23 @@
 import Big from 'big.js';
 
 import {NumericDataValue} from './data-value';
-import {compareBigNumbers, convertBigToNumberSafely, createBigWithoutTrailingZeros, isNumeric, toNumber, convertToBig, decimalStoreToUser, decimalUserToStore, formatUnknownDataValue, dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts, escapeHtml, isNotNullOrUndefined, unescapeHtml} from '../utils';
+import {compareBigNumbers, convertBigToNumberSafely, createBigWithoutTrailingZeros, isNumeric, toNumber, convertToBig, decimalStoreToUser, decimalUserToStore, formatUnknownDataValue, dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts, escapeHtml, isNotNullOrUndefined, unescapeHtml, roundBigNumber} from '../utils';
 import {ConditionType, ConditionValue, PercentageConstraintConfig} from '../model';
 
 export class PercentageDataValue implements NumericDataValue {
-  public readonly bigNumber: Big;
+  public readonly number: Big;
+  private readonly roundedNumber: Big;
+  private readonly parsedValue: string;
 
   constructor(
     public readonly value: any,
     public readonly config: PercentageConstraintConfig,
     public readonly inputValue?: string
   ) {
-    this.bigNumber = createPercentage(value, inputValue, config);
+    const containerPercentageSign = String(value).trim().endsWith('%');
+    this.parsedValue = containerPercentageSign || isNotNullOrUndefined(inputValue) ? parseInputValue(value) : value;
+    this.number = convertPercentageToBig(this.parsedValue);
+    this.roundedNumber = roundBigNumber(this.number, config?.decimals);
   }
 
   public format(overrideConfig?: Partial<PercentageConstraintConfig>, suffix: string = '%'): string {
@@ -39,8 +44,8 @@ export class PercentageDataValue implements NumericDataValue {
       return this.inputValue;
     }
     const bigNumber = overrideConfig
-      ? createPercentage(this.value, this.inputValue, this.config, overrideConfig)
-      : this.bigNumber;
+      ? roundBigNumber(this.number, overrideConfig?.decimals || this.config?.decimals)
+      : this.roundedNumber;
     if (!bigNumber) {
       return formatUnknownDataValue(this.value);
     }
@@ -61,12 +66,12 @@ export class PercentageDataValue implements NumericDataValue {
   }
 
   public serialize(): any {
-    if (!this.bigNumber) {
+    if (!this.number) {
       return this.value ? escapeHtml(String(this.value)) : '';
     }
 
-    const decimals = this.config?.decimals || 0;
-    return convertBigToNumberSafely(this.bigNumber.div(100), decimals + 2);
+    const decimals = this.config?.decimals >= 0 ? this.config.decimals + 2 : undefined;
+    return convertBigToNumberSafely(this.number.div(100), decimals);
   }
 
   public isValid(ignoreConfig?: boolean): boolean {
@@ -78,7 +83,7 @@ export class PercentageDataValue implements NumericDataValue {
       return true;
     }
 
-    return Boolean(this.bigNumber && (ignoreConfig || this.isPercentageWithinRange()));
+    return Boolean(this.number && (ignoreConfig || this.isPercentageWithinRange()));
   }
 
   private isPercentageWithinRange(): boolean {
@@ -95,18 +100,18 @@ export class PercentageDataValue implements NumericDataValue {
 
   public increment(): PercentageDataValue {
     return (
-      (this.bigNumber && new PercentageDataValue(this.bigNumber.add(1).div(100).toFixed(), this.config)) || this.copy()
+      (this.number && new PercentageDataValue(this.number.add(1).div(100).toFixed(), this.config)) || this.copy()
     );
   }
 
   public decrement(): PercentageDataValue {
     return (
-      (this.bigNumber && new PercentageDataValue(this.bigNumber.sub(1).div(100).toFixed(), this.config)) || this.copy()
+      (this.number && new PercentageDataValue(this.number.sub(1).div(100).toFixed(), this.config)) || this.copy()
     );
   }
 
   public compareTo(otherValue: PercentageDataValue): number {
-    return compareBigNumbers(this.bigNumber, otherValue.bigNumber);
+    return compareBigNumbers(this.roundedNumber, otherValue.roundedNumber);
   }
 
   public copy(newValue?: any): PercentageDataValue {
@@ -120,10 +125,10 @@ export class PercentageDataValue implements NumericDataValue {
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = (values || []).map(value => new PercentageDataValue(value.value, this.config));
-    const otherBigNumbers = dataValues.map(value => value.bigNumber);
-    const otherValues = dataValues.map(value => value.value);
+    const otherBigNumbers = dataValues.map(value => value.roundedNumber);
+    const otherValues = dataValues.map(value => value.parsedValue);
 
-    return dataValuesMeetConditionByNumber(condition, this.bigNumber, otherBigNumbers, this.value, otherValues);
+    return dataValuesMeetConditionByNumber(condition, this.roundedNumber, otherBigNumbers, this.parsedValue, otherValues);
   }
 
   public meetFullTexts(fulltexts: string[]): boolean {
@@ -181,18 +186,9 @@ function convertPercentageToBig(value: any, decimals?: number): Big {
     big = new Big('0');
   }
 
-  big = big.round(decimals || 0);
+  if (decimals >= 0) {
+    big = big.round(decimals);
+  }
 
   return createBigWithoutTrailingZeros(big);
-}
-
-function createPercentage(
-  value: any,
-  inputValue: string,
-  config: PercentageConstraintConfig,
-  overrideConfig?: Partial<PercentageConstraintConfig>
-): Big {
-  const containerPercentageSign = String(value).trim().endsWith('%');
-  const pureValue = containerPercentageSign || isNotNullOrUndefined(inputValue) ? parseInputValue(value) : value;
-  return convertPercentageToBig(pureValue, overrideConfig?.decimals || config.decimals);
 }

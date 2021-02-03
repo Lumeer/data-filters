@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Big from 'big.js';
+import Big, {RoundingMode} from 'big.js';
 
 import {isNotNullOrUndefined} from './common.utils';
 
@@ -85,6 +85,13 @@ export function convertToBig(value: any, defaultValue?: number): Big {
     } catch (e) {
         return isNotNullOrUndefined(defaultValue) ? new Big(defaultValue) : null;
     }
+}
+
+export function roundBigNumber(big: Big, decimalPlaces: number): Big {
+    if (big && decimalPlaces >= 0) {
+        return big.round(decimalPlaces, RoundingMode.RoundHalfUp);
+    }
+    return big;
 }
 
 export const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

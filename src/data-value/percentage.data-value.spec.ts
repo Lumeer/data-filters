@@ -17,11 +17,66 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {PercentageConstraintConfig} from '../model';
+import {ConditionType, PercentageConstraintConfig} from '../model';
 import {PercentageDataValue} from './percentage.data-value';
 
 describe('PercentageDataValue', () => {
   const basicPercentage = {} as PercentageConstraintConfig;
+
+  describe('meet condition', () => {
+
+    it('equals', () => {
+      expect(new PercentageDataValue(undefined, basicPercentage).meetCondition(ConditionType.Equals, [{value: ''}])).toBeTruthy();
+
+      expect(new PercentageDataValue(null, basicPercentage).meetCondition(ConditionType.Equals, [{value: ''}])).toBeTruthy();
+
+      expect(new PercentageDataValue(undefined, basicPercentage).meetCondition(ConditionType.Equals, [{value: null}])).toBeTruthy();
+
+      expect(new PercentageDataValue('xyz', basicPercentage).meetCondition(ConditionType.Equals, [{value: ''}])).toBeFalsy();
+
+      expect(new PercentageDataValue('10', basicPercentage).meetCondition(ConditionType.Equals, [{value: '1000%'}])).toBeTruthy();
+
+      expect(new PercentageDataValue(0.1, basicPercentage).meetCondition(ConditionType.Equals, [{value: '10%'}])).toBeTruthy();
+    });
+
+    it('empty', () => {
+      expect(new PercentageDataValue('xyz', basicPercentage).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+
+      expect(new PercentageDataValue(' ', basicPercentage).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+
+      expect(new PercentageDataValue(null, basicPercentage).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+
+      expect(new PercentageDataValue(undefined, basicPercentage).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+
+      expect(new PercentageDataValue('10', basicPercentage).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+
+      expect(new PercentageDataValue('5%', basicPercentage).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+
+    });
+
+    it('not empty', () => {
+      expect(new PercentageDataValue('xyz', basicPercentage).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+
+      expect(new PercentageDataValue(' ', basicPercentage).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+
+      expect(new PercentageDataValue(null, basicPercentage).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+
+      expect(new PercentageDataValue(undefined, basicPercentage).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+
+      expect(new PercentageDataValue('10', basicPercentage).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+
+      expect(new PercentageDataValue('5%', basicPercentage).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+
+    });
+
+  });
+
+  it('undefined value', () => {
+    const dataValue = new PercentageDataValue(undefined, basicPercentage);
+    expect(dataValue.format()).toEqual('');
+    expect(dataValue.serialize()).toEqual('');
+    expect(dataValue.isValid()).toEqual(true);
+  });
 
   it('undefined value', () => {
     const dataValue = new PercentageDataValue(undefined, basicPercentage);
@@ -95,8 +150,8 @@ describe('PercentageDataValue', () => {
 
   it('decimal string value with symbol', () => {
     const dataValue = new PercentageDataValue('66.66%', basicPercentage);
-    expect(dataValue.format()).toEqual('67%');
-    expect(dataValue.serialize()).toEqual('0.67');
+    expect(dataValue.format()).toEqual('66.66%');
+    expect(dataValue.serialize()).toEqual('0.6666');
     expect(dataValue.isValid()).toEqual(true);
   });
 
@@ -124,14 +179,14 @@ describe('PercentageDataValue', () => {
   it('should parse decimal value', () => {
     const dataValue = new PercentageDataValue('', basicPercentage).parseInput('66.66');
     expect(dataValue.format()).toEqual('66.66');
-    expect(dataValue.serialize()).toEqual('0.67');
+    expect(dataValue.serialize()).toEqual('0.6666');
     expect(dataValue.isValid()).toEqual(true);
   });
 
   it('should parse decimal value with symbol', () => {
     const dataValue = new PercentageDataValue('', basicPercentage).parseInput('66.66%');
     expect(dataValue.format()).toEqual('66.66%');
-    expect(dataValue.serialize()).toEqual('0.67');
+    expect(dataValue.serialize()).toEqual('0.6666');
     expect(dataValue.isValid()).toEqual(true);
   });
 

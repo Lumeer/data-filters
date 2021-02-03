@@ -133,5 +133,5 @@ export interface NumericDataValue extends DataValue {
   /**
    * Value stored as big number
    */
-  bigNumber: Big;
+  number: Big;
 }

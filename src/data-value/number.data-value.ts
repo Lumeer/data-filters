@@ -17,18 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Big from 'big.js';
+import Big, {RoundingMode} from 'big.js';
 import numbro from 'numbro';
 
 import {NumericDataValue} from './data-value';
-import {compareBigNumbers, isNumeric, removeNonNumberCharacters, toNumber, escapeHtml, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts, convertToBig, decimalStoreToUser, decimalUserToStore, formatUnknownDataValue} from '../utils';
+import {compareBigNumbers, convertToBig, dataValuesMeetConditionByNumber, decimalStoreToUser, decimalUserToStore, escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, isNullOrUndefined, isNumeric, removeNonNumberCharacters, roundBigNumber, toNumber, unescapeHtml, valueByConditionNumber, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, LanguageTag, NumberConstraintConfig} from '../model';
 import {registerAndSetLanguage} from '../state/language-state';
 import {ConstraintData} from '../constraint';
 
 export class NumberDataValue implements NumericDataValue {
-  public readonly bigNumber: Big;
+  public readonly number: Big;
+  private readonly roundedNumber: Big;
   private readonly locale: LanguageTag;
+  private readonly parsedValue: string;
 
   constructor(
     public readonly value: any,
@@ -38,9 +40,10 @@ export class NumberDataValue implements NumericDataValue {
   ) {
     this.locale = config?.locale || LanguageTag.USA;
     registerAndSetLanguage(config?.currency || this.locale, this.locale, this.constraintData?.currencyData);
-    const parsedValue = this.parseValue(value, config, inputValue);
-    const unformatted = numbro.unformat(parsedValue, parseNumbroConfig(config));
-    this.bigNumber = convertToBig(unformatted);
+    this.parsedValue = this.parseValue(value, config, inputValue);
+    const unformatted = numbro.unformat(this.parsedValue, parseNumbroConfig(config));
+    this.number = convertToBig(unformatted);
+    this.roundedNumber = roundBigNumber(this.number, config?.decimals);
   }
 
   private parseValue(value: any, config: NumberConstraintConfig, inputValue?: string): any {
@@ -52,7 +55,7 @@ export class NumberDataValue implements NumericDataValue {
       return inputValue || value;
     }
 
-    return decimalUserToStore(String(inputValue || value || '')).replace(',', '.');
+    return decimalUserToStore(String(inputValue || value || '')).replace(',', '.').trim();
   }
 
   public format(overrideConfig?: Partial<NumberConstraintConfig>): string {
@@ -60,8 +63,8 @@ export class NumberDataValue implements NumericDataValue {
       return removeNonNumberCharacters(this.inputValue);
     }
 
-    if (this.bigNumber) {
-      return this.formatBigNumber(this.bigNumber, overrideConfig);
+    if (this.number) {
+      return this.formatBigNumber(this.number, overrideConfig);
     }
 
     return formatUnknownDataValue(this.value);
@@ -71,7 +74,7 @@ export class NumberDataValue implements NumericDataValue {
     const numbroConfig = parseNumbroConfig(this.config, overrideConfig);
     if (this.config?.currency) {
       registerAndSetLanguage(LanguageTag.USA, this.locale, this.constraintData?.currencyData);
-      const numbroObject = numbro(this.bigNumber.toFixed());
+      const numbroObject = numbro(this.number.toFixed());
       registerAndSetLanguage(this.config.currency, this.locale, this.constraintData?.currencyData);
       return numbroObject.formatCurrency(numbroConfig);
     }
@@ -91,9 +94,9 @@ export class NumberDataValue implements NumericDataValue {
       return removeNonNumberCharacters(this.inputValue);
     }
 
-    if (this.bigNumber) {
+    if (this.number) {
       const separator = this.getCurrencyDecimalSeparator();
-      return decimalStoreToUser(this.bigNumber.toFixed(), separator);
+      return decimalStoreToUser(this.number.toFixed(), separator);
     }
 
     return unescapeHtml(formatUnknownDataValue(this.value));
@@ -104,35 +107,35 @@ export class NumberDataValue implements NumericDataValue {
   }
 
   public serialize(): any {
-    if (this.bigNumber) {
-      return this.bigNumber.toFixed();
+    if (this.number) {
+      return this.number.toFixed();
     }
     return isNotNullOrUndefined(this.value) ? escapeHtml(decimalUserToStore(String(this.value).trim())) : null;
   }
 
   public isValid(ignoreConfig?: boolean): boolean {
     if (isNotNullOrUndefined(this.inputValue)) {
-      return this.inputValue === '' || !!this.bigNumber;
+      return this.inputValue === '' || !!this.number;
     }
     if (!this.value) {
       return true;
     }
-    if (!this.bigNumber) {
+    if (!this.number) {
       return false;
     }
-    return Boolean(ignoreConfig) || checkNumberRange(this.bigNumber, this.config);
+    return Boolean(ignoreConfig) || checkNumberRange(this.number, this.config);
   }
 
   public increment(): NumberDataValue {
-    return this.bigNumber && new NumberDataValue(this.bigNumber.add(1), this.config, this.constraintData);
+    return this.number && new NumberDataValue(this.number.add(1), this.config, this.constraintData);
   }
 
   public decrement(): NumberDataValue {
-    return this.bigNumber && new NumberDataValue(this.bigNumber.sub(1), this.config, this.constraintData);
+    return this.number && new NumberDataValue(this.number.sub(1), this.config, this.constraintData);
   }
 
   public compareTo(otherValue: NumberDataValue): number {
-    return compareBigNumbers(this.bigNumber, otherValue.bigNumber);
+    return compareBigNumbers(this.roundedNumber, otherValue.roundedNumber);
   }
 
   public copy(newValue?: any): NumberDataValue {
@@ -146,10 +149,10 @@ export class NumberDataValue implements NumericDataValue {
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = (values || []).map(value => new NumberDataValue(value.value, this.config, this.constraintData));
-    const otherBigNumbers = dataValues.map(value => value.bigNumber);
-    const otherValues = dataValues.map(value => value.value);
+    const otherBigNumbers = dataValues.map(value => value.roundedNumber);
+    const otherValues = dataValues.map(value => value.parsedValue);
 
-    return dataValuesMeetConditionByNumber(condition, this.bigNumber, otherBigNumbers, this.value, otherValues);
+    return dataValuesMeetConditionByNumber(condition, this.roundedNumber, otherBigNumbers, this.parsedValue, otherValues);
   }
 
   public meetFullTexts(fulltexts: string[]): boolean {
@@ -195,10 +198,10 @@ function parseNumbroConfig(
 
 function checkNumberRange(n: Big, config?: NumberConstraintConfig): boolean {
   let passed = true;
-  if (config && config.minValue) {
+  if (config?.minValue) {
     passed = n.gte(config.minValue);
   }
-  if (config && config.maxValue) {
+  if (config?.maxValue) {
     passed = passed && n.lte(config.maxValue);
   }
 

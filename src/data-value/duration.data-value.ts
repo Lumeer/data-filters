@@ -20,13 +20,35 @@
 import Big from 'big.js';
 
 import {NumericDataValue} from './data-value';
-import {compareBigNumbers, convertBigToNumberSafely, isNumeric, toNumber, escapeHtml, isNotNullOrUndefined, unescapeHtml, convertToBig, formatUnknownDataValue, dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts, createDurationUnitsCountsMap, formatDurationDataValue, getDurationSaveValue, getDurationUnitToMillisMap, isDurationDataValueValid, sortedDurationUnits} from '../utils';
+import {
+  compareBigNumbers,
+  convertBigToNumberSafely,
+  isNumeric,
+  toNumber,
+  escapeHtml,
+  isNotNullOrUndefined,
+  unescapeHtml,
+  convertToBig,
+  formatUnknownDataValue,
+  dataValuesMeetConditionByNumber,
+  valueByConditionNumber,
+  valueMeetFulltexts,
+  createDurationUnitsCountsMap,
+  formatDurationDataValue,
+  getDurationSaveValue,
+  getDurationUnitToMillisMap,
+  isDurationDataValueValid,
+  sortedDurationUnits,
+  roundBigNumber
+} from '../utils';
 import {ConditionType, ConditionValue, DurationConstraintConfig, DurationUnit} from '../model';
 import {ConstraintData, DurationUnitsMap} from '../constraint';
 
 export class DurationDataValue implements NumericDataValue {
-  public bigNumber: Big;
-  public unitsCountMap: Record<DurationUnit, number>;
+  public readonly number: Big;
+  public readonly unitsCountMap: Record<DurationUnit, number>;
+  private readonly roundedNumber: Big;
+  private readonly parsedValue: string;
 
   constructor(
     public readonly value: any,
@@ -34,11 +56,12 @@ export class DurationDataValue implements NumericDataValue {
     public readonly constraintData: ConstraintData,
     public readonly inputValue?: string
   ) {
-    const durationUnitsMap = this.constraintData && this.constraintData.durationUnitsMap;
-    const modifiedValue = this.inputValue ? parseInputValue(this.inputValue) : value;
-    if (isDurationDataValueValid(value, durationUnitsMap)) {
-      const saveValue = getDurationSaveValue(modifiedValue, this.config, durationUnitsMap);
-      this.bigNumber = convertToBig(saveValue);
+    const durationUnitsMap = this.constraintData?.durationUnitsMap;
+    this.parsedValue = this.inputValue ? parseInputValue(this.inputValue) : value;
+    if (isDurationDataValueValid(this.parsedValue, durationUnitsMap)) {
+      const saveValue = getDurationSaveValue(this.parsedValue, this.config, durationUnitsMap);
+      this.number = convertToBig(saveValue);
+      this.roundedNumber = roundBigNumber(this.number, config?.decimalPlaces);
       this.unitsCountMap = createDurationUnitsCountsMap(saveValue, this.config);
     }
   }
@@ -56,7 +79,7 @@ export class DurationDataValue implements NumericDataValue {
       return this.inputValue;
     }
 
-    if (!this.bigNumber) {
+    if (!this.number) {
       return formatUnknownDataValue(this.value);
     }
 
@@ -76,8 +99,8 @@ export class DurationDataValue implements NumericDataValue {
   }
 
   public serialize(): any {
-    if (this.bigNumber) {
-      return convertBigToNumberSafely(this.bigNumber);
+    if (this.number) {
+      return convertBigToNumberSafely(this.number, 0);
     }
 
     return escapeHtml(formatUnknownDataValue(this.value));
@@ -87,7 +110,7 @@ export class DurationDataValue implements NumericDataValue {
     if (isNotNullOrUndefined(this.inputValue)) {
       return this.copy(this.inputValue).isValid(ignoreConfig);
     }
-    return !!this.bigNumber;
+    return !!this.number;
   }
 
   public increment(): DurationDataValue {
@@ -96,14 +119,14 @@ export class DurationDataValue implements NumericDataValue {
 
   private addToSmallestUnit(multiplier: 1 | -1 = 1): DurationDataValue {
     const one = new Big(1);
-    if (this.bigNumber) {
+    if (this.number) {
       const formatted = this.formatToNativeLocale();
       const unitsMap = getDurationUnitToMillisMap(this.config);
       for (let i = sortedDurationUnits.length - 1; i >= 0; i--) {
         if (formatted.includes(sortedDurationUnits[i])) {
           const millis = unitsMap[sortedDurationUnits[i]] || 1;
-          if (this.bigNumber.div(new Big(millis)).gte(one)) {
-            return this.copy(this.bigNumber.add(millis * multiplier).toFixed());
+          if (this.number.div(new Big(millis)).gte(one)) {
+            return this.copy(this.number.add(millis * multiplier).toFixed());
           }
         }
       }
@@ -116,7 +139,7 @@ export class DurationDataValue implements NumericDataValue {
   }
 
   public compareTo(otherValue: DurationDataValue): number {
-    return compareBigNumbers(this.bigNumber, otherValue.bigNumber);
+    return compareBigNumbers(this.roundedNumber, otherValue.roundedNumber);
   }
 
   public copy(newValue?: any): DurationDataValue {
@@ -130,12 +153,12 @@ export class DurationDataValue implements NumericDataValue {
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = (values || []).map(
-      value => new DurationDataValue(value.value, this.config, this.constraintData)
+        value => new DurationDataValue(value.value, this.config, this.constraintData)
     );
-    const otherBigNumbers = dataValues.map(value => value.bigNumber);
-    const otherValues = dataValues.map(value => value.value);
+    const otherBigNumbers = dataValues.map(value => value.roundedNumber);
+    const otherValues = dataValues.map(value => value.parsedValue);
 
-    return dataValuesMeetConditionByNumber(condition, this.bigNumber, otherBigNumbers, this.value, otherValues);
+    return dataValuesMeetConditionByNumber(condition, this.roundedNumber, otherBigNumbers, this.parsedValue, otherValues);
   }
 
   public meetFullTexts(fulltexts: string[]): boolean {

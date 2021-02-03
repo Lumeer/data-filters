@@ -23,6 +23,9 @@ import {ConditionType, LanguageTag, NumberConstraintConfig} from '../model';
 
 describe('NumberDataValue', () => {
   const config: NumberConstraintConfig = {locale: LanguageTag.USA};
+  const decimalsConfig: NumberConstraintConfig = {locale: LanguageTag.USA, decimals: 3};
+  const zeroDecimalsConfig: NumberConstraintConfig = {locale: LanguageTag.USA, decimals: 0};
+
   const constraintData: ConstraintData = {
     currencyData: {
       ordinals: 'st|nd|rd|th'.split('|'),
@@ -31,18 +34,45 @@ describe('NumberDataValue', () => {
   };
 
   describe('meet condition', () => {
+
+    it('parse input', () => {
+      expect(new NumberDataValue('20', config, constraintData, ' 300  ').serialize()).toEqual('300');
+
+      expect(new NumberDataValue('20', config, constraintData, '10e1').serialize()).toEqual('100');
+
+      expect(new NumberDataValue('20', config, constraintData, '23e-4').serialize()).toEqual('0.0023');
+    });
+
     it('equals', () => {
       expect(new NumberDataValue('20', config, constraintData).meetCondition(ConditionType.Equals, [{value: 20}])).toBeTruthy();
+
+      expect(new NumberDataValue('20', config, constraintData).meetCondition(ConditionType.Equals, [{value: '20.0'}])).toBeTruthy();
 
       expect(new NumberDataValue('20.000', config, constraintData).meetCondition(ConditionType.Equals, [{value: 20}])).toBeTruthy();
 
       expect(new NumberDataValue('20.01', config, constraintData).meetCondition(ConditionType.Equals, [{value: 20}])).toBeFalsy();
 
-      expect(new NumberDataValue('', config, constraintData).meetCondition(ConditionType.Equals, [{value: null}])).toBeTruthy();
+      expect(new NumberDataValue(' ', config, constraintData).meetCondition(ConditionType.Equals, [{value: null}])).toBeTruthy();
+
+      expect(new NumberDataValue('xyz', config, constraintData).meetCondition(ConditionType.Equals, [{value: null}])).toBeFalsy();
+
+      expect(new NumberDataValue('xyz', config, constraintData).meetCondition(ConditionType.Equals, [{value: ' xyz '}])).toBeTruthy();
 
       expect(new NumberDataValue(undefined, config, constraintData).meetCondition(ConditionType.Equals, [{value: null}])).toBeTruthy();
 
       expect(new NumberDataValue('10', config, constraintData).meetCondition(ConditionType.Equals, [{value: '5'}])).toBeFalsy();
+    });
+
+    it('equals decimals config', () => {
+      expect(new NumberDataValue('20.12345', decimalsConfig, constraintData).meetCondition(ConditionType.Equals, [{value: 20.123}])).toBeTruthy();
+
+      expect(new NumberDataValue('20.1235', decimalsConfig, constraintData).meetCondition(ConditionType.Equals, [{value: 20.123}])).toBeFalse();
+    });
+
+    it('equals zero decimals config', () => {
+      expect(new NumberDataValue('1.234', zeroDecimalsConfig, constraintData).meetCondition(ConditionType.Equals, [{value: '1.2031'}])).toBeTruthy();
+
+      expect(new NumberDataValue('1.567', zeroDecimalsConfig, constraintData).meetCondition(ConditionType.Equals, [{value: 2.2031}])).toBeTruthy();
     });
 
     it('not equals', () => {
@@ -136,6 +166,10 @@ describe('NumberDataValue', () => {
 
       expect(new NumberDataValue(null, config, constraintData).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
 
+      expect(new NumberDataValue('xxx', config, constraintData).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+
+      expect(new NumberDataValue('  ', config, constraintData).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+
       expect(new NumberDataValue(undefined, config, constraintData).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
     });
 
@@ -143,6 +177,8 @@ describe('NumberDataValue', () => {
       expect(new NumberDataValue('', config, constraintData).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
 
       expect(new NumberDataValue('10', config, constraintData).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+
+      expect(new NumberDataValue('xxx', config, constraintData).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
     });
   });
 

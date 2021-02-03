@@ -28,15 +28,18 @@ describe('CoordinatesDataValue', () => {
       expect(
         new CoordinatesDataValue('10', config).meetCondition(ConditionType.Equals, [{value: '10,0'}])
       ).toBeTruthy();
+
       expect(new CoordinatesDataValue('10,1', config).meetCondition(ConditionType.Equals, [{value: '1'}])).toBeFalsy();
       expect(
         new CoordinatesDataValue('10.12345', config).meetCondition(ConditionType.Equals, [{value: '10.123'}])
       ).toBeTruthy();
+
       expect(
         new CoordinatesDataValue('20.99999,30.88888', config).meetCondition(ConditionType.Equals, [
           {value: '21,30.889'},
         ])
       ).toBeTruthy();
+
       expect(
         new CoordinatesDataValue('20,30', config).meetCondition(ConditionType.Equals, [{value: '20,30.1'}])
       ).toBeFalsy();
@@ -46,25 +49,32 @@ describe('CoordinatesDataValue', () => {
       expect(
         new CoordinatesDataValue('10.9999', config).meetCondition(ConditionType.NotEquals, [{value: '10.999'}])
       ).toBeTruthy();
+
       expect(
         new CoordinatesDataValue('10', config).meetCondition(ConditionType.NotEquals, [{value: '10,0'}])
       ).toBeFalsy();
+
       expect(
         new CoordinatesDataValue('20,155', config).meetCondition(ConditionType.NotEquals, [{value: '20.000,155.0006'}])
       ).toBeTruthy();
+
       expect(
         new CoordinatesDataValue('20,155', config).meetCondition(ConditionType.NotEquals, [{value: '20.000,155.0004'}])
       ).toBeFalsy();
     });
     it('is empty', () => {
       expect(new CoordinatesDataValue('0', config).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+
       expect(new CoordinatesDataValue('  ', config).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+
       expect(new CoordinatesDataValue(null, config).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
     });
 
     it('is not empty', () => {
       expect(new CoordinatesDataValue(' 0', config).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+
       expect(new CoordinatesDataValue(null, config).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+
       expect(new CoordinatesDataValue('  ', config).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
     });
   });
@@ -72,7 +82,9 @@ describe('CoordinatesDataValue', () => {
   describe('meet fultexts', () => {
     it('single', () => {
       expect(new CoordinatesDataValue('10', config).meetFullTexts(['10.000'])).toBeTruthy();
+
       expect(new CoordinatesDataValue('10.123,40.234', config).meetFullTexts(['123'])).toBeTruthy();
+
       expect(new CoordinatesDataValue('10.123,40.234', config).meetFullTexts(['101'])).toBeFalsy();
     });
   });

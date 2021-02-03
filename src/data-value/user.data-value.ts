@@ -162,7 +162,7 @@ export class UserDataValue implements DataValue {
   private mapQueryConditionValue(value: ConditionValue): UserDataValue {
     if (value.type === UserConstraintConditionValue.CurrentUser) {
       const currentUser = this.constraintData?.currentUser;
-      return new UserDataValue(currentUser && currentUser.email, this.config, this.constraintData);
+      return new UserDataValue(currentUser?.email, this.config, this.constraintData);
     }
     return new UserDataValue(value.value, this.config, this.constraintData);
   }
@@ -173,7 +173,7 @@ export class UserDataValue implements DataValue {
 
   public valueByCondition(condition: ConditionType, values: ConditionValue[]): any {
     const dataValues = values?.map(value => this.mapQueryConditionValue(value));
-    const otherUsers = (dataValues.length > 0 && dataValues[0].users) || [];
+    const otherUsers = dataValues?.[0]?.users || [];
 
     switch (condition) {
       case ConditionType.HasSome:

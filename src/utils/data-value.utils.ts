@@ -21,7 +21,7 @@ import Big from 'big.js';
 import {NumericDataValue} from '../data-value';
 import {Constraint} from '../constraint';
 import {ConditionType, ConditionValue, ConstraintType} from '../model';
-import {setCharAt} from './string.utils';
+import {removeAccentFromString, setCharAt} from './string.utils';
 import {isNotNullOrUndefined, isNullOrUndefined} from './common.utils';
 import {conditionTypeNumberOfInputs} from './query.util';
 import {createRange} from './array.utils';
@@ -154,8 +154,8 @@ export function valueByConditionNumber(
     case ConditionType.GreaterThan:
       return dataValue.copy(values[0].value).increment().serialize();
     case ConditionType.Between:
-      const firstValue = (<NumericDataValue>dataValue.copy(values[0].value)).bigNumber;
-      const secondValue = (<NumericDataValue>dataValue.copy(values[1].value)).bigNumber;
+      const firstValue = (<NumericDataValue>dataValue.copy(values[0].value)).number;
+      const secondValue = (<NumericDataValue>dataValue.copy(values[1].value)).number;
       if (firstValue && secondValue) {
         const firstValueDivided = firstValue.div(new Big(divider));
         const bigValue = firstValueDivided
@@ -176,7 +176,7 @@ export function valueByConditionNumber(
 }
 
 export function valueMeetFulltexts(value: string, fulltexts: string[]): boolean {
-  const formattedValue = (value || '').toLowerCase().trim();
+  const formattedValue = removeAccentFromString(value || '').trim();
   return (fulltexts || [])
     .map(fulltext => fulltext.toLowerCase().trim())
     .every(fulltext => formattedValue.includes(fulltext));

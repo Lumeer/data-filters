@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {isNotNullOrUndefined, unescapeHtml, formatUnknownDataValue, replaceNbspFromString, transformTextBasedOnCaseStyle, stripTextHtmlTags, dataValuesMeetConditionByText, valueByConditionText} from '../utils';
+import {isNotNullOrUndefined, unescapeHtml, formatUnknownDataValue, replaceNbspFromString, transformTextBasedOnCaseStyle, stripTextHtmlTags, dataValuesMeetConditionByText, valueByConditionText, removeAccentFromString} from '../utils';
 import {ConditionType, ConditionValue, TextConstraintConfig} from '../model';
 
 export class TextDataValue implements DataValue {
@@ -112,7 +112,7 @@ export class TextDataValue implements DataValue {
   }
 
   public meetFullTexts(fulltexts: string[]): boolean {
-    const formattedValue = stripTextHtmlTags(this.format(), false).toLowerCase().trim();
+    const formattedValue = removeAccentFromString(stripTextHtmlTags(this.format(), false).trim());
     return (fulltexts || [])
       .map(fulltext => stripTextHtmlTags(fulltext, false).toLowerCase().trim())
       .every(fulltext => formattedValue.includes(fulltext));

@@ -18,6 +18,7 @@
  */
 
 export * from './constraint';
+export * from './create-constraint';
 export * from './constraint-data';
 export * from './action.constraint';
 export * from './address.constraint';

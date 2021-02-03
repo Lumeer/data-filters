@@ -26,14 +26,19 @@ describe('ColorDataValue', () => {
   describe('meet condition', () => {
     it('equals', () => {
       expect(new ColorDataValue('red', config).meetCondition(ConditionType.Equals, [{value: '#ff0000'}])).toBeTruthy();
+
       expect(new ColorDataValue('red', config).meetCondition(ConditionType.Equals, [{value: 'red'}])).toBeTruthy();
+
       expect(new ColorDataValue('red', config).meetCondition(ConditionType.Equals, [{value: '#ff0001'}])).toBeFalsy();
+
       expect(
         new ColorDataValue('white', config).meetCondition(ConditionType.Equals, [{value: '#ffffff'}])
       ).toBeTruthy();
+
       expect(
         new ColorDataValue('#000000', config).meetCondition(ConditionType.Equals, [{value: 'black'}])
       ).toBeTruthy();
+
       expect(new ColorDataValue('#000', config).meetCondition(ConditionType.Equals, [{value: 'black'}])).toBeTruthy();
     });
 
@@ -41,26 +46,34 @@ describe('ColorDataValue', () => {
       expect(
         new ColorDataValue('red', config).meetCondition(ConditionType.NotEquals, [{value: '#ff0001'}])
       ).toBeTruthy();
+
       expect(
         new ColorDataValue('red', config).meetCondition(ConditionType.NotEquals, [{value: '#ff0000'}])
       ).toBeFalsy();
+
       expect(
         new ColorDataValue('white', config).meetCondition(ConditionType.NotEquals, [{value: 'black'}])
       ).toBeTruthy();
+
       expect(
         new ColorDataValue('white', config).meetCondition(ConditionType.NotEquals, [{value: '#ffffffff'}])
       ).toBeTruthy();
     });
     it('is empty', () => {
       expect(new ColorDataValue('     ', config).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+
       expect(new ColorDataValue(' red ', config).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+
       expect(new ColorDataValue(null, config).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
     });
 
     it('is not empty', () => {
       expect(new ColorDataValue('#000000', config).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+
       expect(new ColorDataValue('red', config).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+
       expect(new ColorDataValue(null, config).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+
       expect(new ColorDataValue('  ', config).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
     });
   });
@@ -68,10 +81,15 @@ describe('ColorDataValue', () => {
   describe('meet fultexts', () => {
     it('single', () => {
       expect(new ColorDataValue('#000000', config).meetFullTexts(['black'])).toBeTruthy();
+
       expect(new ColorDataValue('#000000', config).meetFullTexts(['#000000'])).toBeTruthy();
+
       expect(new ColorDataValue('#000000', config).meetFullTexts(['bl'])).toBeTruthy();
+
       expect(new ColorDataValue('#000000', config).meetFullTexts(['001'])).toBeFalsy();
+
       expect(new ColorDataValue('black', config).meetFullTexts(['black'])).toBeTruthy();
+
       expect(new ColorDataValue('black', config).meetFullTexts(['#000'])).toBeTruthy();
     });
   });

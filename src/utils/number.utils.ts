@@ -34,8 +34,8 @@ export function toNumber(value: any): number {
     return Number(val);
 }
 
-export function convertBigToNumberSafely(big: Big, decimals = 0): number | string {
-    const value = big && removeTrailingZeroesFromString(big.toFixed(decimals > 0 ? decimals : 0));
+export function convertBigToNumberSafely(big: Big, decimals: number): number | string {
+    const value = big && removeTrailingZeroesFromString(big.toFixed(decimals));
     return value && !value.includes('.') ? convertStringToNumberSafely(value) : value;
 }
 
