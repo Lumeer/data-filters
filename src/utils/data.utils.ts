@@ -88,7 +88,7 @@ export function convertToBig(value: any, defaultValue?: number): Big {
 }
 
 export function roundBigNumber(big: Big, decimalPlaces: number): Big {
-    if (big && decimalPlaces >= 0) {
+    if (big && isNotNullOrUndefined(decimalPlaces) && decimalPlaces >= 0) {
         return big.round(decimalPlaces, RoundingMode.RoundHalfUp);
     }
     return big;
