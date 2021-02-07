@@ -37,11 +37,11 @@ export class SelectConstraint implements Constraint {
 
   constructor(public readonly config: SelectConstraintConfig) {}
 
-  public createDataValue(value: any, constraintData: ConstraintData): SelectDataValue {
+  public createDataValue(value: any, constraintData?: ConstraintData): SelectDataValue {
     return new SelectDataValue(value, this.config, constraintData);
   }
 
-  public createInputDataValue(inputValue: string, value: any, constraintData: ConstraintData): SelectDataValue {
+  public createInputDataValue(inputValue: string, value: any, constraintData?: ConstraintData): SelectDataValue {
     return new SelectDataValue(value, this.config, constraintData, inputValue);
   }
 
