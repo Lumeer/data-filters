@@ -101,4 +101,9 @@ export interface Constraint {
    * Supported conditions
    */
   conditions(): ConditionType[];
+
+  /**
+   * Filters invalid values from data objects
+   */
+  filterInvalidValues<T extends {data: Record<string, any>}>(objects: T[], attributeId: string, constraintData?: ConstraintData): Set<any>;
 }

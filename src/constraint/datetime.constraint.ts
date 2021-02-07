@@ -21,6 +21,7 @@ import {DateTimeDataValue} from '../data-value';
 import {Constraint} from './constraint';
 import {avgAnyValues, countValues, medianInAnyValues, sumAnyValues, uniqueValuesCount} from '../utils';
 import {ConstraintType, ConditionType, DateTimeConstraintConfig} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class DateTimeConstraint implements Constraint {
   public readonly type = ConstraintType.DateTime;
@@ -83,5 +84,9 @@ export class DateTimeConstraint implements Constraint {
 
   public count(values: any[]): number {
     return countValues(values);
+  }
+
+  public filterInvalidValues<T extends { data: Record<string, any> }>(objects: T[], attributeId: string): Set<any> {
+    return new Set<any>();
   }
 }

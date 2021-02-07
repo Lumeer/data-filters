@@ -21,7 +21,7 @@ import {SelectDataValue} from '../data-value';
 import {Constraint} from './constraint';
 import {
   avgAnyValues,
-  countValues,
+  countValues, isArray, isNotNullOrUndefined,
   maxInAnyValues,
   medianInAnyValues,
   minInAnyValues,
@@ -29,6 +29,7 @@ import {
   uniqueValuesCount,
 } from '../utils';
 import {ConditionType, SelectConstraintConfig, ConstraintType} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class SelectConstraint implements Constraint {
   public readonly type = ConstraintType.Select;
@@ -36,12 +37,12 @@ export class SelectConstraint implements Constraint {
 
   constructor(public readonly config: SelectConstraintConfig) {}
 
-  public createDataValue(value: any): SelectDataValue {
-    return new SelectDataValue(value, this.config);
+  public createDataValue(value: any, constraintData: ConstraintData): SelectDataValue {
+    return new SelectDataValue(value, this.config, constraintData);
   }
 
-  public createInputDataValue(inputValue: string, value: any): SelectDataValue {
-    return new SelectDataValue(value, this.config, inputValue);
+  public createInputDataValue(inputValue: string, value: any, constraintData: ConstraintData): SelectDataValue {
+    return new SelectDataValue(value, this.config, constraintData, inputValue);
   }
 
   public conditions(): ConditionType[] {
@@ -81,5 +82,22 @@ export class SelectConstraint implements Constraint {
 
   public count(values: any[]): number {
     return countValues(values);
+  }
+
+  public filterInvalidValues<T extends { data: Record<string, any> }>(objects: T[], attributeId: string): Set<any> {
+    const invalidValues = new Set();
+    const validValues = new Set(this.config?.options?.map(option => <any>option.value) || []);
+    for (let i = 0; i < objects?.length; i++) {
+      const value = objects[i].data?.[attributeId];
+      if (isNotNullOrUndefined(value)) {
+        const values = isArray(value) ? value : [value];
+        for (let j = 0; j < values.length; j++) {
+          if (!validValues.has(values[j])) {
+            invalidValues.add(values[j]);
+          }
+        }
+      }
+    }
+    return invalidValues;
   }
 }

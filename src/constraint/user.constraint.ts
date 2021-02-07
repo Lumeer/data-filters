@@ -20,13 +20,13 @@
 import {UserDataValue} from '../data-value';
 import {Constraint} from './constraint';
 import {
-  avgAnyValues,
-  countValues,
-  maxInAnyValues,
-  medianInAnyValues,
-  minInAnyValues,
-  sumAnyValues,
-  uniqueValuesCount,
+    avgAnyValues,
+    countValues, isArray, isNotNullOrUndefined,
+    maxInAnyValues,
+    medianInAnyValues,
+    minInAnyValues,
+    sumAnyValues,
+    uniqueValuesCount,
 } from '../utils';
 import {ConditionType, UserConstraintConfig, ConstraintType} from '../model';
 import {ConstraintData} from './constraint-data';
@@ -82,5 +82,22 @@ export class UserConstraint implements Constraint {
 
   public count(values: any[]): number {
     return countValues(values);
+  }
+
+  public filterInvalidValues<T extends { data: Record<string, any> }>(objects: T[], attributeId: string, constraintData: ConstraintData): Set<any> {
+    const invalidValues = new Set();
+    const validValues = new Set(constraintData?.users?.map(option => <any>option.email) || []);
+    for (let i = 0; i < objects?.length; i++) {
+      const value = objects[i].data?.[attributeId];
+      if (isNotNullOrUndefined(value)) {
+          const values = isArray(value) ? value : [value];
+          for (let j = 0; j < values.length; j++) {
+              if (!validValues.has(values[j])) {
+                  invalidValues.add(values[j]);
+              }
+          }
+      }
+    }
+    return invalidValues;
   }
 }

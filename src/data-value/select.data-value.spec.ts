@@ -21,6 +21,7 @@ import {SelectDataValue} from './select.data-value';
 import {ConditionType, SelectConstraintConfig} from '../model';
 
 describe('SelectDataValue', () => {
+  const constraintData = {};
   const config: SelectConstraintConfig = {
     multi: true,
     displayValues: true,
@@ -34,81 +35,81 @@ describe('SelectDataValue', () => {
 
   describe('meet condition', () => {
     it('has some', () => {
-      expect(new SelectDataValue(['0', '5'], config).meetCondition(ConditionType.HasSome, [{value: '0'}])).toBeTruthy();
-      expect(new SelectDataValue(['4', '5'], config).meetCondition(ConditionType.HasSome, [{value: '0'}])).toBeFalsy();
+      expect(new SelectDataValue(['0', '5'], config, constraintData).meetCondition(ConditionType.HasSome, [{value: '0'}])).toBeTruthy();
+      expect(new SelectDataValue(['4', '5'], config, constraintData).meetCondition(ConditionType.HasSome, [{value: '0'}])).toBeFalsy();
       expect(
-        new SelectDataValue(['0', '1', '2', '3'], config).meetCondition(ConditionType.HasSome, [
+        new SelectDataValue(['0', '1', '2', '3'], config, constraintData).meetCondition(ConditionType.HasSome, [
           {value: ['0', '1', '2', '3', '4']},
         ])
       ).toBeTruthy();
-      expect(new SelectDataValue(['3', '1'], config).meetCondition(ConditionType.HasSome, [{value: '0'}])).toBeFalsy();
+      expect(new SelectDataValue(['3', '1'], config, constraintData).meetCondition(ConditionType.HasSome, [{value: '0'}])).toBeFalsy();
     });
 
     it('has none of ', () => {
       expect(
-        new SelectDataValue(['0', '1', '2'], config).meetCondition(ConditionType.HasNoneOf, [{value: '3'}])
+        new SelectDataValue(['0', '1', '2'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [{value: '3'}])
       ).toBeTruthy();
       expect(
-        new SelectDataValue(['0', '1', '2'], config).meetCondition(ConditionType.HasNoneOf, [{value: ['3', '4', '5']}])
+        new SelectDataValue(['0', '1', '2'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [{value: ['3', '4', '5']}])
       ).toBeTruthy();
       expect(
-        new SelectDataValue(['0', '1', '2', '3'], config).meetCondition(ConditionType.HasNoneOf, [{value: ['0', '5']}])
+        new SelectDataValue(['0', '1', '2', '3'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [{value: ['0', '5']}])
       ).toBeFalsy();
       expect(
-        new SelectDataValue(['3', '1'], config).meetCondition(ConditionType.HasNoneOf, [{value: '1'}])
+        new SelectDataValue(['3', '1'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [{value: '1'}])
       ).toBeFalsy();
     });
 
     it('in', () => {
       expect(
-        new SelectDataValue(['a'], config).meetCondition(ConditionType.In, [{value: ['a', 'b', 'c']}])
+        new SelectDataValue(['a'], config, constraintData).meetCondition(ConditionType.In, [{value: ['a', 'b', 'c']}])
       ).toBeTruthy();
       expect(
-        new SelectDataValue(['a', 'b'], config).meetCondition(ConditionType.In, [{value: ['a', 'b', 'c']}])
+        new SelectDataValue(['a', 'b'], config, constraintData).meetCondition(ConditionType.In, [{value: ['a', 'b', 'c']}])
       ).toBeTruthy();
       expect(
-        new SelectDataValue(['a', 'c', 'b'], config).meetCondition(ConditionType.In, [{value: ['a', 'b', 'c']}])
+        new SelectDataValue(['a', 'c', 'b'], config, constraintData).meetCondition(ConditionType.In, [{value: ['a', 'b', 'c']}])
       ).toBeTruthy();
       expect(
-        new SelectDataValue(['a', 'b', 'c', 'd'], config).meetCondition(ConditionType.In, [{value: ['a', 'b', 'c']}])
+        new SelectDataValue(['a', 'b', 'c', 'd'], config, constraintData).meetCondition(ConditionType.In, [{value: ['a', 'b', 'c']}])
       ).toBeFalsy();
     });
 
     it('has all', () => {
       expect(
-        new SelectDataValue(['a'], config).meetCondition(ConditionType.HasAll, [{value: ['a', 'b', 'c']}])
+        new SelectDataValue(['a'], config, constraintData).meetCondition(ConditionType.HasAll, [{value: ['a', 'b', 'c']}])
       ).toBeFalsy();
       expect(
-        new SelectDataValue(['a', 'b'], config).meetCondition(ConditionType.HasAll, [{value: ['a', 'b', 'c']}])
+        new SelectDataValue(['a', 'b'], config, constraintData).meetCondition(ConditionType.HasAll, [{value: ['a', 'b', 'c']}])
       ).toBeFalsy();
       expect(
-        new SelectDataValue(['a', 'c', 'b'], config).meetCondition(ConditionType.HasAll, [{value: ['a', 'b', 'c']}])
+        new SelectDataValue(['a', 'c', 'b'], config, constraintData).meetCondition(ConditionType.HasAll, [{value: ['a', 'b', 'c']}])
       ).toBeTruthy();
       expect(
-        new SelectDataValue(['a', 'b', 'c', 'd'], config).meetCondition(ConditionType.HasAll, [
+        new SelectDataValue(['a', 'b', 'c', 'd'], config, constraintData).meetCondition(ConditionType.HasAll, [
           {value: ['a', 'b', 'c']},
         ])
       ).toBeTruthy();
     });
 
     it('is empty', () => {
-      expect(new SelectDataValue('0', config).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
-      expect(new SelectDataValue('  ', config).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
-      expect(new SelectDataValue(null, config).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+      expect(new SelectDataValue('0', config, constraintData).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+      expect(new SelectDataValue('  ', config, constraintData).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+      expect(new SelectDataValue(null, config, constraintData).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
     });
 
     it('is not empty', () => {
-      expect(new SelectDataValue(' 0', config).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
-      expect(new SelectDataValue(null, config).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
-      expect(new SelectDataValue('  ', config).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+      expect(new SelectDataValue(' 0', config, constraintData).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+      expect(new SelectDataValue(null, config, constraintData).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+      expect(new SelectDataValue('  ', config, constraintData).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
     });
   });
 
   describe('meet fultexts', () => {
     it('single', () => {
-      expect(new SelectDataValue('0', config).meetFullTexts(['he'])).toBeTruthy();
-      expect(new SelectDataValue(['0', '1', '2'], config).meetFullTexts(['He', 'da', 'ma'])).toBeTruthy();
-      expect(new SelectDataValue(['0', '3', '5'], config).meetFullTexts(['da'])).toBeFalsy();
+      expect(new SelectDataValue('0', config, constraintData).meetFullTexts(['he'])).toBeTruthy();
+      expect(new SelectDataValue(['0', '1', '2'], config, constraintData).meetFullTexts(['He', 'da', 'ma'])).toBeTruthy();
+      expect(new SelectDataValue(['0', '3', '5'], config, constraintData).meetFullTexts(['da'])).toBeFalsy();
     });
   });
 });

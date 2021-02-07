@@ -21,6 +21,7 @@ import {CoordinatesDataValue} from '../data-value';
 import {Constraint} from './constraint';
 import {avgAnyValues, countValues, medianInAnyValues, sumAnyValues, uniqueValuesCount} from '../utils';
 import {ConditionType, CoordinatesConstraintConfig, ConstraintType} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class CoordinatesConstraint implements Constraint {
   public readonly type = ConstraintType.Coordinates;
@@ -71,5 +72,9 @@ export class CoordinatesConstraint implements Constraint {
 
   public count(values: any[]): number {
     return countValues(values);
+  }
+
+  public filterInvalidValues<T extends { data: Record<string, any> }>(objects: T[], attributeId: string): Set<any> {
+    return new Set<any>();
   }
 }

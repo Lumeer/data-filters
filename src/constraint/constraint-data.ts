@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DurationUnit, User, AddressesMap} from '../model';
+import {DurationUnit, User, AddressesMap, ConstraintType} from '../model';
 
 export interface ConstraintData {
   addressesMap?: AddressesMap;
@@ -25,6 +25,7 @@ export interface ConstraintData {
   currentUser?: User;
   durationUnitsMap?: DurationUnitsMap;
   currencyData?: CurrencyData;
+  invalidValuesMap?: Record<ConstraintType, Set<any>>;
 }
 
 export type DurationUnitsMap = Record<DurationUnit, string>;

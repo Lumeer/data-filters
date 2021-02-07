@@ -29,6 +29,7 @@ import {
 } from '../utils';
 import {ActionDataValue} from '../data-value';
 import {ConditionType, ActionConstraintConfig, ConstraintType} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class ActionConstraint implements Constraint {
   public readonly type = ConstraintType.Action;
@@ -74,5 +75,9 @@ export class ActionConstraint implements Constraint {
 
   public count(values: any[]): number {
     return countValues(values);
+  }
+
+  public filterInvalidValues<T extends { data: Record<string, any> }>(objects: T[], attributeId: string): Set<any> {
+    return new Set<any>();
   }
 }

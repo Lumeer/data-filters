@@ -29,6 +29,7 @@ import {
   uniqueValuesCount,
 } from '../utils';
 import {ConditionType, LinkConstraintConfig, ConstraintType} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class LinkConstraint implements Constraint {
   public readonly type = ConstraintType.Link;
@@ -74,5 +75,9 @@ export class LinkConstraint implements Constraint {
 
   public count(values: any[]): number {
     return countValues(values);
+  }
+
+  public filterInvalidValues<T extends { data: Record<string, any> }>(objects: T[], attributeId: string): Set<any> {
+    return new Set<any>();
   }
 }

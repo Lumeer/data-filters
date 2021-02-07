@@ -29,6 +29,7 @@ import {
   uniqueValuesCount,
 } from '../utils';
 import {ConditionType, PercentageConstraintConfig, ConstraintType} from '../model';
+import {ConstraintData} from './constraint-data';
 
 export class PercentageConstraint implements Constraint {
   public readonly type = ConstraintType.Percentage;
@@ -86,5 +87,9 @@ export class PercentageConstraint implements Constraint {
 
   public count(values: any[]): number {
     return countValues(values);
+  }
+
+  public filterInvalidValues<T extends { data: Record<string, any> }>(objects: T[], attributeId: string): Set<any> {
+    return new Set<any>();
   }
 }

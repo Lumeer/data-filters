@@ -20,6 +20,7 @@
 import {DataValue} from './data-value';
 import {arrayIntersection, isArray, formatUnknownDataValue, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, SelectConstraintConfig, SelectConstraintOption} from '../model';
+import {ConstraintData} from '../constraint';
 
 export class SelectDataValue implements DataValue {
   public readonly options: SelectConstraintOption[];
@@ -27,6 +28,7 @@ export class SelectDataValue implements DataValue {
   constructor(
     public readonly value: any,
     public readonly config: SelectConstraintConfig,
+    public readonly constraintData: ConstraintData,
     public readonly inputValue?: string
   ) {
     this.options = findOptionsByValue(config, value);
@@ -77,7 +79,7 @@ export class SelectDataValue implements DataValue {
     }
 
     const nextOption = this.shiftOption(1, this.options[0]);
-    return new SelectDataValue(nextOption.value, this.config);
+    return new SelectDataValue(nextOption.value, this.config,  this.constraintData);
   }
 
   public decrement(): SelectDataValue {
@@ -86,7 +88,7 @@ export class SelectDataValue implements DataValue {
     }
 
     const previousOption = this.shiftOption(-1, this.options[0]);
-    return new SelectDataValue(previousOption.value, this.config);
+    return new SelectDataValue(previousOption.value, this.config,  this.constraintData);
   }
 
   public compareTo(otherValue: SelectDataValue): number {
@@ -102,11 +104,11 @@ export class SelectDataValue implements DataValue {
 
   public copy(newValue?: any): SelectDataValue {
     const value = newValue !== undefined ? newValue : this.value;
-    return new SelectDataValue(value, this.config);
+    return new SelectDataValue(value, this.config,  this.constraintData);
   }
 
   public parseInput(inputValue: string): SelectDataValue {
-    return new SelectDataValue(this.value, this.config, inputValue);
+    return new SelectDataValue(this.value, this.config, this.constraintData, inputValue);
   }
 
   private shiftOption(indexDelta: number, option: SelectConstraintOption): SelectConstraintOption {
@@ -117,7 +119,7 @@ export class SelectDataValue implements DataValue {
   }
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
-    const dataValues = (values || []).map(value => new SelectDataValue(value.value, this.config));
+    const dataValues = (values || []).map(value => new SelectDataValue(value.value, this.config,  this.constraintData));
     const otherOptions = (dataValues.length > 0 && dataValues[0].options) || [];
 
     switch (condition) {
@@ -153,7 +155,7 @@ export class SelectDataValue implements DataValue {
   }
 
   public valueByCondition(condition: ConditionType, values: ConditionValue[]): any {
-    const dataValues = (values || []).map(value => new SelectDataValue(value.value, this.config));
+    const dataValues = (values || []).map(value => new SelectDataValue(value.value, this.config, this.constraintData));
     const otherOptions = (dataValues.length > 0 && dataValues[0].options) || [];
 
     switch (condition) {
