@@ -443,7 +443,7 @@ describe('Document filters', () => {
         undefined,
         true
       ).documents.map(document => document.id)
-    ).toEqual(['d1', 'd2', 'd3', 'd4']);
+    ).toEqual(['d1', 'd2', 'd4', 'd3']);
   });
 
   it('should filter children together with nested parent document by attribute values', () => {
@@ -519,7 +519,7 @@ describe('Document filters', () => {
         undefined,
         true
       ).documents.map(document => document.id)
-    ).toEqual(['d1', 'd2', 'd3', 'd4']);
+    ).toEqual(['d1', 'd2', 'd4', 'd3']);
   });
 
   it('should filter only matching document without children by fulltext', () => {

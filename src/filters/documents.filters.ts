@@ -134,13 +134,14 @@ export function filterDocumentsAndLinksByStem(
   const pushedIds = new Set();
   const currentPipeline = pipeline[0];
   const attributesMap = objectsByIdMap(currentPipeline.resource?.attributes);
+  const documentsMap = includeChildren ? documentChildrenMap(currentPipeline.dataResources as DocumentModel[]) : {};
   for (const dataResource of currentPipeline.dataResources) {
     const dataValues = createDataValuesMap(dataResource.data, currentPipeline.attributes, constraintData);
     if (
       dataValuesMeetsFilters(dataValues, currentPipeline.filters, attributesMap, currentPipeline.permissions, constraintData)
     ) {
       const searchDocuments = includeChildren
-        ? getDocumentsWithChildren(dataResource as DocumentModel, currentPipeline.dataResources as DocumentModel[])
+        ? getDocumentsWithChildren(dataResource as DocumentModel, documentsMap)
         : [dataResource as DocumentModel];
       const parentDocumentContainsByDocumentIds = pipelineContainsDocumentByIds(currentPipeline, dataResource as DocumentModel);
       for (const document of searchDocuments) {
@@ -292,21 +293,20 @@ function containsAnyFilterInPipeline(pipeline: FilterPipeline[], fromIndex: numb
   return pipeline.slice(fromIndex, pipeline.length).some(pipe => (pipe.filters || []).length > 0);
 }
 
-function getDocumentsWithChildren(currentDocument: DocumentModel, allDocuments: DocumentModel[]): DocumentModel[] {
-  const documentsWithChildren = [currentDocument];
-  const currentDocumentsIds = new Set(documentsWithChildren.map(doc => doc.id));
-  let documentsToSearch = allDocuments.filter(document => !currentDocumentsIds.has(document.id));
-  let foundParent = true;
-  while (foundParent) {
-    foundParent = false;
-    for (const document of documentsToSearch) {
-      if (document.metaData && currentDocumentsIds.has(document.metaData.parentId)) {
-        documentsWithChildren.push(document);
-        currentDocumentsIds.add(document.id);
-        foundParent = true;
-      }
+function getDocumentsWithChildren(document: DocumentModel, documentsMap: Record<string, DocumentModel[]>): DocumentModel[] {
+  const documentsWithChildren = [];
+  const currentDocumentsIds = new Set();
+
+  const documentsQueue = [document];
+  while (documentsQueue.length) {
+    const currentDocument = documentsQueue.splice(0, 1)[0];
+    if (currentDocument && !currentDocumentsIds.has(currentDocument.id)) {
+        documentsWithChildren.push(currentDocument);
+        currentDocumentsIds.add(currentDocument.id);
+
+        const childDocuments = documentsMap?.[currentDocument.id] || [];
+        documentsQueue.push(...childDocuments);
     }
-    documentsToSearch = documentsToSearch.filter(document => !currentDocumentsIds.has(document.id));
   }
 
   return documentsWithChildren;
@@ -460,4 +460,17 @@ function paginate(documents: DocumentModel[], query: Query) {
   }
 
   return [...documents].slice(query.page * query.pageSize, (query.page + 1) * query.pageSize);
+}
+
+function documentChildrenMap(documents: DocumentModel[]): Record<string, DocumentModel[]> {
+    return (documents || []).reduce((map, document) => {
+        if (document.metaData?.parentId) {
+            if(!map[document.metaData.parentId]) {
+                map[document.metaData.parentId] = [];
+            }
+            map[document.metaData.parentId].push(document);
+        }
+
+        return map;
+    }, {});
 }
