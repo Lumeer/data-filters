@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DataResource, DocumentModel, LinkInstance, AttributeFilter, ConditionType, EquationOperator} from '../model';
+import {DataResource, DocumentModel, LinkInstance, AttributeFilter, ConditionType, EquationOperator, LanguageTag} from '../model';
 import {hasRoleByPermissions, escapeHtml, isNullOrUndefined, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, mergeDocuments, mergeLinkInstances, removeAccentFromString} from '../utils';
-import {ConstraintData, UnknownConstraint} from '../constraint';
+import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes, UnknownConstraint} from '../constraint';
 import {ConstraintType, Query, AllowedPermissions, QueryStem, Attribute, AttributesResourceType, Collection, LinkType, Resource, ActionConstraintConfig} from '../model';
 import {DataValue} from '../data-value';
 
@@ -38,6 +38,29 @@ interface FilterPipeline {
   attributes: Attribute[];
   permissions: AllowedPermissions;
   documentIds: Set<string>;
+}
+
+export function filterDocumentsAndLinksIdsFromJson(json: string): {documentsIds: string[], linkInstancesIds: string[]} {
+  const jsObject = JSON.parse(json);
+  const documents = jsObject.documents as  DocumentModel[];
+  const linkInstances  = jsObject.linkInstances as LinkInstance[];
+  const collections = jsObject.collections as Collection[];
+  const linkTypes = jsObject.linkTypes as LinkType[];
+  const query = jsObject.query as Query;
+  const collectionsPermissions = jsObject.collectionsPermissions as Record<string, AllowedPermissions>;
+  const linkTypePermissions = jsObject.linkTypePermissions as Record<string, AllowedPermissions>;
+  const constraintData = jsObject.constraintData as ConstraintData;
+  const includeChildren = jsObject.includeChildren as boolean;
+  const language = jsObject.language as LanguageTag;
+
+  const collectionsWithConstraints = createConstraintsInCollections(collections, language);
+  const linkTypesWithConstraints = createConstraintsInLinkTypes(linkTypes, language);
+
+  const {documents: filteredDocuments, linkInstances: filteredLinkInstances} = filterDocumentsAndLinksByQuery(documents, collectionsWithConstraints, linkTypesWithConstraints, linkInstances, query, collectionsPermissions, linkTypePermissions, constraintData, includeChildren);
+  return {
+    documentsIds: filteredDocuments.map(document => document.id),
+    linkInstancesIds: filteredLinkInstances.map(linkInstance => linkInstance.id),
+  }
 }
 
 export function filterDocumentsAndLinksByQuery(
