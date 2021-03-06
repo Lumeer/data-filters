@@ -26,6 +26,7 @@ export interface ConstraintData {
   durationUnitsMap?: DurationUnitsMap;
   currencyData?: CurrencyData;
   invalidValuesMap?: Record<ConstraintType, Set<any>>;
+  timezone?: string;
 }
 
 export type DurationUnitsMap = Record<DurationUnit, string>;

@@ -1,7 +1,8 @@
 import typescript from '@rollup/plugin-typescript'
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
-import { terser } from "rollup-plugin-terser";
+import json from '@rollup/plugin-json';
+import {terser} from "rollup-plugin-terser";
 
 export default [
     {
@@ -10,7 +11,7 @@ export default [
             file: './dist/index.esm.js',
             format: 'esm',
         },
-        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs()],
+        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), json({compact: true})],
     },
     {
         input: './src/index.ts',
@@ -18,7 +19,7 @@ export default [
             file: './dist/index.js',
             format: 'cjs',
         },
-        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs()],
+        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), json({compact: true})],
     },
     {
         input: './src/index.ts',
@@ -27,7 +28,7 @@ export default [
             format: 'cjs',
             sourcemap: true,
         },
-        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), terser()],
+        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), terser(), json({compact: true})],
     },
     {
         input: './src/index.ts',
@@ -36,7 +37,7 @@ export default [
             format: 'umd',
             name: "Filter"
         },
-        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs()],
+        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), json({compact: true})],
     },
     {
         input: './src/index.ts',
@@ -46,6 +47,6 @@ export default [
             name: "Filter",
             sourcemap: true,
         },
-        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), terser()],
+        plugins: [typescript({module: 'esnext'}), nodeResolve(), commonjs(), terser(), json({compact: true})],
     },
 ]

@@ -1,6 +1,6 @@
 {
   "name": "@lumeer/data-filters",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Helper library to filter data values",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -25,6 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
     "numbro": "^2.3.2",
     "big.js": "^6.0.3",
     "lodash": "^4.17.20",
@@ -35,6 +36,7 @@
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.1.0",
     "@rollup/plugin-typescript": "^8.1.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@types/big.js": "^6.0.2",
     "@types/jasmine": "^3.6.3",
     "@types/lodash": "^4.14.168",

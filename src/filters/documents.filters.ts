@@ -22,6 +22,7 @@ import {hasRoleByPermissions, escapeHtml, isNullOrUndefined, objectsByIdMap, obj
 import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes, UnknownConstraint} from '../constraint';
 import {ConstraintType, Query, AllowedPermissions, QueryStem, Attribute, AttributesResourceType, Collection, LinkType, Resource, ActionConstraintConfig} from '../model';
 import {DataValue} from '../data-value';
+import * as momentTimeZone from 'moment-timezone';
 
 interface FilteredDataResources {
   allDocuments: DocumentModel[];
@@ -87,6 +88,10 @@ export function filterDocumentsAndLinksByQuery(
       : (collections || []).map(collection => ({collectionId: collection.id}));
   const documentsByCollections = groupDocumentsByCollection(documents);
   const linkInstancesByLinkTypes = groupLinkInstancesByLinkTypes(linkInstances);
+
+  if (constraintData?.timezone) {
+     momentTimeZone.tz.setDefault(constraintData.timezone);
+  }
 
   const escapedFulltexts = query.fulltexts?.map(fullText => removeAccentFromString(escapeHtml(fullText)));
   stems.forEach(stem => {
