@@ -29,7 +29,7 @@ const documents: DocumentModel[] = [
       a1: 'IBM',
       a2: 'Lala',
       a100: '40',
-      a101: '2019-04-01T00:00:00.000+0000',
+      a101: '2019-04-01T00:00:00.000Z',
     },
   },
   {
@@ -39,7 +39,7 @@ const documents: DocumentModel[] = [
       a1: 'Red Hat',
       a2: 'aturing@lumeer.io',
       a100: '100',
-      a101: '2019-04-02T00:00:00.000+0000',
+      a101: '2019-04-02T00:00:00.000Z',
     },
     metaData: {
       parentId: 'd1',
@@ -52,7 +52,7 @@ const documents: DocumentModel[] = [
       a1: 'JBoss',
       a2: 'Lala',
       a100: '-10',
-      a101: '2019-04-10T00:00:00.000+0000',
+      a101: '2019-04-10T00:00:00.000Z',
     },
     metaData: {
       parentId: 'd2',
@@ -76,7 +76,7 @@ const documents: DocumentModel[] = [
     data: {
       a1: 'Microsoft',
       a2: 'Lala',
-      a101: '2019-04-06T00:00:00.000+0000',
+      a101: '2019-04-06T10:00:00.000Z',
     },
   },
   {
@@ -86,7 +86,7 @@ const documents: DocumentModel[] = [
       a1: 'LinkedIn',
       a2: 'Lala',
       a100: '98',
-      a101: '2019-04-11T00:00:00.000+0000',
+      a101: '2019-04-11T00:00:00.000Z',
     },
     metaData: {
       parentId: 'd5',
@@ -117,7 +117,7 @@ const collections: Collection[] = [
       {id: 'a1', name: 'a1'},
       {id: 'a2', name: 'a2', constraint: new UserConstraint({} as UserConstraintConfig)},
       {id: 'a100', name: 'a100', constraint: new NumberConstraint({locale: LanguageTag.USA})},
-      {id: 'a101', name: 'a101', constraint: new DateTimeConstraint({} as DateTimeConstraintConfig)},
+      {id: 'a101', name: 'a101', constraint: new DateTimeConstraint({format: 'DD.MM.YYYY'} as DateTimeConstraintConfig)},
     ],
   },
   {
@@ -649,7 +649,7 @@ describe('Document filters', () => {
               collectionId: 'c1',
               attributeId: 'a101',
               condition: ConditionType.Equals,
-              conditionValues: [{value: '2019-04-06T00:00:00.000+0000'}],
+              conditionValues: [{value: '2019-04-06T00:00:00.000Z'}],
             },
           ],
         },
@@ -670,7 +670,7 @@ describe('Document filters', () => {
               collectionId: 'c1',
               attributeId: 'a101',
               condition: ConditionType.NotEquals,
-              conditionValues: [{value: '2019-04-06T00:00:00.000+0000'}],
+              conditionValues: [{value: '2019-04-06T00:00:00.000Z'}],
             },
           ],
         },
@@ -691,7 +691,7 @@ describe('Document filters', () => {
               collectionId: 'c1',
               attributeId: 'a101',
               condition: ConditionType.LowerThan,
-              conditionValues: [{value: '2019-04-06T00:00:00.000+0000'}],
+              conditionValues: [{value: '2019-04-06T00:00:00.000Z'}],
             },
           ],
         },
@@ -712,7 +712,7 @@ describe('Document filters', () => {
               collectionId: 'c1',
               attributeId: 'a101',
               condition: ConditionType.GreaterThanEquals,
-              conditionValues: [{value: '2019-04-06T00:00:00.000+0000'}],
+              conditionValues: [{value: '2019-04-06T00:00:00.000Z'}],
             },
           ],
         },
@@ -745,4 +745,27 @@ describe('Document filters', () => {
       )
     ).toEqual([]);
   });
+
+  it('should filter by date constraint with written text', () => {
+    let query: Query = {
+      stems: [
+        {
+          collectionId: 'c1',
+          filters: [
+            {
+              collectionId: 'c1',
+              attributeId: 'a101',
+              condition: ConditionType.Equals,
+              conditionValues: [{value: '06.04.2019'}],
+            },
+          ],
+        },
+      ],
+    };
+    expect(
+        filterDocumentsAndLinksByQuery(documents, collections, [], [], query, {}, {}, undefined, false).documents.map(
+            document => document.id
+        )
+    ).toEqual(['d5']);
+  })
 });

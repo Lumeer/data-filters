@@ -22,24 +22,27 @@ import moment from 'moment';
 import {DataValue} from './data-value';
 import {DateTimeConstraintConfig, ConstraintConditionValue, DateTimeConstraintConditionValue, ConditionType, ConditionValue} from '../model';
 import {conditionTypeNumberOfInputs, createRange, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, valueMeetFulltexts, getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek, formatUnknownDataValue} from '../utils';
+import {createDateTimeOptions, hasTimeOption} from '../utils/date-time-options';
 
 export class DateTimeDataValue implements DataValue {
   public readonly momentDate: moment.Moment;
+  public isUtc: boolean;
 
   constructor(
     public readonly value: any,
     public readonly config: DateTimeConstraintConfig,
     public readonly inputValue?: string
   ) {
+    this.isUtc = this.isUtcDate();
     if (inputValue) {
-      this.momentDate = parseMomentDate(this.value, this.config?.format, this.config?.asUtc);
+      this.momentDate = parseMomentDate(this.value, this.config?.format, this.isUtc);
     } else if (isDateValid(this.value)) {
-      this.momentDate = this.parseMoment(this.value);
+      this.momentDate = this.parseMoment(this.value, this.isUtc);
       this.value = this.value.getTime();
     } else if (this.value) {
       this.momentDate = isISOFormat(this.value)
-        ? this.parseMoment(this.value)
-        : parseMomentDate(this.value, this.config?.format, this.config?.asUtc);
+        ? this.parseMoment(this.value, this.isUtc)
+        : parseMomentDate(this.value, this.config?.format, this.isUtc);
     }
 
     this.momentDate = this.momentDate?.isValid()
@@ -47,8 +50,14 @@ export class DateTimeDataValue implements DataValue {
       : this.momentDate;
   }
 
-  private parseMoment(value: any): moment.Moment {
-    return this.config?.asUtc ? moment.utc(value) : moment(value);
+  private isUtcDate(): boolean {
+    const options = createDateTimeOptions(this.config?.format);
+    const hasTimeOptions = hasTimeOption(options);
+    return this.config?.asUtc || (options && !hasTimeOptions);
+  }
+
+  private parseMoment(value: any, asUtc: boolean): moment.Moment {
+    return asUtc ? moment.utc(value) : moment(value);
   }
 
   public serialize(): any {
@@ -166,7 +175,7 @@ export class DateTimeDataValue implements DataValue {
   }
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
-    const otherMomentValues = this.mapConditionValues(values);
+    const otherMomentValues = this.mapConditionValues(values, this.isUtc);
     const momentDates = otherMomentValues
       .map(value => resetUnusedMomentPart(this.momentDate, value.format))
       .sort((a, b) => this.compareMoments(a, b));
@@ -189,6 +198,8 @@ export class DateTimeDataValue implements DataValue {
     if (!allMomentDatesDefined) {
       return false;
     }
+
+    console.log(momentDates[0], otherMoment);
 
     switch (condition) {
       case ConditionType.Equals:
@@ -216,12 +227,12 @@ export class DateTimeDataValue implements DataValue {
     }
   }
 
-  private mapConditionValues(values: ConditionValue[]): {moment: moment.Moment; format: string}[] {
+  private mapConditionValues(values: ConditionValue[], utc: boolean): {moment: moment.Moment; format: string}[] {
     return (values || [])
       .map(value => {
         if (value.type) {
           return {
-            moment: constraintConditionValueMoment(value.type),
+            moment: constraintConditionValueMoment(value.type, utc),
             format: constraintConditionValueFormat(value.type),
           };
         }
@@ -246,7 +257,7 @@ export class DateTimeDataValue implements DataValue {
   }
 
   public valueByCondition(condition: ConditionType, values: ConditionValue[]): any {
-    const dates = this.mapConditionValues(values).map(value => value.moment.toDate());
+    const dates = this.mapConditionValues(values, this.isUtc).map(value => value.moment.toDate());
 
     switch (condition) {
       case ConditionType.Equals:
@@ -297,26 +308,27 @@ function isISOFormat(value: any): boolean {
   return String(value || '').match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}/g)?.length > 0;
 }
 
-function constraintConditionValueMoment(value: ConstraintConditionValue): moment.Moment {
+function constraintConditionValueMoment(value: ConstraintConditionValue, utc: boolean): moment.Moment {
+  const momentBase = utc ? moment.utc() : moment();
   switch (value) {
     case DateTimeConstraintConditionValue.Yesterday:
-      return moment().startOf('day').subtract(1, 'day');
+      return momentBase.startOf('day').subtract(1, 'day');
     case DateTimeConstraintConditionValue.Tomorrow:
-      return moment().startOf('day').add(1, 'day');
+      return momentBase.startOf('day').add(1, 'day');
     case DateTimeConstraintConditionValue.Today:
-      return moment().startOf('day');
+      return momentBase.startOf('day');
     case DateTimeConstraintConditionValue.LastWeek:
-      return resetWeek(moment().startOf('day').subtract(1, 'week'));
+      return resetWeek(momentBase.startOf('day').subtract(1, 'week'));
     case DateTimeConstraintConditionValue.NextWeek:
-      return resetWeek(moment().startOf('day').add(1, 'week'));
+      return resetWeek(momentBase.startOf('day').add(1, 'week'));
     case DateTimeConstraintConditionValue.ThisWeek:
-      return resetWeek(moment().startOf('day'));
+      return resetWeek(momentBase.startOf('day'));
     case DateTimeConstraintConditionValue.LastMonth:
-      return moment().startOf('month').subtract(1, 'month');
+      return momentBase.startOf('month').subtract(1, 'month');
     case DateTimeConstraintConditionValue.NextMonth:
-      return moment().startOf('month').add(1, 'month');
+      return momentBase.startOf('month').add(1, 'month');
     case DateTimeConstraintConditionValue.ThisMonth:
-      return moment().startOf('month');
+      return momentBase.startOf('month');
     default:
       return null;
   }
