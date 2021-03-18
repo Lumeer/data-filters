@@ -199,8 +199,6 @@ export class DateTimeDataValue implements DataValue {
       return false;
     }
 
-    console.log(momentDates[0], otherMoment);
-
     switch (condition) {
       case ConditionType.Equals:
         return momentDates[0].isSame(otherMoment);

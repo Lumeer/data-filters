@@ -37,6 +37,13 @@ describe('DateTimeDataValue', () => {
   const lastMonth = moment().subtract(1, 'month').toDate();
   const nextMonth = moment().add(1, 'month').toDate();
 
+  describe('format', () => {
+      const config: DateTimeConstraintConfig = {format: 'YYYY-MM-DD'};
+      it('simple string', () => {
+        expect(new DateTimeDataValue('2020-03-24', config).format()).toEqual('2020-03-24');
+      })
+  });
+
   describe('meet condition', () => {
     it('equals by specific date', () => {
       expect(

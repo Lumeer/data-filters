@@ -33,7 +33,7 @@ import {ConstraintData} from './constraint-data';
 
 export class TextConstraint implements Constraint {
   public readonly type = ConstraintType.Text;
-  public readonly isTextRepresentation = false;
+  public readonly isTextRepresentation = true;
   public readonly allowEditFunction = true;
 
   constructor(public readonly config: TextConstraintConfig) {}
