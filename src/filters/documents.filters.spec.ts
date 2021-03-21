@@ -116,7 +116,7 @@ const collections: Collection[] = [
     attributes: [
       {id: 'a1', name: 'a1'},
       {id: 'a2', name: 'a2', constraint: new UserConstraint({} as UserConstraintConfig)},
-      {id: 'a100', name: 'a100', constraint: new NumberConstraint({locale: LanguageTag.USA})},
+      {id: 'a100', name: 'a100', constraint: new NumberConstraint({})},
       {id: 'a101', name: 'a101', constraint: new DateTimeConstraint({format: 'DD.MM.YYYY'} as DateTimeConstraintConfig)},
     ],
   },

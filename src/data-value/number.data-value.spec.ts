@@ -22,15 +22,16 @@ import {ConstraintData} from '../constraint';
 import {ConditionType, LanguageTag, NumberConstraintConfig} from '../model';
 
 describe('NumberDataValue', () => {
-  const config: NumberConstraintConfig = {locale: LanguageTag.USA};
-  const decimalsConfig: NumberConstraintConfig = {locale: LanguageTag.USA, decimals: 3};
-  const zeroDecimalsConfig: NumberConstraintConfig = {locale: LanguageTag.USA, decimals: 0};
+  const config: NumberConstraintConfig = {};
+  const decimalsConfig: NumberConstraintConfig = {decimals: 3};
+  const zeroDecimalsConfig: NumberConstraintConfig = {decimals: 0};
 
   const constraintData: ConstraintData = {
     currencyData: {
       ordinals: 'st|nd|rd|th'.split('|'),
       abbreviations: 'k|m|b|t'.split('|')
-    }
+    },
+    locale: LanguageTag.USA
   };
 
   describe('meet condition', () => {
@@ -195,7 +196,7 @@ describe('NumberDataValue', () => {
   });
 
   describe('Format', () => {
-    const emptyConfig: NumberConstraintConfig = {locale: LanguageTag.USA};
+    const emptyConfig: NumberConstraintConfig = {};
     it('Empty config', () => {
       expect(new NumberDataValue('10.11', emptyConfig, constraintData).format()).toBe('10.11');
       expect(new NumberDataValue('10,11', emptyConfig, constraintData).format()).toBe('10.11');
@@ -206,8 +207,8 @@ describe('NumberDataValue', () => {
       expect(new NumberDataValue(10, emptyConfig, constraintData, '10').serialize()).toBe('10');
     });
 
-    const thousandSeparatedConfig: NumberConstraintConfig = {separated: true, locale: LanguageTag.USA};
-    const thousandSeparatedConfig2: NumberConstraintConfig = {decimals: 3, separated: true, locale: LanguageTag.USA};
+    const thousandSeparatedConfig: NumberConstraintConfig = {separated: true};
+    const thousandSeparatedConfig2: NumberConstraintConfig = {decimals: 3, separated: true};
     it('Thousand separated config', () => {
       expect(new NumberDataValue('10.11', thousandSeparatedConfig, constraintData).format()).toBe('10.11');
       expect(new NumberDataValue('10,11', thousandSeparatedConfig, constraintData).format()).toBe('10.11');
@@ -225,7 +226,7 @@ describe('NumberDataValue', () => {
       );
     });
 
-    const slovakCurrencyConfig: NumberConstraintConfig = {currency: LanguageTag.Slovak, locale: LanguageTag.USA};
+    const slovakCurrencyConfig: NumberConstraintConfig = {currency: LanguageTag.Slovak};
     it('Slovak currency config', () => {
       expect(new NumberDataValue('10.11', slovakCurrencyConfig, constraintData).format()).toBe('10,11 €');
       expect(new NumberDataValue('10,11', slovakCurrencyConfig, constraintData).format()).toBe('10,11 €');
@@ -235,7 +236,7 @@ describe('NumberDataValue', () => {
       expect(new NumberDataValue('10,11', slovakCurrencyConfig, constraintData, '10,11').serialize()).toBe('10.11');
     });
 
-    const usCurrencyConfig: NumberConstraintConfig = {currency: LanguageTag.USA, locale: LanguageTag.USA};
+    const usCurrencyConfig: NumberConstraintConfig = {currency: LanguageTag.USA};
     it('USA currency config', () => {
       expect(new NumberDataValue('10.11', usCurrencyConfig, constraintData).format()).toBe('$10.11');
       expect(new NumberDataValue('10,11', usCurrencyConfig, constraintData).format()).toBe('$10.11');
@@ -245,7 +246,7 @@ describe('NumberDataValue', () => {
       expect(new NumberDataValue('10,11', usCurrencyConfig, constraintData, '10,11').serialize()).toBe('1011');
     });
 
-    const deCurrencyConfig: NumberConstraintConfig = {currency: LanguageTag.Germany, locale: LanguageTag.USA};
+    const deCurrencyConfig: NumberConstraintConfig = {currency: LanguageTag.Germany};
     it('Germany currency config', () => {
       expect(new NumberDataValue('10.11', deCurrencyConfig, constraintData).format()).toBe('10,11 €');
       expect(new NumberDataValue('10,11', deCurrencyConfig, constraintData).format()).toBe('10,11 €');

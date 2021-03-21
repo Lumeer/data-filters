@@ -38,7 +38,7 @@ export class NumberDataValue implements NumericDataValue {
     public readonly constraintData?: ConstraintData,
     public readonly inputValue?: string,
   ) {
-    this.locale = config?.locale || LanguageTag.USA;
+    this.locale = constraintData?.locale || LanguageTag.USA;
     registerAndSetLanguage(config?.currency || this.locale, this.locale, this.constraintData?.currencyData);
     this.parsedValue = this.parseValue(value, config, inputValue);
     const unformatted = numbro.unformat(this.parsedValue, parseNumbroConfig(config));

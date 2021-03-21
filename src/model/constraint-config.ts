@@ -79,7 +79,6 @@ export interface NumberConstraintConfig {
   forceSign?: boolean; // +350
   negative?: boolean; // (100)
   currency?: LanguageTag;
-  locale: LanguageTag;
 }
 
 export interface PercentageConstraintConfig {
