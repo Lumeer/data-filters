@@ -52,7 +52,7 @@ export function removeTrailingZeroesFromString(value: string): string {
 
 
 export function removeAccentFromString(value: string, lowerCase = true): string {
-    return unorm.nfd(lowerCase ? (value || '').toLowerCase() : value || '').replace(/[\u0300-\u036f]/g, '');
+    return unorm.nfd(lowerCase ? (value || '').toString().toLowerCase() : value || '').replace(/[\u0300-\u036f]/g, '');
 }
 
 export function escapeStringForRegex(text: string): string {
