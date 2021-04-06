@@ -139,6 +139,7 @@ export interface LinkConstraintConfig {
 
 export interface ActionConstraintConfig {
   requiresConfirmation?: boolean;
+  confirmationTitle?: string;
   equation: AttributeFilterEquation;
   rule: string;
   background: string;
