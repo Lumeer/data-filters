@@ -42,6 +42,18 @@ describe('DateTimeDataValue', () => {
       it('simple string', () => {
         expect(new DateTimeDataValue('2020-03-24', config).format()).toEqual('2020-03-24');
       })
+
+      it('only day string', () => {
+          const onlyDayConfig: DateTimeConstraintConfig = {format: 'DD'};
+          expect(new DateTimeDataValue('31', onlyDayConfig).format()).toEqual('31');
+          expect(new DateTimeDataValue('01', onlyDayConfig).format()).toEqual('01');
+          expect(new DateTimeDataValue('1', {format: 'D'}).format()).toEqual('1');
+          expect(new DateTimeDataValue(31, onlyDayConfig).format()).toEqual('31');
+          expect(new DateTimeDataValue('310', onlyDayConfig).format()).toEqual('31');
+          expect(new DateTimeDataValue('', onlyDayConfig).format()).toEqual('');
+          expect(new DateTimeDataValue(null, onlyDayConfig).format()).toEqual('');
+          expect(new DateTimeDataValue(undefined, onlyDayConfig).format()).toEqual('');
+      })
   });
 
   describe('meet condition', () => {
@@ -330,6 +342,15 @@ describe('DateTimeDataValue', () => {
           {type: DateTimeConstraintConditionValue.NextWeek},
         ])
       ).toBeFalsy();
+    });
+
+    it('greater than or equals last day in previous month', () => {
+        const lastDayInPreviousMonthISO = moment.utc().subtract(1, 'month').endOf('month').startOf('day').toISOString();
+        expect(
+            new DateTimeDataValue(lastDayInPreviousMonthISO, dayConfig).meetCondition(ConditionType.GreaterThanEquals, [
+                {type: DateTimeConstraintConditionValue.LastMonth},
+            ])
+        ).toBeTruthy();
     });
 
     it('lower than by specific date', () => {

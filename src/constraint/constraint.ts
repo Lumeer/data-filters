@@ -43,7 +43,7 @@ export interface Constraint {
   isDirectlyEditable?: boolean;
 
   /**
-   * Determine if constraint can contain and end function.
+   * Determine if constraint can contain and edit function.
    */
   allowEditFunction?: boolean;
 

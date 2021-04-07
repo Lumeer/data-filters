@@ -1,6 +1,6 @@
 {
   "name": "@lumeer/data-filters",
-  "version": "0.3.17",
+  "version": "0.3.21",
   "description": "Helper library to filter data values",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
