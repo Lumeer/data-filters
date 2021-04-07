@@ -196,7 +196,6 @@ export function parseMomentDate(value: any, expectedFormat?: string, utc?: boole
     if (expectedFormat.toLowerCase().match(/^(d|dd)$/gi)) {
       const modifiedValue = expectedFormat.length === 1 ? '0' : '' + String(value).substring(0, expectedFormat.length) + '.01.1970';
       const modifiedFormat = 'DD.MM.YYYY';
-      console.log(modifiedValue, modifiedFormat);
       return utc ? moment.utc(modifiedValue, [modifiedFormat]) : moment(modifiedValue, [modifiedFormat]);
     }
 

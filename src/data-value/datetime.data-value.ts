@@ -48,8 +48,6 @@ export class DateTimeDataValue implements DataValue {
         this.momentDate = this.momentDate?.isValid()
             ? resetUnusedMomentPart(this.momentDate, this.config?.format)
             : this.momentDate;
-
-        console.log(this.value, this.momentDate);
     }
 
     private isUtcDate(): boolean {
