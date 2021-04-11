@@ -112,6 +112,24 @@ describe('DurationDataValue', () => {
       });
       expect(dataValue.format()).toEqual('3t4d5h3s');
     });
+    it('should format number second', () => {
+      const dataValue = new DurationDataValue('1000', config, {
+        durationUnitsMap,
+      });
+      expect(dataValue.format()).toEqual('1s');
+    });
+    it('should format zero value', () => {
+      const dataValue = new DurationDataValue('0', config, {
+        durationUnitsMap,
+      });
+      expect(dataValue.format()).toEqual('0');
+    });
+    it('should format zero value rounded down', () => {
+      const dataValue = new DurationDataValue('300', config, {
+        durationUnitsMap,
+      });
+      expect(dataValue.format()).toEqual('0');
+    });
   });
 
   describe('serialize()', () => {

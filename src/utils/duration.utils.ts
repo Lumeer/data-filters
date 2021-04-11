@@ -190,7 +190,7 @@ export function formatDurationDataValue(
         const unitsCountMap = createDurationUnitsCountsMap(saveValue, config, overrideConfig);
         const decimalPlaces = overrideConfig?.decimalPlaces || config.decimalPlaces || 0;
         const resultValue = durationCountsMapToString(unitsCountMap, decimalPlaces, durationUnitsMap);
-        return resultValue || (toNumber(saveValue) > 0 ? '0' : '');
+        return resultValue || (toNumber(saveValue) >= 0 ? '0' : '');
     }
 
     return saveValue;
