@@ -62,6 +62,8 @@ export enum DurationUnit {
   Seconds = 's',
 }
 
+export const smallestDurationUnit = DurationUnit.Seconds;
+
 export enum DurationType {
   Work = 'Work',
   Classic = 'Classic',

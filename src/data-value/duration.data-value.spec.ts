@@ -124,11 +124,11 @@ describe('DurationDataValue', () => {
       });
       expect(dataValue.format()).toEqual('0');
     });
-    it('should format zero value rounded down', () => {
+    it('should format zero value ceiling', () => {
       const dataValue = new DurationDataValue('300', config, {
         durationUnitsMap,
       });
-      expect(dataValue.format()).toEqual('0');
+      expect(dataValue.format()).toEqual('1s');
     });
   });
 

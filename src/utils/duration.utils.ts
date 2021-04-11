@@ -23,7 +23,7 @@ import {DurationUnitsMap} from '../constraint';
 import {isNumeric, toNumber} from './number.utils';
 import {convertToBig} from './data.utils';
 import {objectValues} from './common.utils';
-import {DurationConstraintConfig, DurationType, DurationUnit} from '../model';
+import {DurationConstraintConfig, DurationType, DurationUnit, smallestDurationUnit} from '../model';
 
 export const sortedDurationUnits = [
     DurationUnit.Weeks,
@@ -222,20 +222,24 @@ export function createDurationUnitsCountsMap(
                     return result;
                 }
 
+                const isLastUnit = usedNumUnits + 1 === maximumUnits || unit === smallestDurationUnit;
+
                 const unitToMillisBig = new Big(unitToMillis);
-                let numUnits = currentDuration.div(unitToMillisBig).round(decimalPlaces, RoundingMode.RoundDown);
+                const numUnits = currentDuration.div(unitToMillisBig);
+                let numUnitsRounded = numUnits.round(decimalPlaces, RoundingMode.RoundDown);
 
                 if (numUnits.lt(new Big(1))) {
-                    result[unit] = 0;
+                    // rounded up for last unit if greater than 0
+                    result[unit] = isLastUnit && numUnits.gt(new Big(0)) ? 1 : 0;
                     return result;
                 }
 
-                currentDuration = currentDuration.sub(numUnits.times(unitToMillisBig));
+                currentDuration = currentDuration.sub(numUnitsRounded.times(unitToMillisBig));
 
                 if (usedNumUnits + 1 === maximumUnits && currentDuration.cmp(unitToMillisBig.div(2)) === Comparison.GT) {
-                    numUnits = numUnits.add(1);
+                    numUnitsRounded = numUnitsRounded.add(1);
                 }
-                result[unit] = toNumber(numUnits.toFixed(decimalPlaces));
+                result[unit] = toNumber(numUnitsRounded.toFixed(decimalPlaces));
                 usedNumUnits++;
             }
 
