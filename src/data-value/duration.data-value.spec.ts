@@ -130,6 +130,27 @@ describe('DurationDataValue', () => {
       });
       expect(dataValue.format()).toEqual('1s');
     });
+
+    it('should format null value', () => {
+      const dataValue = new DurationDataValue(null, config, {
+        durationUnitsMap,
+      });
+      expect(dataValue.format()).toEqual('');
+    });
+
+    it('should format empty value', () => {
+      const dataValue = new DurationDataValue('', config, {
+        durationUnitsMap,
+      });
+      expect(dataValue.format()).toEqual('');
+    });
+
+    it('should format undefined value', () => {
+      const dataValue = new DurationDataValue(undefined, config, {
+        durationUnitsMap,
+      });
+      expect(dataValue.format()).toEqual('');
+    });
   });
 
   describe('serialize()', () => {

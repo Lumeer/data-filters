@@ -159,9 +159,12 @@ export function isDurationDataValueValid(value: any, durationUnitsMap: DurationU
 
 function isDurationValidByGlobalLetters(value: any): boolean {
     const stringValue = prepareDurationValue(value);
-    const globalLetters = objectValues(DurationUnit);
-    const globalRegex = durationInvalidityTestRegex(globalLetters);
-    return !stringValue.match(globalRegex);
+    if (stringValue) {
+        const globalLetters = objectValues(DurationUnit);
+        const globalRegex = durationInvalidityTestRegex(globalLetters);
+        return !stringValue.match(globalRegex);
+    }
+    return false;
 }
 
 function prepareDurationValue(value: any): string {
@@ -170,9 +173,12 @@ function prepareDurationValue(value: any): string {
 
 function isDurationValidByNativeLetters(value: any, durationUnitsMap: DurationUnitsMap): boolean {
     const stringValue = prepareDurationValue(value);
-    const nativeLetters = objectValues(durationUnitsMap || {});
-    const nativeRegex = durationInvalidityTestRegex(nativeLetters);
-    return !stringValue.match(nativeRegex);
+    if (stringValue) {
+        const nativeLetters = objectValues(durationUnitsMap || {});
+        const nativeRegex = durationInvalidityTestRegex(nativeLetters);
+        return !stringValue.match(nativeRegex);
+    }
+    return false;
 }
 
 function durationInvalidityTestRegex(letters: string[]): RegExp {
