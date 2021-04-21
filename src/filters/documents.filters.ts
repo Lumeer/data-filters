@@ -17,10 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DataResource, DocumentModel, LinkInstance, AttributeFilter, ConditionType, EquationOperator, LanguageTag} from '../model';
-import {hasRoleByPermissions, escapeHtml, isNullOrUndefined, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, mergeDocuments, mergeLinkInstances, removeAccentFromString} from '../utils';
+import {ActionConstraintConfig, AllowedPermissions, Attribute, AttributeFilter, AttributesResourceType, Collection, ConditionType, ConstraintType, DataResource, DocumentModel, EquationOperator, LanguageTag, LinkInstance, LinkType, Query, QueryStem, Resource} from '../model';
+import {escapeHtml, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, hasRoleByPermissions, isNullOrUndefined, mergeDocuments, mergeLinkInstances, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, removeAccentFromString} from '../utils';
 import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes, UnknownConstraint} from '../constraint';
-import {ConstraintType, Query, AllowedPermissions, QueryStem, Attribute, AttributesResourceType, Collection, LinkType, Resource, ActionConstraintConfig} from '../model';
 import {DataValue} from '../data-value';
 import * as momentTimeZone from 'moment-timezone';
 
@@ -444,6 +443,63 @@ function dataValuesMeetsFilters(
     }
   });
 }
+
+export interface ActionButtonFiltersStats {
+  satisfy?: boolean;
+  filtersStats?: ActionButtonFilterStats[];
+  hasPermissions?: boolean;
+}
+
+export interface ActionButtonFilterStats {
+  satisfy?: boolean;
+  filter?: AttributeFilter;
+}
+
+export function actionButtonEnabledStats(
+    dataValues: Record<string, DataValue>,
+    attributesMap: Record<string, Attribute>,
+    permissions: AllowedPermissions,
+    config: ActionConstraintConfig,
+    constraintData?: ConstraintData
+): ActionButtonFiltersStats {
+  if (!dataValues || !attributesMap) {
+    return {};
+  }
+  const filters = config.equation?.equations?.map(eq => eq.filter) || [];
+  const stats = dataValuesMeetsFiltersWithOperatorStats(dataValues, attributesMap,filters, permissions, constraintData);
+  const hasPermissions = hasRoleByPermissions(config.role, permissions);
+  return {
+    ...stats,
+    satisfy: stats.satisfy && hasPermissions,
+    hasPermissions
+  }
+}
+
+function dataValuesMeetsFiltersWithOperatorStats(
+    dataValues: Record<string, DataValue>,
+    attributesMap: Record<string, Attribute>,
+    filters: AttributeFilter[],
+    permissions: AllowedPermissions,
+    constraintData: ConstraintData,
+    operator: EquationOperator = EquationOperator.And
+): ActionButtonFiltersStats {
+  const definedFilters = filters?.filter(fil => !!attributesMap[fil.attributeId]) || [];
+
+  const filtersStats: ActionButtonFilterStats[] = definedFilters.map(filter => {
+    const meetsFilters = dataValuesMeetsFilters(dataValues, [filter], attributesMap, permissions, constraintData);
+    return {filter, satisfy: meetsFilters};
+  });
+
+  let satisfy: boolean;
+  if (operator === EquationOperator.Or) {
+    satisfy = filtersStats.length === 0 || filtersStats.some(stats => stats.satisfy);
+  } else {
+    satisfy = filtersStats.length === 0 || filtersStats.every(stats => stats.satisfy);
+  }
+
+  return {filtersStats, satisfy};
+}
+
 
 export function isActionButtonEnabled(
   dataValues: Record<string, DataValue>,
