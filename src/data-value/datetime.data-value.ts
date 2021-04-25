@@ -37,7 +37,7 @@ export class DateTimeDataValue implements DataValue {
         if (inputValue) {
             this.momentDate = parseMomentDate(this.value, this.config?.format, this.isUtc);
         } else if (isDateValid(this.value)) {
-            this.momentDate = this.parseMoment(this.value, this.isUtc);
+            this.momentDate = this.parseMoment(offsetTime(this.value, this.isUtc), this.isUtc);
             this.value = this.value.getTime();
         } else if (this.value) {
             this.momentDate = isISOFormat(this.value)
@@ -299,6 +299,16 @@ function constraintConditionValueFormat(value: ConstraintConditionValue): string
             return 'M Y';
         default:
             return '';
+    }
+}
+
+function offsetTime(date: Date, utc?: boolean): Date {
+    if (utc && date) {
+        const parsedDate = new Date(date);
+        parsedDate.setHours(parsedDate.getHours() + (parsedDate.getTimezoneOffset() / 60) * -1);
+        return parsedDate;
+    } else {
+        return date;
     }
 }
 
