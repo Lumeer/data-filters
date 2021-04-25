@@ -64,53 +64,84 @@ export function filterDocumentsAndLinksIdsFromJson(json: string): {documentsIds:
 }
 
 export function filterDocumentsAndLinksByQuery(
-  documents: DocumentModel[],
-  collections: Collection[],
-  linkTypes: LinkType[],
-  linkInstances: LinkInstance[],
-  query: Query,
-  collectionsPermissions: Record<string, AllowedPermissions>,
-  linkTypePermissions: Record<string, AllowedPermissions>,
-  constraintData: ConstraintData,
-  includeChildren?: boolean
+    documents: DocumentModel[],
+    collections: Collection[],
+    linkTypes: LinkType[],
+    linkInstances: LinkInstance[],
+    query: Query,
+    collectionsPermissions: Record<string, AllowedPermissions>,
+    linkTypePermissions: Record<string, AllowedPermissions>,
+    constraintData: ConstraintData,
+    includeChildren?: boolean
 ): {documents: DocumentModel[]; linkInstances: LinkInstance[]} {
+  const {uniqueDocuments, uniqueLinkInstances} = filterDocumentsAndLinksDataByQuery(documents, collections, linkTypes, linkInstances, query, collectionsPermissions, linkTypePermissions, constraintData, includeChildren);
+  return {documents: uniqueDocuments, linkInstances: uniqueLinkInstances};
+}
+
+export interface DocumentsAndLinksData {
+  uniqueDocuments: DocumentModel[];
+  uniqueLinkInstances: LinkInstance[];
+  dataByStems?: DocumentsAndLinksStemData[];
+}
+
+export interface DocumentsAndLinksStemData {
+  stem: QueryStem;
+  documents: DocumentModel[];
+  linkInstances: LinkInstance[];
+}
+
+export function filterDocumentsAndLinksDataByQuery(
+    documents: DocumentModel[],
+    collections: Collection[],
+    linkTypes: LinkType[],
+    linkInstances: LinkInstance[],
+    query: Query,
+    collectionsPermissions: Record<string, AllowedPermissions>,
+    linkTypePermissions: Record<string, AllowedPermissions>,
+    constraintData: ConstraintData,
+    includeChildren?: boolean
+): DocumentsAndLinksData {
   if (!query || queryIsEmptyExceptPagination(query)) {
-    return {documents: paginate(documents, query), linkInstances};
+    return {uniqueDocuments: paginate(documents, query), uniqueLinkInstances: linkInstances};
   }
 
-  let documentsByStems: DocumentModel[] = [];
-  let linkInstancesByStems: LinkInstance[] = [];
+  let uniqueDocuments: DocumentModel[] = [];
+  let uniqueLinkInstances: LinkInstance[] = [];
 
   const stems: QueryStem[] =
-    (query.stems || []).length > 0
-      ? [...query.stems]
-      : (collections || []).map(collection => ({collectionId: collection.id}));
+      (query.stems || []).length > 0
+          ? [...query.stems]
+          : (collections || []).map(collection => ({collectionId: collection.id}));
   const documentsByCollections = groupDocumentsByCollection(documents);
   const linkInstancesByLinkTypes = groupLinkInstancesByLinkTypes(linkInstances);
 
   if (constraintData?.timezone) {
-     momentTimeZone.tz.setDefault(constraintData.timezone);
+    momentTimeZone.tz.setDefault(constraintData.timezone);
   }
+
+  const dataByStems: DocumentsAndLinksStemData[] = [];
 
   const escapedFulltexts = query.fulltexts?.map(fullText => removeAccentFromString(escapeHtml(fullText)));
   stems.forEach(stem => {
     const {allDocuments, allLinkInstances} = filterDocumentsAndLinksByStem(
-      collections,
-      documentsByCollections,
-      linkTypes,
-      linkInstancesByLinkTypes,
-      collectionsPermissions,
-      linkTypePermissions,
-      constraintData,
-      stem,
-      escapedFulltexts,
-      includeChildren
+        collections,
+        documentsByCollections,
+        linkTypes,
+        linkInstancesByLinkTypes,
+        collectionsPermissions,
+        linkTypePermissions,
+        constraintData,
+        stem,
+        escapedFulltexts,
+        includeChildren
     );
-    documentsByStems = mergeDocuments(documentsByStems, allDocuments);
-    linkInstancesByStems = mergeLinkInstances(linkInstancesByStems, allLinkInstances);
+
+    dataByStems.push({stem, documents: allDocuments, linkInstances: allLinkInstances});
+    uniqueDocuments = mergeDocuments(uniqueDocuments, allDocuments);
+    uniqueLinkInstances = mergeLinkInstances(uniqueLinkInstances, allLinkInstances);
   });
 
-  return {documents: paginate(documentsByStems, query), linkInstances: linkInstancesByStems};
+  return {uniqueDocuments: paginate(uniqueDocuments, query), uniqueLinkInstances, dataByStems};
 }
 
 export function filterDocumentsAndLinksByStem(
