@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {valueMeetFulltexts, escapeHtml, unescapeHtml} from '../utils';
+import {valueMeetFulltexts, escapeHtml, unescapeHtml, compareStrings} from '../utils';
 import {FilesConstraintConfig, ConditionType, ConditionValue} from '../model';
 
 export class FilesDataValue implements DataValue {
@@ -57,7 +57,7 @@ export class FilesDataValue implements DataValue {
   }
 
   public compareTo(otherValue: FilesDataValue): number {
-    return String(this.value).localeCompare(String(otherValue.value));
+    return compareStrings(this.format(), otherValue.format());
   }
 
   public copy(newValue?: any): FilesDataValue {

@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts, deepObjectsEquals, escapeHtml, isNotNullOrUndefined, isObject, unescapeHtml} from '../utils';
+import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts, deepObjectsEquals, escapeHtml, isNotNullOrUndefined, isObject, unescapeHtml, compareStrings} from '../utils';
 import {Address, AddressField, AddressConstraintConfig} from '../model';
 import {ConditionType, ConditionValue} from '../model';
 import {ConstraintData} from '../constraint';
@@ -99,8 +99,7 @@ export class AddressDataValue implements DataValue {
     if (deepObjectsEquals(this.address, otherValue.address)) {
       return 0;
     }
-
-    return String(this.value).localeCompare(String(otherValue.value), undefined, {sensitivity: 'base'});
+    return compareStrings(this.format(), otherValue.format());
   }
 
   public copy(newValue?: any): AddressDataValue {

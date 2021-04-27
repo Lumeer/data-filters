@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts} from '../utils';
+import {compareStrings, dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, LinkConstraintConfig} from '../model';
 
 /*
@@ -62,7 +62,7 @@ export class LinkDataValue implements DataValue {
   }
 
   public compareTo(otherValue: LinkDataValue): number {
-    return this.title().localeCompare(otherValue.title());
+    return compareStrings(this.title(), otherValue.title());
   }
 
   public copy(newValue?: any): LinkDataValue {

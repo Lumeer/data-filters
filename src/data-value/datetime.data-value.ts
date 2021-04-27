@@ -35,7 +35,7 @@ export class DateTimeDataValue implements DataValue {
     ) {
         this.isUtc = this.isUtcDate();
         if (inputValue) {
-            this.momentDate = parseMomentDate(this.value, this.config?.format, this.isUtc);
+            this.momentDate = parseMomentDate(inputValue, this.config?.format, this.isUtc);
         } else if (isDateValid(this.value)) {
             this.momentDate = this.parseMoment(offsetTime(this.value, this.isUtc), this.isUtc);
             this.value = this.value.getTime();

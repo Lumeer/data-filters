@@ -21,6 +21,10 @@ import unorm from 'unorm';
 
 import {CaseStyle} from '../model/';
 
+export function compareStrings(a: string, b: string): number {
+    return (a || '').localeCompare(b || '', undefined, {sensitivity: 'base'});
+}
+
 export function completeStringWithCharacter(value: string, num: number, character: string): string {
     let text = value || '';
     while (text.length < num) {

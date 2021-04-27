@@ -19,7 +19,7 @@
 
 import {ConstraintData} from '../constraint';
 import {DataValue} from './data-value';
-import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts} from '../utils';
+import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings} from '../utils';
 import {ConditionType, ConditionValue, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
 
 export class UserDataValue implements DataValue {
@@ -109,13 +109,7 @@ export class UserDataValue implements DataValue {
       return 0;
     }
 
-    if (this.users[0] && otherValue.users[0]) {
-      return (this.users[0].name || this.users[0].email).localeCompare(
-        otherValue.users[0].name || otherValue.users[0].email
-      );
-    }
-
-    return String(this.value).localeCompare(String(otherValue.value));
+    return compareStrings(this.format(), otherValue.format());
   }
 
   public copy(newValue?: any): UserDataValue {

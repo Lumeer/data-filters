@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {isNumeric, toNumber, formatUnknownDataValue, dataValuesMeetConditionByText, valueByConditionText,escapeHtml, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts} from '../utils';
+import {formatUnknownDataValue, dataValuesMeetConditionByText, valueByConditionText, escapeHtml, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings} from '../utils';
 import {ConditionType, ConditionValue} from '../model';
 
 export class UnknownDataValue implements DataValue {
@@ -62,15 +62,7 @@ export class UnknownDataValue implements DataValue {
   }
 
   public compareTo(otherValue: DataValue): number {
-    const aValue = isNumeric(this.value) ? toNumber(this.value) : this.value;
-    const bValue = isNumeric(otherValue.value) ? toNumber(otherValue.value) : otherValue.value;
-
-    if (aValue > bValue) {
-      return 1;
-    } else if (bValue > aValue) {
-      return -1;
-    }
-    return 0;
+    return compareStrings(this.format(), otherValue.format());
   }
 
   public copy(newValue?: any): DataValue {

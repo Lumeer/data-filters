@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {isNotNullOrUndefined, unescapeHtml, formatUnknownDataValue, replaceNbspFromString, transformTextBasedOnCaseStyle, stripTextHtmlTags, dataValuesMeetConditionByText, valueByConditionText, removeAccentFromString} from '../utils';
+import {isNotNullOrUndefined, unescapeHtml, formatUnknownDataValue, replaceNbspFromString, transformTextBasedOnCaseStyle, stripTextHtmlTags, dataValuesMeetConditionByText, valueByConditionText, removeAccentFromString, compareStrings} from '../utils';
 import {ConditionType, ConditionValue, TextConstraintConfig} from '../model';
 
 export class TextDataValue implements DataValue {
@@ -90,7 +90,7 @@ export class TextDataValue implements DataValue {
   }
 
   public compareTo(otherValue: TextDataValue): number {
-    return stripTextHtmlTags(this.format(), false).localeCompare(stripTextHtmlTags(otherValue.format(), false));
+    return compareStrings(stripTextHtmlTags(this.format(), false), stripTextHtmlTags(otherValue.format(), false));
   }
 
   public copy(newValue?: any): TextDataValue {
