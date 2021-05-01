@@ -88,6 +88,13 @@ export interface PercentageConstraintConfig {
   decimals?: number;
   minValue?: number;
   maxValue?: number;
+  style?: PercentageDisplayStyle;
+  color?: string;
+}
+
+export enum PercentageDisplayStyle {
+  Text = 'Text',
+  ProgressBar = 'ProgressBar',
 }
 
 export interface RatingConstraintConfig {

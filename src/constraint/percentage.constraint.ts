@@ -19,21 +19,12 @@
 
 import {PercentageDataValue} from '../data-value';
 import {Constraint} from './constraint';
-import {
-  avgNumericValues,
-  countValues,
-  maxInNumericValues,
-  medianInNumericValues,
-  minInNumericValues,
-  sumNumericValues,
-  uniqueValuesCount,
-} from '../utils';
-import {ConditionType, PercentageConstraintConfig, ConstraintType} from '../model';
-import {ConstraintData} from './constraint-data';
+import {avgNumericValues, countValues, maxInNumericValues, medianInNumericValues, minInNumericValues, sumNumericValues, uniqueValuesCount,} from '../utils';
+import {ConditionType, ConstraintType, PercentageConstraintConfig, PercentageDisplayStyle} from '../model';
 
 export class PercentageConstraint implements Constraint {
   public readonly type = ConstraintType.Percentage;
-  public readonly isTextRepresentation = true;
+  public readonly isTextRepresentation = !this.config?.style || this.config?.style === PercentageDisplayStyle.Text;
   public readonly allowEditFunction = true;
 
   constructor(public readonly config: PercentageConstraintConfig) {}
