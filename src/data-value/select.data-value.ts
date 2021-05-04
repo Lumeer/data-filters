@@ -162,15 +162,15 @@ export class SelectDataValue implements DataValue {
       case ConditionType.HasSome:
       case ConditionType.Equals:
       case ConditionType.In:
-        return otherOptions[0].value;
+        return otherOptions[0]?.value;
       case ConditionType.HasAll:
-        return values[0].value;
+        return values[0]?.value;
       case ConditionType.HasNoneOf:
       case ConditionType.NotEquals:
         const noneOptions = (this.config?.options || []).filter(
           option => !otherOptions.some(otherOption => otherOption.value === option.value)
         );
-        return noneOptions[0] && noneOptions[0].value;
+        return noneOptions[0]?.value;
       case ConditionType.IsEmpty:
         return '';
       case ConditionType.NotEmpty:

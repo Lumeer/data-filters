@@ -86,13 +86,13 @@ export class SelectConstraint implements Constraint {
 
   public filterInvalidValues<T extends { data: Record<string, any> }>(objects: T[], attributeId: string): Set<any> {
     const invalidValues = new Set();
-    const validValues = new Set(this.config?.options?.map(option => <any>option.value) || []);
+    const validValues = new Set<string>(this.config?.options?.map(option => String(option.value)) || []);
     for (let i = 0; i < objects?.length; i++) {
       const value = objects[i].data?.[attributeId];
       if (isNotNullOrUndefined(value)) {
-        const values = isArray(value) ? value : [value];
+        const values = (isArray(value) ? value : [value]).map(val => String(val));
         for (let j = 0; j < values.length; j++) {
-          if (!validValues.has(values[j])) {
+          if (values[j] && !validValues.has(values[j])) {
             invalidValues.add(values[j]);
           }
         }
