@@ -36,5 +36,6 @@ export enum ConstraintType {
   Select = 'Select',
   Tag = 'Tag',
   User = 'User',
+  View= 'View',
   Color = 'Color',
 }

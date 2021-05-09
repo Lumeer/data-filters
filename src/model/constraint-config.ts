@@ -117,6 +117,11 @@ export interface SelectConstraintConfig {
   options: SelectConstraintOption[];
 }
 
+export interface ViewConstraintConfig {
+  multi?: boolean;
+  openInNewWindow?: boolean;
+}
+
 export interface TagConstraintConfig {
   options: string[];
 }
@@ -171,4 +176,5 @@ export type ConstraintConfig =
   | TagConstraintConfig
   | TextConstraintConfig
   | UserConstraintConfig
-  | ColorConstraintConfig;
+  | ColorConstraintConfig
+  | ViewConstraintConfig;

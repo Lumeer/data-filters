@@ -35,3 +35,4 @@ export * from './select.constraint';
 export * from './text.constraint';
 export * from './unknown.constraint';
 export * from './user.constraint';
+export * from './view.constraint';

@@ -30,3 +30,4 @@ export * from './permissions';
 export * from './query';
 export * from './role';
 export * from './user';
+export * from './view';
