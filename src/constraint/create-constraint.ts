@@ -34,6 +34,7 @@ import {TextConstraint} from './text.constraint';
 import {UserConstraint} from './user.constraint';
 import {LinkConstraint} from './link.constraint';
 import {UnknownConstraint} from './unknown.constraint';
+import {ViewConstraint} from './view.constraint';
 
 export function createConstraint(type: string, config: any, locale?: LanguageTag): Constraint {
   switch (type) {
@@ -65,6 +66,8 @@ export function createConstraint(type: string, config: any, locale?: LanguageTag
       return new UserConstraint(config);
     case ConstraintType.Link:
       return new LinkConstraint(config);
+    case ConstraintType.View:
+      return new ViewConstraint(config);
     default:
       return new UnknownConstraint();
   }

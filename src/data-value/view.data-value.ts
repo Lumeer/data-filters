@@ -24,6 +24,7 @@ import {ConditionType, ConditionValue, View, ViewConstraintConfig} from '../mode
 
 export class ViewDataValue implements DataValue {
   public readonly views: View[];
+  public readonly validViews: View[];
 
   constructor(
     public readonly value: any,
@@ -32,6 +33,7 @@ export class ViewDataValue implements DataValue {
     public readonly inputValue?: string
   ) {
     this.views = this.createViews();
+    this.validViews = this.views.filter(view => !!view.name);
   }
 
   private createViews(): View[] {
@@ -55,7 +57,7 @@ export class ViewDataValue implements DataValue {
       return this.inputValue;
     }
 
-    return this.views.map(view => view.name).filter(name => !!name).join(', ');
+    return this.validViews.map(view => view.name).join(', ');
   }
 
   public preview(): string {
