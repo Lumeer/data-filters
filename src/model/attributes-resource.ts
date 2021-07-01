@@ -6,7 +6,23 @@ export interface Resource {
 }
 
 export interface Collection extends Resource {
+    purpose?: CollectionPurpose;
+}
 
+interface CollectionPurpose {
+    type: CollectionPurposeType;
+    metaData: Partial<CollectionPurposeMetadata>;
+}
+
+export enum CollectionPurposeType {
+    None = 'None',
+    Tasks = 'Tasks',
+}
+
+type CollectionPurposeMetadata = TaskPurposeMetadata;
+
+interface TaskPurposeMetadata {
+    assigneeAttributeId?: string;
 }
 
 export interface LinkType extends Resource {

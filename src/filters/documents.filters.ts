@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ActionConstraintConfig, AllowedPermissions, Attribute, AttributeFilter, AttributesResourceType, Collection, ConditionType, ConstraintType, DataResource, DocumentModel, EquationOperator, LanguageTag, LinkInstance, LinkType, Query, QueryStem, Resource} from '../model';
+import {ActionConstraintConfig, AllowedPermissions, Attribute, AttributeFilter, AttributesResource, AttributesResourceType, Collection, ConditionType, ConstraintType, DataResource, DocumentModel, EquationOperator, LanguageTag, LinkInstance, LinkType, Query, QueryStem, Resource} from '../model';
 import {escapeHtml, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, hasRoleByPermissions, isNullOrUndefined, mergeDocuments, mergeLinkInstances, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, removeAccentFromString} from '../utils';
 import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes, UnknownConstraint} from '../constraint';
 import {DataValue} from '../data-value';
@@ -196,7 +196,7 @@ export function filterDocumentsAndLinksByStem(
   for (const dataResource of currentPipeline.dataResources) {
     const dataValues = createDataValuesMap(dataResource.data, currentPipeline.attributes, constraintData);
     if (
-      dataValuesMeetsFilters(dataValues, currentPipeline.filters, attributesMap, currentPipeline.permissions, constraintData)
+      dataValuesMeetsFilters(dataResource, dataValues, currentPipeline.resource, currentPipeline.filters, attributesMap, currentPipeline.permissions, constraintData)
     ) {
       const searchDocuments = includeChildren
         ? getDocumentsWithChildren(dataResource as DocumentModel, documentsMap)
@@ -259,7 +259,9 @@ function checkAndFillDataResources(
       linkInstance =>
         linkInstance.documentIds.includes(previousDocument.id) &&
         dataMeetsFilters(
+          linkInstance,
           linkInstance.data,
+          currentPipeline.resource,
           currentPipeline.attributes,
           currentPipeline.filters,
           currentPipeline.permissions,
@@ -301,7 +303,9 @@ function checkAndFillDataResources(
       document =>
         previousLink.documentIds.includes(document.id) &&
         dataMeetsFilters(
+          document,
           document.data,
+          currentPipeline.resource,
           currentPipeline.attributes,
           currentPipeline.filters,
           currentPipeline.permissions,
@@ -402,7 +406,9 @@ export function createDataValuesMap(
 }
 
 function dataValuesMeetsFiltersWithOperator(
+    dataResource: DataResource,
   dataValues: Record<string, DataValue>,
+  resource: AttributesResource,
   attributesMap: Record<string, Attribute>,
   filters: AttributeFilter[],
   permissions: AllowedPermissions,
@@ -416,16 +422,18 @@ function dataValuesMeetsFiltersWithOperator(
       definedFilters.length === 0 ||
       definedFilters.reduce(
         (result, filter) =>
-          result || dataValuesMeetsFilters(dataValues, [filter], attributesMap, permissions, constraintData),
+          result || dataValuesMeetsFilters(dataResource, dataValues, resource, [filter], attributesMap, permissions, constraintData),
         false
       )
     );
   }
-  return dataValuesMeetsFilters(dataValues, definedFilters, attributesMap, permissions, constraintData);
+  return dataValuesMeetsFilters(dataResource, dataValues, resource, definedFilters, attributesMap, permissions, constraintData);
 }
 
 function dataMeetsFilters(
+    dataResource: DataResource,
   data: Record<string, any>,
+  resource: AttributesResource,
   attributes: Attribute[],
   filters: AttributeFilter[],
   permissions: AllowedPermissions,
@@ -434,7 +442,9 @@ function dataMeetsFilters(
 ): boolean {
   const dataValues = createDataValuesMap(data, attributes, constraintData);
   return dataValuesMeetsFiltersWithOperator(
+      dataResource,
     dataValues,
+    resource,
     objectsByIdMap(attributes),
     filters,
     permissions,
@@ -444,7 +454,9 @@ function dataMeetsFilters(
 }
 
 function dataValuesMeetsFilters(
+    dataResource: DataResource,
   dataValues: Record<string, DataValue>,
+  resource: AttributesResource,
   filters: AttributeFilter[],
   attributesMap: Record<string, Attribute>,
   permissions: AllowedPermissions,
@@ -464,9 +476,9 @@ function dataValuesMeetsFilters(
       case ConstraintType.Action:
         const config = <ActionConstraintConfig>constraint.config;
         if (filter.condition === ConditionType.Enabled) {
-          return isActionButtonEnabled(dataValues, attributesMap, permissions, config, constraintData);
+          return isActionButtonEnabled(dataResource, dataValues, resource, attributesMap, permissions, config, constraintData);
         } else if (filter.condition === ConditionType.Disabled) {
-          return !isActionButtonEnabled(dataValues, attributesMap, permissions, config, constraintData);
+          return !isActionButtonEnabled(dataResource, dataValues, resource, attributesMap, permissions, config, constraintData);
         }
         return false;
       default:
@@ -487,7 +499,9 @@ export interface ActionButtonFilterStats {
 }
 
 export function actionButtonEnabledStats(
+    dataResource: DataResource,
     dataValues: Record<string, DataValue>,
+    resource: AttributesResource,
     attributesMap: Record<string, Attribute>,
     permissions: AllowedPermissions,
     config: ActionConstraintConfig,
@@ -497,8 +511,8 @@ export function actionButtonEnabledStats(
     return {};
   }
   const filters = config.equation?.equations?.map(eq => eq.filter) || [];
-  const stats = dataValuesMeetsFiltersWithOperatorStats(dataValues, attributesMap,filters, permissions, constraintData);
-  const hasPermissions = hasRoleByPermissions(config.role, permissions);
+  const stats = dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, resource, attributesMap,filters, permissions, constraintData);
+  const hasPermissions = hasRoleByPermissions(config.role, dataResource, resource, permissions, constraintData.currentUser);
   return {
     ...stats,
     satisfy: stats.satisfy && hasPermissions,
@@ -507,7 +521,9 @@ export function actionButtonEnabledStats(
 }
 
 function dataValuesMeetsFiltersWithOperatorStats(
+    dataResource: DataResource,
     dataValues: Record<string, DataValue>,
+    resource: AttributesResource,
     attributesMap: Record<string, Attribute>,
     filters: AttributeFilter[],
     permissions: AllowedPermissions,
@@ -517,7 +533,7 @@ function dataValuesMeetsFiltersWithOperatorStats(
   const definedFilters = filters?.filter(fil => !!attributesMap[fil.attributeId]) || [];
 
   const filtersStats: ActionButtonFilterStats[] = definedFilters.map(filter => {
-    const meetsFilters = dataValuesMeetsFilters(dataValues, [filter], attributesMap, permissions, constraintData);
+    const meetsFilters = dataValuesMeetsFilters(dataResource, dataValues,resource,  [filter], attributesMap, permissions, constraintData);
     return {filter, satisfy: meetsFilters};
   });
 
@@ -531,9 +547,10 @@ function dataValuesMeetsFiltersWithOperatorStats(
   return {filtersStats, satisfy};
 }
 
-
 export function isActionButtonEnabled(
+    dataResource: DataResource,
   dataValues: Record<string, DataValue>,
+  resource: AttributesResource,
   attributesMap: Record<string, Attribute>,
   permissions: AllowedPermissions,
   config: ActionConstraintConfig,
@@ -545,13 +562,15 @@ export function isActionButtonEnabled(
   const filters = config.equation?.equations?.map(eq => eq.filter) || [];
   return (
     dataValuesMeetsFiltersWithOperator(
+        dataResource,
       dataValues,
+      resource,
       attributesMap,
       filters,
       permissions,
       constraintData,
       config.equation?.operator
-    ) && hasRoleByPermissions(config.role, permissions)
+    ) && hasRoleByPermissions(config.role, dataResource, resource, permissions, constraintData?.currentUser)
   );
 }
 

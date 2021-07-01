@@ -17,12 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {Role} from './role';
+
 export interface AllowedPermissions {
-    readWithView?: boolean;
-    writeWithView?: boolean;
-    manageWithView?: boolean;
-    read?: boolean;
-    write?: boolean;
-    manage?: boolean;
-    share?: boolean;
+    roles?: Record<Role, boolean>
+    rolesWithView?: Record<Role, boolean>
 }

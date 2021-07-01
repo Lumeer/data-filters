@@ -18,11 +18,8 @@
  */
 
 export const enum Role {
-  Read = 'READ',
-  Manage = 'MANAGE',
-  Write = 'WRITE',
-  Share = 'SHARE',
-  Clone = 'CLONE',
-  Comment = 'COMMENT',
-  Empty = 'EMPTY',
+  Read = 'Read',
+  DataRead = 'DataRead',
+  DataWrite = 'DataWrite',
+  DataContribute = 'DataContribute',
 }

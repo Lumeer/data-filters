@@ -18,7 +18,7 @@
  */
 
 import Big from 'big.js';
-import {LanguageTag, AddressField, AttributeFilterEquation, Role} from './index';
+import {LanguageTag, AddressField, AttributeFilterEquation} from './index';
 
 export interface AddressConstraintConfig {
   fields: AddressField[];
@@ -159,7 +159,12 @@ export interface ActionConstraintConfig {
   background: string;
   title: string;
   icon: string;
-  role: Role;
+  role: ActionRole;
+}
+
+export enum ActionRole {
+  Read = 'READ',
+  Write = 'WRITE',
 }
 
 export type ConstraintConfig =

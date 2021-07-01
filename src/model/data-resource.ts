@@ -1,6 +1,7 @@
 export interface DataResource {
     id?: string;
     data: Record<string, any>;
+    createdBy?: string;
 }
 
 export interface DocumentModel extends DataResource {
