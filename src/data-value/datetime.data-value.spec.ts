@@ -20,7 +20,8 @@
 import moment from 'moment';
 
 import {DateTimeDataValue} from './datetime.data-value';
-import {DateTimeConstraintConditionValue, ConditionType, DateTimeConstraintConfig} from '../model';
+import {ConditionType, DateTimeConstraintConditionValue, DateTimeConstraintConfig, LanguageTag} from '../model';
+import {ConstraintData} from '../constraint';
 
 describe('DateTimeDataValue', () => {
   const yearConfig: DateTimeConstraintConfig = {format: 'Y'};
@@ -53,6 +54,12 @@ describe('DateTimeDataValue', () => {
           expect(new DateTimeDataValue('', onlyDayConfig).format()).toEqual('');
           expect(new DateTimeDataValue(null, onlyDayConfig).format()).toEqual('');
           expect(new DateTimeDataValue(undefined, onlyDayConfig).format()).toEqual('');
+      })
+
+      const skConfig = {...config, format: 'YYYY.MMMM.DD'};
+      const skConstraintData: ConstraintData = {locale: LanguageTag.Slovak};
+      it('slovak', () => {
+          expect(new DateTimeDataValue('2020-04-24T00:00:00.000Z', skConfig, skConstraintData).format()).toEqual('2020.apríl.24');
       })
   });
 

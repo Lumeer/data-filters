@@ -52,3 +52,7 @@ export enum LanguageTag {
   Ukraine = 'uk-UA',
   India = 'en-IN',
 }
+
+export function languageTagToLocale(tag: LanguageTag): string {
+  return tag.split('-')[0];
+}

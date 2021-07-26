@@ -47,7 +47,7 @@ export function queryStemAttributesResourcesOrder(
     collections: Collection[],
     linkTypes: LinkType[]
 ): AttributesResource[] {
-  const baseCollection = stem && (collections || []).find(collection => collection.id === stem.collectionId);
+  const baseCollection = stem && (collections || []).find(collection => collection?.id === stem.collectionId);
   if (!baseCollection) {
     return [];
   }

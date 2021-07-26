@@ -30,12 +30,12 @@ export class DateTimeConstraint implements Constraint {
 
   constructor(public readonly config: DateTimeConstraintConfig) {}
 
-  public createDataValue(value: any): DateTimeDataValue {
-    return new DateTimeDataValue(value, this.config);
+  public createDataValue(value: any, constraintData?: ConstraintData): DateTimeDataValue {
+    return new DateTimeDataValue(value, this.config, constraintData);
   }
 
-  public createInputDataValue(inputValue: string, value: any): DateTimeDataValue {
-    return new DateTimeDataValue(value, this.config, inputValue);
+  public createInputDataValue(inputValue: string, value: any, constraintData?: ConstraintData): DateTimeDataValue {
+    return new DateTimeDataValue(value, this.config, constraintData, inputValue);
   }
 
   public conditions(): ConditionType[] {

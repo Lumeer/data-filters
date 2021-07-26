@@ -20,20 +20,24 @@
 import moment from 'moment';
 
 import {DataValue} from './data-value';
-import {DateTimeConstraintConfig, ConstraintConditionValue, DateTimeConstraintConditionValue, ConditionType, ConditionValue} from '../model';
+import {DateTimeConstraintConfig, ConstraintConditionValue, DateTimeConstraintConditionValue, ConditionType, ConditionValue, LanguageTag, languageTagToLocale} from '../model';
 import {conditionTypeNumberOfInputs, createRange, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, valueMeetFulltexts, getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek, formatUnknownDataValue} from '../utils';
 import {createDateTimeOptions, hasTimeOption} from '../utils/date-time-options';
+import {ConstraintData} from '../constraint';
 
 export class DateTimeDataValue implements DataValue {
     public readonly momentDate: moment.Moment;
     public isUtc: boolean;
+    private readonly locale: string;
 
     constructor(
         public readonly value: any,
         public readonly config: DateTimeConstraintConfig,
+        public readonly constraintData?: ConstraintData,
         public readonly inputValue?: string
     ) {
         this.isUtc = this.isUtcDate();
+        this.locale = languageTagToLocale(constraintData?.locale || LanguageTag.USA);
         if (inputValue) {
             const inputValueMatchFormat = inputValue.trim().length === this.config?.format?.length;
             const parsedValue = inputValueMatchFormat ? inputValue : value;
@@ -83,7 +87,7 @@ export class DateTimeDataValue implements DataValue {
             return showInvalid ? formatUnknownDataValue(this.value, true) : '';
         }
 
-        return this.config?.format ? this.momentDate.format(this.config.format) : formatUnknownDataValue(this.value);
+        return this.config?.format ? this.momentDate.locale(this.locale).format(this.config.format) : formatUnknownDataValue(this.value);
     }
 
     public title(): string {
@@ -173,7 +177,7 @@ export class DateTimeDataValue implements DataValue {
     }
 
     public parseInput(inputValue: string): DateTimeDataValue {
-        return new DateTimeDataValue(inputValue, this.config, inputValue);
+        return new DateTimeDataValue(inputValue, this.config, this.constraintData, inputValue);
     }
 
     public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
