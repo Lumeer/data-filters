@@ -23,6 +23,14 @@ import {DurationInputArg2} from 'moment';
 import {createDateTimeOptions} from './date-time-options';
 import {DurationUnit} from '../model';
 
+import 'moment/locale/en-gb';
+import 'moment/locale/sk';
+import 'moment/locale/cs';
+import 'moment/locale/cs';
+import 'moment/locale/de';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+
 export function isDateValid(date: Date): boolean {
   return date && date.getTime && !isNaN(date.getTime());
 }
