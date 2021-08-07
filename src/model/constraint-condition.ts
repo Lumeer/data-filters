@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export type ConstraintConditionValue = DateTimeConstraintConditionValue | UserConstraintConditionValue;
+export type ConstraintConditionValue = DateTimeConstraintConditionValue | UserConstraintConditionValue |TeamConstraintConditionValue;
 
 export enum DateTimeConstraintConditionValue {
   Today = 'today',
@@ -33,4 +33,8 @@ export enum DateTimeConstraintConditionValue {
 
 export enum UserConstraintConditionValue {
   CurrentUser = 'currentUser',
+}
+
+export enum TeamConstraintConditionValue {
+  CurrentTeams = 'currentTeams',
 }

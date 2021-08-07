@@ -38,7 +38,7 @@ describe('UserDataValue', () => {
   };
 
   describe('meet condition', () => {
-    it('in', () => {
+    it('has some', () => {
       expect(
         new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasSome, [
           {value: 'one@lmr.com'},
@@ -71,7 +71,7 @@ describe('UserDataValue', () => {
       ).toBeTruthy();
     });
 
-    it('not in', () => {
+    it('has none of', () => {
       expect(
         new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(
           ConditionType.HasNoneOf,

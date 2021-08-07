@@ -105,10 +105,6 @@ export class UserDataValue implements DataValue {
   }
 
   public compareTo(otherValue: UserDataValue): number {
-    if (this.users.length > 1 || otherValue.users.length > 1) {
-      return 0;
-    }
-
     return compareStrings(this.format(), otherValue.format());
   }
 

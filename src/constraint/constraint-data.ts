@@ -18,10 +18,12 @@
  */
 
 import {DurationUnit, User, AddressesMap, ConstraintType, LanguageTag, View} from '../model';
+import {Team} from '../model/team';
 
 export interface ConstraintData {
   addressesMap?: AddressesMap;
   users?: User[];
+  teams?: Team[];
   views?: View[];
   currentUser?: User;
   durationUnitsMap?: DurationUnitsMap;

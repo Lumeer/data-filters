@@ -147,6 +147,10 @@ export interface UserConstraintConfig {
   externalUsers: boolean;
 }
 
+export interface TeamConstraintConfig {
+  multi?: boolean;
+}
+
 export interface LinkConstraintConfig {
   openInApp?: boolean;
 }
