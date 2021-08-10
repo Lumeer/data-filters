@@ -21,7 +21,7 @@ import {ConstraintData} from '../constraint';
 import {UserDataValue} from './user.data-value';
 import {ConditionType, UserConstraintConfig, UserConstraintConditionValue} from '../model';
 
-describe('UserDataValue', () => {
+fdescribe('UserDataValue', () => {
   const config: UserConstraintConfig = {
     multi: true,
     externalUsers: true,
@@ -29,12 +29,12 @@ describe('UserDataValue', () => {
 
   const constraintData: ConstraintData = {
     users: [
-      {email: 'one@lmr.com', name: 'One Lmr'},
-      {email: 'two@lmr.com', name: 'Two Lmr'},
-      {email: 'three@lmr.com', name: 'Three Lmr'},
-      {email: 'four@lmr.com', name: 'Four Lmr'},
+      {id: '1', email: 'one@lmr.com', name: 'One Lmr'},
+      {id: '2', email: 'two@lmr.com', name: 'Two Lmr'},
+      {id: '3', email: 'three@lmr.com', name: 'Three Lmr'},
+      {id: '4', email: 'four@lmr.com', name: 'Four Lmr'},
     ],
-    currentUser: {email: 'two@lmr.com', name: 'Two Lmr'},
+    currentUser: {id: '2', email: 'two@lmr.com', name: 'Two Lmr'},
   };
 
   describe('meet condition', () => {

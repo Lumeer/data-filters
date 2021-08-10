@@ -19,11 +19,16 @@
 
 import {ConstraintData} from '../constraint';
 import {DataValue} from './data-value';
-import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings} from '../utils';
-import {ConditionType, ConditionValue, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
+import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings, uniqueValues} from '../utils';
+import {ConditionType, ConditionValue, Team, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
 
 export class UserDataValue implements DataValue {
   public readonly users: User[];
+  public readonly usersIds: string[];
+  public readonly teams: Team[];
+  public readonly teamsIds: string[];
+  public readonly teamsUsersIds: string[];
+  public readonly allUsersIds: string[];
 
   constructor(
     public readonly value: any,
@@ -31,23 +36,37 @@ export class UserDataValue implements DataValue {
     public readonly constraintData: ConstraintData,
     public readonly inputValue?: string
   ) {
-    this.users = this.createUsers();
+    const {users, teams} = this.createUsersAndTeams();
+    this.users = users;
+    this.usersIds = users.map(user => user.id);
+    this.teams = teams;
+    this.teamsIds = teams.map(team => team.id);
+    this.teamsUsersIds = uniqueValues(teams.reduce((ids, team) => [...ids, (team.users || [])], []));
+    this.allUsersIds = uniqueValues([...this.usersIds, ...this.teamsUsersIds]);
   }
 
-  private createUsers(): User[] {
+  private createUsersAndTeams(): { users: User[], teams: Team[] } {
     const users = this.constraintData?.users || [];
-    const userValues: any[] = (isArray(this.value) ? this.value : [this.value]).filter(
+    const teams = this.constraintData?.teams || [];
+
+    const allValues: any[] = (isArray(this.value) ? this.value : [this.value]).filter(
       val => isNotNullOrUndefined(val) && String(val).trim()
     );
-    return userValues
-      .map(userValue => {
-        const user = users.find(u => u.email === userValue);
-        if (user) {
-          return user;
+
+    return allValues.reduce((data, value) => {
+      if (userDataValueIsTeamValue(value)) {
+        const teamId = userDataValueParseTeamValue(value);
+        const team = teams.find(t => t.id === teamId);
+        if (team) {
+          data.teams.push(team);
         }
-        return {email: String(userValue), name: String(userValue), groupsMap: {}};
-      })
-      .filter(user => !!user);
+      } else {
+        const user = users.find(u => u.email === value) || {id: String(value), email: String(value), name: String(value), groupsMap: {}};
+        data.users.push(user);
+      }
+
+      return data;
+    }, {users: [], teams: []});
   }
 
   public format(preferEmail?: boolean): string {
@@ -55,8 +74,10 @@ export class UserDataValue implements DataValue {
       return this.inputValue;
     }
 
-    if (this.users.length) {
-      return this.users.map(user => (preferEmail ? user.email || user.name : user.name || user.email)).join(', ');
+    if (this.users.length || this.teams.length) {
+      const values = this.teams.map(team => team.name);
+      values.push(...this.users.map(user => (preferEmail ? user.email || user.name : user.name || user.email)));
+      return values.join(', ');
     }
 
     return formatUnknownDataValue(this.value);
@@ -76,10 +97,10 @@ export class UserDataValue implements DataValue {
 
   public serialize(): any {
     if (this.config?.multi) {
-      return this.users.map(user => user.email);
+      return [...this.teamsIds.map(id => userDataValueCreateTeamValue(id)), this.users.map(user => user.email)];
     }
 
-    return this.users?.[0]?.email || null;
+    return userDataValueCreateTeamValue(this.teams?.[0]?.id) || this.users?.[0]?.email || null;
   }
 
   public isValid(ignoreConfig?: boolean): boolean {
@@ -120,30 +141,35 @@ export class UserDataValue implements DataValue {
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = values?.map(value => this.mapQueryConditionValue(value));
     const otherUsers = (dataValues.length > 0 && dataValues[0].users) || [];
+    const otherTeams = (dataValues.length > 0 && dataValues[0].teams) || [];
 
     switch (condition) {
       case ConditionType.HasSome:
       case ConditionType.Equals:
-        return this.users.some(option => (otherUsers || []).some(otherOption => otherOption.email === option.email));
+        return otherTeams.some(otherTeam => this.teamsIds.includes(otherTeam.id)) ||
+          otherUsers.some(otherUser => this.allUsersIds.includes(otherUser.id));
       case ConditionType.HasNoneOf:
       case ConditionType.NotEquals:
-        return this.users.every(option => (otherUsers || []).every(otherOption => otherOption.email !== option.email));
+        return otherTeams.every(otherTeam => !this.teamsIds.includes(otherTeam.id)) &&
+          otherUsers.every(otherUser => !this.allUsersIds.includes(otherUser.id));
       case ConditionType.In:
         return (
-          this.users.length > 0 &&
-          this.users.every(user => otherUsers.some(otherOption => otherOption.email === user.email))
+          (this.usersIds.length > 0 || this.teamsIds.length > 0) &&
+          this.teamsIds.every(teamId => otherTeams.some(otherTeam => otherTeam.id === teamId)) &&
+          this.usersIds.every(userId => otherUsers.some(otherOption => otherOption.id === userId))
         );
       case ConditionType.HasAll:
         return (
           arrayIntersection(
-            otherUsers.map(o => o.email),
-            this.users.map(o => o.email)
-          ).length === otherUsers.length
+            otherTeams.map(o => o.id),
+            this.teamsIds
+          ).length === otherTeams.length &&
+          otherUsers.every(otherUser => this.allUsersIds.includes(otherUser.id))
         );
       case ConditionType.IsEmpty:
-        return this.users.length === 0 && this.format().trim().length === 0;
+        return this.users.length === 0 && this.teams.length === 0 && this.format().trim().length === 0;
       case ConditionType.NotEmpty:
-        return this.users.length > 0 || this.format().trim().length > 0;
+        return this.users.length > 0 || this.teams.length > 0 || this.format().trim().length > 0;
       default:
         return false;
     }
@@ -153,6 +179,13 @@ export class UserDataValue implements DataValue {
     if (value.type === UserConstraintConditionValue.CurrentUser) {
       const currentUser = this.constraintData?.currentUser;
       return new UserDataValue(currentUser?.email, this.config, this.constraintData);
+    } else if (value.type === UserConstraintConditionValue.CurrentTeams) {
+      const currentUser = this.constraintData?.currentUser;
+      if (currentUser) {
+        const teams = (this.constraintData?.teams || []).filter(team => team.users?.includes(currentUser.id))
+        const teamsIds = teams.map(team => userDataValueCreateTeamValue(team.id));
+        return new UserDataValue(teamsIds, this.config, this.constraintData);
+      }
     }
     return new UserDataValue(value.value, this.config, this.constraintData);
   }
@@ -164,12 +197,13 @@ export class UserDataValue implements DataValue {
   public valueByCondition(condition: ConditionType, values: ConditionValue[]): any {
     const dataValues = values?.map(value => this.mapQueryConditionValue(value));
     const otherUsers = dataValues?.[0]?.users || [];
+    const otherTeams = dataValues?.[0]?.teams || [];
 
     switch (condition) {
       case ConditionType.HasSome:
       case ConditionType.Equals:
       case ConditionType.In:
-        return otherUsers?.[0]?.email;
+        return userDataValueCreateTeamValue(otherTeams?.[0]?.id) || otherUsers?.[0]?.email;
       case ConditionType.HasAll:
         return values[0].value;
       case ConditionType.HasNoneOf:
@@ -181,9 +215,23 @@ export class UserDataValue implements DataValue {
       case ConditionType.IsEmpty:
         return '';
       case ConditionType.NotEmpty:
-        return this.constraintData?.users?.[0]?.email;
+        return this.constraintData?.currentUser?.email;
       default:
         return null;
     }
   }
+}
+
+const teamPrefix = '@';
+
+export function userDataValueIsTeamValue(value: string): boolean {
+  return value?.startsWith(teamPrefix);
+}
+
+export function userDataValueCreateTeamValue(teamId: string): string {
+  return teamId && `${teamPrefix}${teamId}`;
+}
+
+export function userDataValueParseTeamValue(value: string): string {
+  return value?.substring(teamPrefix.length);
 }

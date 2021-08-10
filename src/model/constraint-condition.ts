@@ -33,6 +33,7 @@ export enum DateTimeConstraintConditionValue {
 
 export enum UserConstraintConditionValue {
   CurrentUser = 'currentUser',
+  CurrentTeams = 'currentTeams',
 }
 
 export enum TeamConstraintConditionValue {
