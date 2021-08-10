@@ -145,6 +145,13 @@ export interface UserConstraintConfig {
   multi?: boolean;
   onlyIcon?: boolean;
   externalUsers: boolean;
+  type?: UserConstraintType;
+}
+
+export enum UserConstraintType {
+  Users = 'users',
+  Teams = 'teams',
+  UsersAndTeams = 'usersAndTeams',
 }
 
 export interface TeamConstraintConfig {

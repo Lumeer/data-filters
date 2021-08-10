@@ -19,6 +19,6 @@
 
 export interface Team {
     id?: string;
-    name?: string;
+    name: string;
     users?: string[];
 }
