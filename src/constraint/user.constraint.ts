@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {UserDataValue} from '../data-value';
+import {UserDataValue, userDataValueIsTeamValue} from '../data-value';
 import {Constraint} from './constraint';
 import {
     avgAnyValues,
@@ -92,7 +92,7 @@ export class UserConstraint implements Constraint {
       if (isNotNullOrUndefined(value)) {
           const values = isArray(value) ? value : [value];
           for (let j = 0; j < values.length; j++) {
-              if (!validValues.has(values[j])) {
+              if (!validValues.has(values[j]) && !userDataValueIsTeamValue(values[j] as string)) {
                   invalidValues.add(values[j]);
               }
           }

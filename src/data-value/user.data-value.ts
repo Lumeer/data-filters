@@ -19,7 +19,7 @@
 
 import {ConstraintData} from '../constraint';
 import {DataValue} from './data-value';
-import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings} from '../utils';
+import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings, uniqueValues} from '../utils';
 import {ConditionType, ConditionValue, Team, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
 
 export class UserDataValue implements DataValue {
@@ -27,6 +27,8 @@ export class UserDataValue implements DataValue {
   public readonly usersIds: string[];
   public readonly teams: Team[];
   public readonly teamsIds: string[];
+  public readonly teamsUsersIds: string[];
+  public readonly allUsersIds: string[];
 
   constructor(
     public readonly value: any,
@@ -39,6 +41,8 @@ export class UserDataValue implements DataValue {
     this.usersIds = users.map(user => user.id);
     this.teams = teams;
     this.teamsIds = teams.map(team => team.id);
+    this.teamsUsersIds = uniqueValues(teams.reduce((ids, team) => [...ids, ...(team.users || [])], []));
+    this.allUsersIds = uniqueValues([...this.usersIds, ...this.teamsUsersIds]);
   }
 
   private createUsersAndTeams(): { users: User[], teams: Team[] } {
@@ -143,11 +147,11 @@ export class UserDataValue implements DataValue {
       case ConditionType.HasSome:
       case ConditionType.Equals:
         return otherTeams.some(otherTeam => this.teamsIds.includes(otherTeam.id)) ||
-          otherUsers.some(otherUser => this.usersIds.includes(otherUser.id));
+          otherUsers.some(otherUser => this.allUsersIds.includes(otherUser.id));
       case ConditionType.HasNoneOf:
       case ConditionType.NotEquals:
         return otherTeams.every(otherTeam => !this.teamsIds.includes(otherTeam.id)) &&
-          otherUsers.every(otherUser => !this.usersIds.includes(otherUser.id));
+          otherUsers.every(otherUser => !this.allUsersIds.includes(otherUser.id));
       case ConditionType.In:
         return (
           (this.usersIds.length > 0 || this.teamsIds.length > 0) &&
