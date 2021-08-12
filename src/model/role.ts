@@ -21,5 +21,6 @@ export const enum Role {
   Read = 'Read',
   DataRead = 'DataRead',
   DataWrite = 'DataWrite',
+  DataDelete = 'DataDelete',
   DataContribute = 'DataContribute',
 }

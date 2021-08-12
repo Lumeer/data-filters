@@ -17,8 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DurationUnit, User, AddressesMap, ConstraintType, LanguageTag, View} from '../model';
-import {Team} from '../model/team';
+import {DurationUnit, User, AddressesMap, ConstraintType, LanguageTag, View, Team} from '../model';
 
 export interface ConstraintData {
   addressesMap?: AddressesMap;

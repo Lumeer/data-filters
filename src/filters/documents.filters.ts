@@ -512,7 +512,7 @@ export function actionButtonEnabledStats(
   }
   const filters = config.equation?.equations?.map(eq => eq.filter) || [];
   const stats = dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, resource, attributesMap,filters, permissions, constraintData);
-  const hasPermissions = hasRoleByPermissions(config.role, dataResource, resource, permissions, constraintData.currentUser);
+  const hasPermissions = hasRoleByPermissions(config.role, dataResource, resource, permissions, constraintData.currentUser, constraintData);
   return {
     ...stats,
     satisfy: stats.satisfy && hasPermissions,
@@ -570,7 +570,7 @@ export function isActionButtonEnabled(
       permissions,
       constraintData,
       config.equation?.operator
-    ) && hasRoleByPermissions(config.role, dataResource, resource, permissions, constraintData?.currentUser)
+    ) && hasRoleByPermissions(config.role, dataResource, resource, permissions, constraintData?.currentUser, constraintData)
   );
 }
 
