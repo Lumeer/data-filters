@@ -18,13 +18,14 @@
  */
 
 import {DataValue} from './data-value';
-import {formatUnknownDataValue, dataValuesMeetConditionByText, valueByConditionText, escapeHtml, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings} from '../utils';
+import {formatUnknownDataValue, dataValuesMeetConditionByText, valueByConditionText, escapeHtml, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings, isNumeric, toNumber} from '../utils';
 import {ConditionType, ConditionValue} from '../model';
 
 export class UnknownDataValue implements DataValue {
   public readonly config: any = {};
 
-  constructor(public readonly value: any, public readonly inputValue?: string) {}
+  constructor(public readonly value: any, public readonly inputValue?: string) {
+  }
 
   public format(): string {
     if (isNotNullOrUndefined(this.inputValue)) {
@@ -62,7 +63,13 @@ export class UnknownDataValue implements DataValue {
   }
 
   public compareTo(otherValue: DataValue): number {
-    return compareStrings(this.format(), otherValue.format());
+    const v1 = this.format();
+    const v2 = otherValue.format();
+    if (isNumeric(v1) && isNumeric(v2)) {
+      return toNumber(v1) - toNumber(v2);
+    }
+
+    return compareStrings(v1, v2);
   }
 
   public copy(newValue?: any): DataValue {
