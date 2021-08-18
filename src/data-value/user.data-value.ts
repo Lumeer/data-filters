@@ -19,7 +19,7 @@
 
 import {ConstraintData} from '../constraint';
 import {DataValue} from './data-value';
-import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings, uniqueValues} from '../utils';
+import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings, uniqueValues, isNullOrUndefined} from '../utils';
 import {ConditionType, ConditionValue, Team, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
 
 export class UserDataValue implements DataValue {
@@ -36,7 +36,8 @@ export class UserDataValue implements DataValue {
     public readonly constraintData: ConstraintData,
     public readonly inputValue?: string
   ) {
-    const {users, teams} = this.createUsersAndTeams();
+    const currentValue = isNotNullOrUndefined(inputValue) ? inputValue : value;
+    const {users, teams} = this.createUsersAndTeams(currentValue, isNullOrUndefined(inputValue));
     this.users = users;
     this.usersIds = users.map(user => user.id);
     this.teams = teams;
@@ -45,11 +46,11 @@ export class UserDataValue implements DataValue {
     this.allUsersIds = uniqueValues([...this.usersIds, ...this.teamsUsersIds]);
   }
 
-  private createUsersAndTeams(): { users: User[], teams: Team[] } {
+  private createUsersAndTeams(value: any, showInvalid: boolean): { users: User[], teams: Team[] } {
     const users = this.constraintData?.users || [];
     const teams = this.constraintData?.teams || [];
 
-    const allValues: any[] = (isArray(this.value) ? this.value : [this.value]).filter(
+    const allValues: any[] = (isArray(value) ? value : [value]).filter(
       val => isNotNullOrUndefined(val) && String(val).trim()
     );
 
@@ -62,7 +63,9 @@ export class UserDataValue implements DataValue {
         }
       } else {
         const user = users.find(u => u.email === value) || {id: null, email: String(value), name: String(value), groupsMap: {}};
-        data.users.push({...user, id: user.id || user.email});
+        if (showInvalid || user.id) {
+          data.users.push({...user, id: user.id || user.email});
+        }
       }
 
       return data;

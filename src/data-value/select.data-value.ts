@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {arrayIntersection, isArray, formatUnknownDataValue, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts} from '../utils';
+import {arrayIntersection, isArray, formatUnknownDataValue, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, isNullOrUndefined} from '../utils';
 import {ConditionType, ConditionValue, SelectConstraintConfig, SelectConstraintOption} from '../model';
 import {ConstraintData} from '../constraint';
 
@@ -31,7 +31,8 @@ export class SelectDataValue implements DataValue {
     public readonly constraintData: ConstraintData,
     public readonly inputValue?: string
   ) {
-    this.options = findOptionsByValue(config, value);
+    const currentValue = isNotNullOrUndefined(inputValue) ? inputValue : value;
+    this.options = findOptionsByValue(config, currentValue, isNullOrUndefined(inputValue));
   }
 
   public format(): string {
@@ -79,7 +80,7 @@ export class SelectDataValue implements DataValue {
     }
 
     const nextOption = this.shiftOption(1, this.options[0]);
-    return new SelectDataValue(nextOption.value, this.config,  this.constraintData);
+    return new SelectDataValue(nextOption.value, this.config, this.constraintData);
   }
 
   public decrement(): SelectDataValue {
@@ -88,7 +89,7 @@ export class SelectDataValue implements DataValue {
     }
 
     const previousOption = this.shiftOption(-1, this.options[0]);
-    return new SelectDataValue(previousOption.value, this.config,  this.constraintData);
+    return new SelectDataValue(previousOption.value, this.config, this.constraintData);
   }
 
   public compareTo(otherValue: SelectDataValue): number {
@@ -104,7 +105,7 @@ export class SelectDataValue implements DataValue {
 
   public copy(newValue?: any): SelectDataValue {
     const value = newValue !== undefined ? newValue : this.value;
-    return new SelectDataValue(value, this.config,  this.constraintData);
+    return new SelectDataValue(value, this.config, this.constraintData);
   }
 
   public parseInput(inputValue: string): SelectDataValue {
@@ -119,7 +120,7 @@ export class SelectDataValue implements DataValue {
   }
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
-    const dataValues = (values || []).map(value => new SelectDataValue(value.value, this.config,  this.constraintData));
+    const dataValues = (values || []).map(value => new SelectDataValue(value.value, this.config, this.constraintData));
     const otherOptions = (dataValues.length > 0 && dataValues[0].options) || [];
 
     switch (condition) {
@@ -181,7 +182,7 @@ export class SelectDataValue implements DataValue {
   }
 }
 
-function findOptionsByValue(config: SelectConstraintConfig, value: any): SelectConstraintOption[] {
+function findOptionsByValue(config: SelectConstraintConfig, value: any, showInvalid: boolean): SelectConstraintOption[] {
   const options = config?.options || [];
   const values: any[] = (isArray(value) ? value : [value]).filter(
     val => isNotNullOrUndefined(val) && String(val).trim()
@@ -193,7 +194,9 @@ function findOptionsByValue(config: SelectConstraintConfig, value: any): SelectC
         return {...option, displayValue: config?.displayValues ? option.displayValue : option.value};
       }
 
-      return {value: val, displayValue: val};
+      if (showInvalid) {
+        return {value: val, displayValue: val};
+      }
     })
     .filter(option => !!option);
 }
