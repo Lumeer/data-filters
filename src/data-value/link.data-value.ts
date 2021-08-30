@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {compareStrings, dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts} from '../utils';
+import {compareStrings, dataValuesMeetConditionByText, isEmailValid, valueByConditionText, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, LinkConstraintConfig} from '../model';
 
 /*
@@ -27,15 +27,27 @@ import {ConditionType, ConditionValue, LinkConstraintConfig} from '../model';
 export class LinkDataValue implements DataValue {
   public readonly linkValue: string;
   public readonly titleValue: string;
+  public readonly rawLinkValue: string;
+  public readonly rawTitleValue: string;
 
   constructor(
     public readonly value: string,
     public readonly config: LinkConstraintConfig,
     public readonly inputValue?: string
   ) {
-    const {link, title} = parseLinkValue(inputValue || value || '');
-    this.linkValue = link || '';
-    this.titleValue = title || '';
+    const {link: rawLink, title: rawTitle} = parseLinkValue(inputValue || value || '');
+    this.rawLinkValue = rawLink || '';
+    this.rawTitleValue = rawTitle || '';
+    const {link, title}  = this.checkLinkValue(this.rawLinkValue, this.rawTitleValue);
+    this.linkValue = link;
+    this.titleValue = title;
+  }
+
+  private checkLinkValue(link: string, title: string): {link: string, title: string} {
+    if (isEmailValid(link)) {
+      return {link: `mailto:${link}`, title: title || link};
+    }
+    return {link, title};
   }
 
   public format(): string {
@@ -54,7 +66,7 @@ export class LinkDataValue implements DataValue {
   }
 
   public serialize(): any {
-    return formatLinkValue(this.linkValue, this.titleValue);
+    return formatLinkValue(this.rawLinkValue, this.rawTitleValue);
   }
 
   public title(): string {
@@ -153,7 +165,7 @@ export function formatLinkValue(link: string, title: string): string {
   return '';
 }
 
-export function parseLinkValue(value: string): {link?: string; title?: string} {
+export function parseLinkValue(value: string): { link?: string; title?: string } {
   const trimmedValue = value ? value.trim() : value;
   if (trimmedValue && trimmedValue[trimmedValue.length - 1] === ']') {
     const titleStartIndex = trimmedValue.lastIndexOf('[');

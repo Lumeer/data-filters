@@ -23,6 +23,20 @@ import {LinkDataValue} from './link.data-value';
 describe('LinkDataValue', () => {
   const config: LinkConstraintConfig = {};
 
+  describe('format & serialize', () => {
+    it('email', () => {
+      expect(new LinkDataValue('aturing@lumeer.io', config).serialize()).toEqual('aturing@lumeer.io');
+
+      expect(new LinkDataValue('aturing@lumeer.io', config).linkValue).toEqual('mailto:aturing@lumeer.io');
+
+      expect(new LinkDataValue('aturing@lumeer.io', config).titleValue).toEqual('aturing@lumeer.io');
+
+      expect(new LinkDataValue('aturing@lumeer.io [abc]', config).linkValue).toEqual('mailto:aturing@lumeer.io');
+
+      expect(new LinkDataValue('aturing@lumeer.io [abc]', config).titleValue).toEqual('abc');
+    });
+  });
+
   describe('meet condition', () => {
     it('equals', () => {
       expect(new LinkDataValue('https://www.google.sk', config).meetCondition(ConditionType.Equals, [{value: 'https://www.google.sk    [https://www.google.sk]'}])).toBeTruthy();
