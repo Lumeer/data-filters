@@ -569,4 +569,13 @@ describe('DateTimeDataValue', () => {
       ).toBeFalsy();
     });
   });
+
+  describe('parse input', () => {
+
+    const config: DateTimeConstraintConfig = {format: 'DD.MM.YYYY HH:mm', asUtc: true};
+
+    it('utc time', () => {
+      expect(new DateTimeDataValue(new Date(), config).parseInput('19.05.2019 23:15').serialize()).toEqual('2019-05-19T23:15:00.000Z');
+    });
+  });
 });
