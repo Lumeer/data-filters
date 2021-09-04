@@ -62,7 +62,8 @@ export class UserDataValue implements DataValue {
           data.teams.push(team);
         }
       } else {
-        const user = users.find(u => u.email === value) || {id: null, email: String(value), name: String(value), groupsMap: {}};
+        const stringValue = String(value);
+        const user = users.find(u => u.email === stringValue) || {id: stringValue, email: stringValue, name: stringValue};
         if (showInvalid || user.id) {
           data.users.push({...user, id: user.id || user.email});
         }

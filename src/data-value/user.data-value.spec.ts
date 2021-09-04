@@ -42,6 +42,17 @@ describe('UserDataValue', () => {
     ]
   };
 
+  describe('init value', () => {
+    const config: UserConstraintConfig = {externalUsers: true};
+    it('should parse unknown user', () => {
+      expect(new UserDataValue(null, config, constraintData).parseInput('unknown@user.com').serialize()).toEqual('unknown@user.com');
+    });
+
+    it('should parse unknown user by multi', () => {
+      expect(new UserDataValue(null, {...config, multi: true}, constraintData).parseInput('unknown@user.com').serialize()).toEqual(['unknown@user.com']);
+    });
+  });
+
   describe('meet condition', () => {
     it('has some users', () => {
       expect(
@@ -203,7 +214,7 @@ describe('UserDataValue', () => {
         ])
       ).toBeFalsy();
       expect(
-        new UserDataValue([ userDataValueCreateTeamValue('1'), 'two@lmr.com', 'three@lmr.com'], config, constraintData).meetFullTexts([
+        new UserDataValue([userDataValueCreateTeamValue('1'), 'two@lmr.com', 'three@lmr.com'], config, constraintData).meetFullTexts([
           'team',
         ])
       ).toBeTruthy();
