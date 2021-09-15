@@ -26,6 +26,7 @@ import {ConstraintData} from '../constraint';
 describe('DateTimeDataValue', () => {
   const yearConfig: DateTimeConstraintConfig = {format: 'Y'};
   const monthConfig: DateTimeConstraintConfig = {format: 'MM Y'};
+  const weekConfig: DateTimeConstraintConfig = {format: 'WW.YYYY'};
   const dayConfig: DateTimeConstraintConfig = {format: 'D.MM.YYYY'};
   const hoursConfig: DateTimeConstraintConfig = {format: 'D-MM-Y HH'};
   const secondsConfig: DateTimeConstraintConfig = {format: 'DD.MM.YYYY HH:mm:ss'};
@@ -39,34 +40,38 @@ describe('DateTimeDataValue', () => {
   const nextMonth = moment().add(1, 'month').toDate();
 
   describe('format', () => {
-      const config: DateTimeConstraintConfig = {format: 'YYYY-MM-DD'};
-      it('simple string', () => {
-        expect(new DateTimeDataValue('2020-03-24', config).format()).toEqual('2020-03-24');
-      })
+    const config: DateTimeConstraintConfig = {format: 'YYYY-MM-DD'};
+    it('simple string', () => {
+      expect(new DateTimeDataValue('2020-03-24', config).format()).toEqual('2020-03-24');
+    })
 
-      it('only day string', () => {
-          const onlyDayConfig: DateTimeConstraintConfig = {format: 'DD'};
-          expect(new DateTimeDataValue('31', onlyDayConfig).format()).toEqual('31');
-          expect(new DateTimeDataValue('01', onlyDayConfig).format()).toEqual('01');
-          expect(new DateTimeDataValue('1', {format: 'D'}).format()).toEqual('1');
-          expect(new DateTimeDataValue(31, onlyDayConfig).format()).toEqual('31');
-          expect(new DateTimeDataValue('310', onlyDayConfig).format()).toEqual('31');
-          expect(new DateTimeDataValue('', onlyDayConfig).format()).toEqual('');
-          expect(new DateTimeDataValue(null, onlyDayConfig).format()).toEqual('');
-          expect(new DateTimeDataValue(undefined, onlyDayConfig).format()).toEqual('');
-      })
+    it('week config', () => {
+      expect(new DateTimeDataValue('22.2020', weekConfig).format()).toEqual('22.2020');
+    })
 
-      const skConfig = {...config, format: 'YYYY.MMMM.DD'};
-      const skConstraintData: ConstraintData = {locale: LanguageTag.Slovak};
-      it('slovak', () => {
-          expect(new DateTimeDataValue('2020-04-24T00:00:00.000Z', skConfig, skConstraintData).format()).toEqual('2020.apríl.24');
-      })
+    it('only day string', () => {
+      const onlyDayConfig: DateTimeConstraintConfig = {format: 'DD'};
+      expect(new DateTimeDataValue('31', onlyDayConfig).format()).toEqual('31');
+      expect(new DateTimeDataValue('01', onlyDayConfig).format()).toEqual('01');
+      expect(new DateTimeDataValue('1', {format: 'D'}).format()).toEqual('1');
+      expect(new DateTimeDataValue(31, onlyDayConfig).format()).toEqual('31');
+      expect(new DateTimeDataValue('310', onlyDayConfig).format()).toEqual('31');
+      expect(new DateTimeDataValue('', onlyDayConfig).format()).toEqual('');
+      expect(new DateTimeDataValue(null, onlyDayConfig).format()).toEqual('');
+      expect(new DateTimeDataValue(undefined, onlyDayConfig).format()).toEqual('');
+    })
 
-      const csConfig = {...config, format: 'YYYY.MMMM.DD'};
-      const csConstraintData: ConstraintData = {locale: LanguageTag.Czech};
-      it('czech', () => {
-          expect(new DateTimeDataValue('2020-04-24T00:00:00.000Z', csConfig, csConstraintData).format()).toEqual('2020.duben.24');
-      })
+    const skConfig = {...config, format: 'YYYY.MMMM.DD'};
+    const skConstraintData: ConstraintData = {locale: LanguageTag.Slovak};
+    it('slovak', () => {
+      expect(new DateTimeDataValue('2020-04-24T00:00:00.000Z', skConfig, skConstraintData).format()).toEqual('2020.apríl.24');
+    })
+
+    const csConfig = {...config, format: 'YYYY.MMMM.DD'};
+    const csConstraintData: ConstraintData = {locale: LanguageTag.Czech};
+    it('czech', () => {
+      expect(new DateTimeDataValue('2020-04-24T00:00:00.000Z', csConfig, csConstraintData).format()).toEqual('2020.duben.24');
+    })
   });
 
   describe('meet condition', () => {
@@ -358,12 +363,12 @@ describe('DateTimeDataValue', () => {
     });
 
     it('greater than or equals last day in previous month', () => {
-        const lastDayInPreviousMonthISO = moment.utc().subtract(1, 'month').endOf('month').startOf('day').toISOString();
-        expect(
-            new DateTimeDataValue(lastDayInPreviousMonthISO, dayConfig).meetCondition(ConditionType.GreaterThanEquals, [
-                {type: DateTimeConstraintConditionValue.LastMonth},
-            ])
-        ).toBeTruthy();
+      const lastDayInPreviousMonthISO = moment.utc().subtract(1, 'month').endOf('month').startOf('day').toISOString();
+      expect(
+        new DateTimeDataValue(lastDayInPreviousMonthISO, dayConfig).meetCondition(ConditionType.GreaterThanEquals, [
+          {type: DateTimeConstraintConditionValue.LastMonth},
+        ])
+      ).toBeTruthy();
     });
 
     it('lower than by specific date', () => {
@@ -572,10 +577,13 @@ describe('DateTimeDataValue', () => {
 
   describe('parse input', () => {
 
-    const config: DateTimeConstraintConfig = {format: 'DD.MM.YYYY HH:mm', asUtc: true};
-
     it('utc time', () => {
+      const config: DateTimeConstraintConfig = {format: 'DD.MM.YYYY HH:mm', asUtc: true};
       expect(new DateTimeDataValue(new Date(), config).parseInput('19.05.2019 23:15').serialize()).toEqual('2019-05-19T23:15:00.000Z');
+    });
+
+    it('parse week config', () => {
+      expect(new DateTimeDataValue(null, weekConfig).parseInput('22.2020').format()).toEqual('22.2020');
     });
   });
 });

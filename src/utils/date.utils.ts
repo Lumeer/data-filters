@@ -112,9 +112,9 @@ function resetMonth(date: moment.Moment): moment.Moment {
 
 export function resetWeek(date: moment.Moment): moment.Moment {
   if (date.week() === 1) {
-    return date.clone().day('Thursday');
+    return date.clone().day(5);
   }
-  return date.clone().day('Monday');
+  return date.clone().day(1);
 }
 
 function resetDayOfWeek(date: moment.Moment): moment.Moment {
