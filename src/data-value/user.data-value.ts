@@ -63,8 +63,8 @@ export class UserDataValue implements DataValue {
         }
       } else {
         const stringValue = String(value);
-        const user = users.find(u => u.email === stringValue) || {id: stringValue, email: stringValue, name: stringValue};
-        if (showInvalid || user.id) {
+        const user = users.find(u => u.email === stringValue) || {id: null, email: stringValue, name: stringValue};
+        if (showInvalid || user.id || (isEmailValid(stringValue) && this.config?.externalUsers)) {
           data.users.push({...user, id: user.id || user.email});
         }
       }

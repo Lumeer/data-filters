@@ -51,6 +51,10 @@ describe('UserDataValue', () => {
     it('should parse unknown user by multi', () => {
       expect(new UserDataValue(null, {...config, multi: true}, constraintData).parseInput('unknown@user.com').serialize()).toEqual(['unknown@user.com']);
     });
+
+    it('should parse empty users from inputValue', () => {
+      expect(new UserDataValue(null, {...config, multi: true}, constraintData).parseInput('x').serialize()).toEqual([]);
+    });
   });
 
   describe('meet condition', () => {
