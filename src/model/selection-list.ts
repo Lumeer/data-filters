@@ -17,8 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface Team {
+import {SelectConstraintConfig, SelectConstraintOption} from './constraint-config';
+
+export interface SelectionList extends Partial<SelectConstraintConfig> {
     id?: string;
-    name: string;
-    users?: string[];
+    displayValues?: boolean;
+    options: SelectConstraintOption[];
 }

@@ -32,3 +32,4 @@ export * from './role';
 export * from './user';
 export * from './team';
 export * from './view';
+export * from './selection-list';

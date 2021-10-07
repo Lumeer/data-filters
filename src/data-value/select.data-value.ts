@@ -32,7 +32,20 @@ export class SelectDataValue implements DataValue {
     public readonly inputValue?: string
   ) {
     const currentValue = isNotNullOrUndefined(inputValue) ? inputValue : value;
-    this.options = findOptionsByValue(config, currentValue, isNullOrUndefined(inputValue));
+    this.config = this.checkConfigWithSelectionList();
+    this.options = findOptionsByValue(this.config, currentValue, isNullOrUndefined(inputValue));
+  }
+
+  private checkConfigWithSelectionList(): SelectConstraintConfig {
+    const selectionList = this.config?.selectionListId && this.constraintData?.selectionLists?.find(list => list.id === this.config.selectionListId);
+    if (selectionList) {
+      return {
+        ...this.config,
+        displayValues: selectionList.displayValues,
+        options: selectionList.options,
+      }
+    }
+    return this.config;
   }
 
   public format(): string {

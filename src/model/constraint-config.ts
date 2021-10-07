@@ -113,6 +113,7 @@ export interface SelectConstraintOption {
 
 export interface SelectConstraintConfig {
   multi?: boolean;
+  selectionListId?: string;
   displayValues?: boolean;
   options: SelectConstraintOption[];
 }
