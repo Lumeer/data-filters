@@ -22,7 +22,32 @@ import {valueMeetFulltexts, escapeHtml, unescapeHtml, compareStrings} from '../u
 import {FilesConstraintConfig, ConditionType, ConditionValue} from '../model';
 
 export class FilesDataValue implements DataValue {
-  constructor(public readonly value: any, public readonly config: FilesConstraintConfig) {}
+
+  public readonly filesInMemory: File[] = [];
+  public readonly removedFiles: string[] = [];
+
+  constructor(public readonly value: any, public readonly config: FilesConstraintConfig) {
+  }
+
+  public addFileInMemory(file: File) {
+    this.filesInMemory.push(file);
+  }
+
+  public addFilesInMemory(files: File[]) {
+    files.forEach(file => this.addFileInMemory(file));
+  }
+
+  public removeFileInMemory(index: number) {
+    this.filesInMemory.splice(index, 1);
+  }
+
+  public removeFiles(fileIds: string[]) {
+    fileIds.forEach(fileId => this.removeFile(fileId));
+  }
+
+  public removeFile(fileId: string) {
+    this.removedFiles.push(fileId);
+  }
 
   public format(): string {
     return this.value || this.value === 0 ? String(this.value) : '';
@@ -62,7 +87,10 @@ export class FilesDataValue implements DataValue {
 
   public copy(newValue?: any): FilesDataValue {
     const value = newValue !== undefined ? newValue : this.value;
-    return new FilesDataValue(value, this.config);
+    const newDataValue = new FilesDataValue(value, this.config);
+    newDataValue.addFilesInMemory(this.filesInMemory);
+    newDataValue.removeFiles(this.removedFiles);
+    return newDataValue;
   }
 
   public parseInput(inputValue: string): FilesDataValue {
