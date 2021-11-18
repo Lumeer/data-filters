@@ -193,7 +193,24 @@ describe('DurationDataValue', () => {
     });
   });
 
+  describe('copy()', () => {
+    it('should be same', () => {
+      const dataValue = new DurationDataValue('1w3d400h5m2s', config, {durationUnitsMap});
+      expect(dataValue.copy().serialize()).toEqual(dataValue.serialize());
+    });
+  });
+
   describe('isValid()', () => {
+    it('should be valid', () => {
+      const dataValue = new DurationDataValue(undefined, config, {durationUnitsMap});
+      expect(dataValue.isValid()).toEqual(true);
+    });
+
+    it('should be valid', () => {
+      const dataValue = new DurationDataValue(0, config, {durationUnitsMap});
+      expect(dataValue.isValid()).toEqual(true);
+    });
+
     it('should be valid', () => {
       const dataValue = new DurationDataValue('1w3d400h5m2s', config, {durationUnitsMap});
       expect(dataValue.isValid()).toEqual(true);

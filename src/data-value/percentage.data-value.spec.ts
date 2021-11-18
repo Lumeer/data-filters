@@ -19,9 +19,25 @@
 
 import {ConditionType, PercentageConstraintConfig} from '../model';
 import {PercentageDataValue} from './percentage.data-value';
+import {DurationDataValue} from './duration.data-value';
 
 describe('PercentageDataValue', () => {
   const basicPercentage = {} as PercentageConstraintConfig;
+
+  describe('copy()', () => {
+    it('should be same after copy', () => {
+      const dataValue = new PercentageDataValue('10', basicPercentage);
+      expect(dataValue.copy().copy().serialize()).toEqual(dataValue.serialize());
+    });
+  });
+
+  describe('isValid()', () => {
+    const rangePercentage = {minValue: 1, maxValue: 10} as PercentageConstraintConfig;
+    it('range', () => {
+      const dataValue = new PercentageDataValue('0.01', rangePercentage);
+      expect(dataValue.isValid()).toEqual(true);
+    });
+  });
 
   describe('meet condition', () => {
 

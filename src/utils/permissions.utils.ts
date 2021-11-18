@@ -170,7 +170,7 @@ function isDocumentOwnerByPurpose(
   user: User,
   constraintData: ConstraintData
 ): boolean {
-    if (!document || !collection || !user) {
+    if (!document?.id || !collection?.id || !user) {
         return false;
     }
     if (collection.purpose?.type === CollectionPurposeType.Tasks) {

@@ -110,7 +110,7 @@ export class DurationDataValue implements NumericDataValue {
     if (isNotNullOrUndefined(this.inputValue)) {
       return this.copy(this.inputValue).isValid(ignoreConfig);
     }
-    return !!this.number;
+    return !!this.number || !this.value;
   }
 
   public increment(): DurationDataValue {

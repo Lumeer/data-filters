@@ -33,8 +33,8 @@ export class PercentageDataValue implements NumericDataValue {
     public readonly config: PercentageConstraintConfig,
     public readonly inputValue?: string
   ) {
-    const containerPercentageSign = String(value).trim().endsWith('%');
-    this.parsedValue = containerPercentageSign || isNotNullOrUndefined(inputValue) ? parseInputValue(value) : value;
+    const containsPercentageSign = String(value).trim().endsWith('%');
+    this.parsedValue = containsPercentageSign || isNotNullOrUndefined(inputValue) ? parseInputValue(value) : value;
     this.number = convertPercentageToBig(this.parsedValue);
     this.roundedNumber = roundBigNumber(this.number, config?.decimals);
   }
@@ -92,10 +92,10 @@ export class PercentageDataValue implements NumericDataValue {
     }
 
     const {minValue, maxValue} = this.config;
-    if ((minValue || minValue === 0) && this.compareTo(this.copy(minValue)) < 0) {
+    if ((minValue || minValue === 0) && this.compareTo(this.copy(minValue / 100)) < 0) {
       return false;
     }
-    return !((maxValue || maxValue === 0) && this.compareTo(this.copy(maxValue)) > 0);
+    return !((maxValue || maxValue === 0) && this.compareTo(this.copy(maxValue / 100)) > 0);
   }
 
   public increment(): PercentageDataValue {
