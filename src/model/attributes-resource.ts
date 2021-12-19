@@ -1,4 +1,5 @@
 import {Constraint} from '../constraint';
+import {AttributeLock} from './attribute-lock';
 
 export interface Resource {
     id?: string;
@@ -34,6 +35,7 @@ export interface Attribute {
     id?: string;
     name: string;
     constraint?: Constraint;
+    lock?: AttributeLock;
 }
 
 export type AttributesResource =

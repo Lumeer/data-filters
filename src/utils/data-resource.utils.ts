@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConstraintType, ActionConstraintConfig, Attribute, AttributesResource, AttributesResourceType, LinkType, DocumentModel, LinkInstance, AttributeFilter} from '../model';
+import {ConstraintType, Attribute, AttributesResource, AttributesResourceType, LinkType, DocumentModel, LinkInstance, AttributeFilter, AttributeLock} from '../model';
 import {objectsByIdMap, objectValues} from './common.utils';
 
 export function groupDocumentsByCollection(documents: DocumentModel[]): Record<string, DocumentModel[]> {
@@ -75,10 +75,8 @@ export function filterAttributesByFilters(attributes: Attribute[], filters: Attr
                 attrs.push(attribute);
             }
             if (attribute?.constraint?.type === ConstraintType.Action) {
-                const config = <ActionConstraintConfig>attribute.constraint.config;
-                const configFilters = config?.equation?.equations?.map(eq => eq.filter) || [];
                 attrs.push(
-                    ...configFilters
+                    ...collectAttributeLockFilters(attribute.lock)
                         .filter(configFilter => !!attributesMap[configFilter.attributeId])
                         .map(configFilter => attributesMap[configFilter.attributeId])
                 );
@@ -86,6 +84,13 @@ export function filterAttributesByFilters(attributes: Attribute[], filters: Attr
             return attrs;
         }, [])
     );
+}
+
+export function collectAttributeLockFilters(lock: AttributeLock): AttributeFilter[] {
+    return (lock?.exceptionGroups || []).reduce((filters, group) => {
+        filters.push(...(group.equation?.equations?.map(eq => eq.filter) || []));
+        return filters;
+    }, []);
 }
 
 export function uniqueAttributes(attributes: Attribute[]): Attribute[] {

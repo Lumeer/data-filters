@@ -29,7 +29,6 @@ import {
 } from '../utils';
 import {ActionDataValue} from '../data-value';
 import {ConditionType, ActionConstraintConfig, ConstraintType} from '../model';
-import {ConstraintData} from './constraint-data';
 
 export class ActionConstraint implements Constraint {
   public readonly type = ConstraintType.Action;

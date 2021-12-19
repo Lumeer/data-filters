@@ -18,7 +18,7 @@
  */
 
 import Big from 'big.js';
-import {LanguageTag, AddressField, AttributeFilterEquation} from './index';
+import {LanguageTag, AddressField} from './index';
 
 export interface AddressConstraintConfig {
   fields: AddressField[];
@@ -145,7 +145,7 @@ export interface TextConstraintConfig {
 export interface UserConstraintConfig {
   multi?: boolean;
   onlyIcon?: boolean;
-  externalUsers: boolean;
+  externalUsers?: boolean;
   type?: UserConstraintType;
 }
 
@@ -166,17 +166,10 @@ export interface LinkConstraintConfig {
 export interface ActionConstraintConfig {
   requiresConfirmation?: boolean;
   confirmationTitle?: string;
-  equation: AttributeFilterEquation;
   rule: string;
   background: string;
   title: string;
   icon: string;
-  role: ActionRole;
-}
-
-export enum ActionRole {
-  Read = 'READ',
-  Write = 'WRITE',
 }
 
 export type ConstraintConfig =

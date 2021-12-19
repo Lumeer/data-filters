@@ -17,11 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ActionConstraintConfig, AllowedPermissions, Attribute, AttributeFilter, AttributesResource, AttributesResourceType, Collection, ConditionType, ConstraintType, DataResource, DocumentModel, EquationOperator, LanguageTag, LinkInstance, LinkType, Query, QueryStem, Resource} from '../model';
-import {escapeHtml, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, hasRoleByPermissions, isNullOrUndefined, mergeDocuments, mergeLinkInstances, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, removeAccentFromString} from '../utils';
+import {AllowedPermissions, Attribute, AttributeFilter, AttributesResource, AttributesResourceType, Collection, ConditionType, ConstraintType, DataResource, DocumentModel, EquationOperator, LanguageTag, LinkInstance, LinkType, Query, QueryStem, Resource, UserConstraintConditionValue, UserConstraintType} from '../model';
+import {escapeHtml, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, isNullOrUndefined, mergeDocuments, mergeLinkInstances, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, removeAccentFromString} from '../utils';
 import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes, UnknownConstraint} from '../constraint';
-import {DataValue} from '../data-value';
+import {DataValue, UserDataValue} from '../data-value';
 import * as momentTimeZone from 'moment-timezone';
+import {AttributeLock, AttributeLockExceptionGroup, AttributeLockGroupType} from '../model/attribute-lock';
 
 interface FilteredDataResources {
   allDocuments: DocumentModel[];
@@ -40,10 +41,10 @@ interface FilterPipeline {
   documentIds: Set<string>;
 }
 
-export function filterDocumentsAndLinksIdsFromJson(json: string): {documentsIds: string[], linkInstancesIds: string[]} {
+export function filterDocumentsAndLinksIdsFromJson(json: string): { documentsIds: string[], linkInstancesIds: string[] } {
   const jsObject = JSON.parse(json);
-  const documents = jsObject.documents as  DocumentModel[];
-  const linkInstances  = jsObject.linkInstances as LinkInstance[];
+  const documents = jsObject.documents as DocumentModel[];
+  const linkInstances = jsObject.linkInstances as LinkInstance[];
   const collections = jsObject.collections as Collection[];
   const linkTypes = jsObject.linkTypes as LinkType[];
   const query = jsObject.query as Query;
@@ -64,16 +65,16 @@ export function filterDocumentsAndLinksIdsFromJson(json: string): {documentsIds:
 }
 
 export function filterDocumentsAndLinksByQuery(
-    documents: DocumentModel[],
-    collections: Collection[],
-    linkTypes: LinkType[],
-    linkInstances: LinkInstance[],
-    query: Query,
-    collectionsPermissions: Record<string, AllowedPermissions>,
-    linkTypePermissions: Record<string, AllowedPermissions>,
-    constraintData: ConstraintData,
-    includeChildren?: boolean
-): {documents: DocumentModel[]; linkInstances: LinkInstance[]} {
+  documents: DocumentModel[],
+  collections: Collection[],
+  linkTypes: LinkType[],
+  linkInstances: LinkInstance[],
+  query: Query,
+  collectionsPermissions: Record<string, AllowedPermissions>,
+  linkTypePermissions: Record<string, AllowedPermissions>,
+  constraintData: ConstraintData,
+  includeChildren?: boolean
+): { documents: DocumentModel[]; linkInstances: LinkInstance[] } {
   const {uniqueDocuments, uniqueLinkInstances} = filterDocumentsAndLinksDataByQuery(documents, collections, linkTypes, linkInstances, query, collectionsPermissions, linkTypePermissions, constraintData, includeChildren);
   return {documents: uniqueDocuments, linkInstances: uniqueLinkInstances};
 }
@@ -91,15 +92,15 @@ export interface DocumentsAndLinksStemData {
 }
 
 export function filterDocumentsAndLinksDataByQuery(
-    documents: DocumentModel[],
-    collections: Collection[],
-    linkTypes: LinkType[],
-    linkInstances: LinkInstance[],
-    query: Query,
-    collectionsPermissions: Record<string, AllowedPermissions>,
-    linkTypePermissions: Record<string, AllowedPermissions>,
-    constraintData: ConstraintData,
-    includeChildren?: boolean
+  documents: DocumentModel[],
+  collections: Collection[],
+  linkTypes: LinkType[],
+  linkInstances: LinkInstance[],
+  query: Query,
+  collectionsPermissions: Record<string, AllowedPermissions>,
+  linkTypePermissions: Record<string, AllowedPermissions>,
+  constraintData: ConstraintData,
+  includeChildren?: boolean
 ): DocumentsAndLinksData {
   if (!query || queryIsEmptyExceptPagination(query)) {
     return {uniqueDocuments: paginate(documents, query), uniqueLinkInstances: linkInstances};
@@ -109,9 +110,9 @@ export function filterDocumentsAndLinksDataByQuery(
   let uniqueLinkInstances: LinkInstance[] = [];
 
   const stems: QueryStem[] =
-      (query.stems || []).length > 0
-          ? [...query.stems]
-          : (collections || []).map(collection => ({collectionId: collection.id}));
+    (query.stems || []).length > 0
+      ? [...query.stems]
+      : (collections || []).map(collection => ({collectionId: collection.id}));
   const documentsByCollections = groupDocumentsByCollection(documents);
   const linkInstancesByLinkTypes = groupLinkInstancesByLinkTypes(linkInstances);
 
@@ -124,16 +125,16 @@ export function filterDocumentsAndLinksDataByQuery(
   const escapedFulltexts = query.fulltexts?.map(fullText => removeAccentFromString(escapeHtml(fullText)));
   stems.forEach(stem => {
     const {allDocuments, allLinkInstances} = filterDocumentsAndLinksByStem(
-        collections,
-        documentsByCollections,
-        linkTypes,
-        linkInstancesByLinkTypes,
-        collectionsPermissions,
-        linkTypePermissions,
-        constraintData,
-        stem,
-        escapedFulltexts,
-        includeChildren
+      collections,
+      documentsByCollections,
+      linkTypes,
+      linkInstancesByLinkTypes,
+      collectionsPermissions,
+      linkTypePermissions,
+      constraintData,
+      stem,
+      escapedFulltexts,
+      includeChildren
     );
 
     dataByStems.push({stem, documents: allDocuments, linkInstances: allLinkInstances});
@@ -196,7 +197,7 @@ export function filterDocumentsAndLinksByStem(
   for (const dataResource of currentPipeline.dataResources) {
     const dataValues = createDataValuesMap(dataResource.data, currentPipeline.attributes, constraintData);
     if (
-      dataValuesMeetsFilters(dataResource, dataValues, currentPipeline.resource, currentPipeline.filters, attributesMap, currentPipeline.permissions, constraintData)
+      dataValuesMeetsFilters(dataResource, dataValues, currentPipeline.resource, currentPipeline.filters, attributesMap, constraintData)
     ) {
       const searchDocuments = includeChildren
         ? getDocumentsWithChildren(dataResource as DocumentModel, documentsMap)
@@ -212,12 +213,12 @@ export function filterDocumentsAndLinksByStem(
             constraintData,
             1,
             !currentPipeline.fulltexts.length ||
-              dataMeetsFulltexts(
-                dataResource.data,
-                currentPipeline.fulltexts,
-                currentPipeline.resource?.attributes,
-                constraintData
-              )
+            dataMeetsFulltexts(
+              dataResource.data,
+              currentPipeline.fulltexts,
+              currentPipeline.resource?.attributes,
+              constraintData
+            )
           ) || parentDocumentContainsByDocumentIds || pipelineContainsDocumentByIds(currentPipeline, document))
         ) {
           pushedIds.add(document.id);
@@ -264,7 +265,6 @@ function checkAndFillDataResources(
           currentPipeline.resource,
           currentPipeline.attributes,
           currentPipeline.filters,
-          currentPipeline.permissions,
           constraintData
         )
     );
@@ -282,12 +282,12 @@ function checkAndFillDataResources(
           constraintData,
           pipelineIndex + 1,
           fulltextFound ||
-            dataMeetsFulltexts(
-              linkedLink.data,
-              currentPipeline.fulltexts,
-              currentPipeline.resource?.attributes,
-              constraintData
-            )
+          dataMeetsFulltexts(
+            linkedLink.data,
+            currentPipeline.fulltexts,
+            currentPipeline.resource?.attributes,
+            constraintData
+          )
         ) || pipelineContainsLinkByIds(currentPipeline, linkedLink)
       ) {
         someLinkPassed = true;
@@ -308,7 +308,6 @@ function checkAndFillDataResources(
           currentPipeline.resource,
           currentPipeline.attributes,
           currentPipeline.filters,
-          currentPipeline.permissions,
           constraintData
         )
     );
@@ -326,12 +325,12 @@ function checkAndFillDataResources(
           constraintData,
           pipelineIndex + 1,
           fulltextFound ||
-            dataMeetsFulltexts(
-              linkedDocument.data,
-              currentPipeline.fulltexts,
-              currentPipeline.resource?.attributes,
-              constraintData
-            )
+          dataMeetsFulltexts(
+            linkedDocument.data,
+            currentPipeline.fulltexts,
+            currentPipeline.resource?.attributes,
+            constraintData
+          )
         ) || pipelineContainsDocumentByIds(currentPipeline, linkedDocument)
       ) {
         someDocumentPassed = true;
@@ -344,11 +343,11 @@ function checkAndFillDataResources(
 }
 
 function pipelineContainsDocumentByIds(pipeline: FilterPipeline, document: DocumentModel): boolean {
-    return pipeline.documentIds.size > 0 &&  pipeline.documentIds.has(document.id);
+  return pipeline.documentIds.size > 0 && pipeline.documentIds.has(document.id);
 }
 
 function pipelineContainsLinkByIds(pipeline: FilterPipeline, linkInstance: LinkInstance): boolean {
-    return pipeline.documentIds.size > 0 && (linkInstance.documentIds?.length === 2 && pipeline.documentIds.has(linkInstance.documentIds[0]) || pipeline.documentIds.has(linkInstance.documentIds[1]));
+  return pipeline.documentIds.size > 0 && (linkInstance.documentIds?.length === 2 && pipeline.documentIds.has(linkInstance.documentIds[0]) || pipeline.documentIds.has(linkInstance.documentIds[1]));
 }
 
 function containsAnyFilterInPipeline(pipeline: FilterPipeline[], fromIndex: number): boolean {
@@ -363,11 +362,11 @@ function getDocumentsWithChildren(document: DocumentModel, documentsMap: Record<
   while (documentsQueue.length) {
     const currentDocument = documentsQueue.splice(0, 1)[0];
     if (currentDocument && !currentDocumentsIds.has(currentDocument.id)) {
-        documentsWithChildren.push(currentDocument);
-        currentDocumentsIds.add(currentDocument.id);
+      documentsWithChildren.push(currentDocument);
+      currentDocumentsIds.add(currentDocument.id);
 
-        const childDocuments = documentsMap?.[currentDocument.id] || [];
-        documentsQueue.push(...childDocuments);
+      const childDocuments = documentsMap?.[currentDocument.id] || [];
+      documentsQueue.push(...childDocuments);
     }
   }
 
@@ -406,12 +405,11 @@ export function createDataValuesMap(
 }
 
 function dataValuesMeetsFiltersWithOperator(
-    dataResource: DataResource,
+  dataResource: DataResource,
   dataValues: Record<string, DataValue>,
   resource: AttributesResource,
   attributesMap: Record<string, Attribute>,
   filters: AttributeFilter[],
-  permissions: AllowedPermissions,
   constraintData: ConstraintData,
   operator: EquationOperator = EquationOperator.And
 ): boolean {
@@ -422,44 +420,41 @@ function dataValuesMeetsFiltersWithOperator(
       definedFilters.length === 0 ||
       definedFilters.reduce(
         (result, filter) =>
-          result || dataValuesMeetsFilters(dataResource, dataValues, resource, [filter], attributesMap, permissions, constraintData),
+          result || dataValuesMeetsFilters(dataResource, dataValues, resource, [filter], attributesMap, constraintData),
         false
       )
     );
   }
-  return dataValuesMeetsFilters(dataResource, dataValues, resource, definedFilters, attributesMap, permissions, constraintData);
+  return dataValuesMeetsFilters(dataResource, dataValues, resource, definedFilters, attributesMap, constraintData);
 }
 
 function dataMeetsFilters(
-    dataResource: DataResource,
+  dataResource: DataResource,
   data: Record<string, any>,
   resource: AttributesResource,
   attributes: Attribute[],
   filters: AttributeFilter[],
-  permissions: AllowedPermissions,
   constraintData: ConstraintData,
   operator: EquationOperator = EquationOperator.And
 ): boolean {
   const dataValues = createDataValuesMap(data, attributes, constraintData);
   return dataValuesMeetsFiltersWithOperator(
-      dataResource,
+    dataResource,
     dataValues,
     resource,
     objectsByIdMap(attributes),
     filters,
-    permissions,
     constraintData,
     operator
   );
 }
 
 function dataValuesMeetsFilters(
-    dataResource: DataResource,
+  dataResource: DataResource,
   dataValues: Record<string, DataValue>,
   resource: AttributesResource,
   filters: AttributeFilter[],
   attributesMap: Record<string, Attribute>,
-  permissions: AllowedPermissions,
   constraintData?: ConstraintData
 ): boolean {
   if (!filters || filters.length === 0) {
@@ -470,15 +465,14 @@ function dataValuesMeetsFilters(
       return false;
     }
 
-    const constraint = attributesMap[filter.attributeId]?.constraint;
-    const constraintType = constraint?.type || ConstraintType.Unknown;
+    const attribute = attributesMap[filter.attributeId];
+    const constraintType = attribute?.constraint?.type || ConstraintType.Unknown;
     switch (constraintType) {
       case ConstraintType.Action:
-        const config = <ActionConstraintConfig>constraint.config;
         if (filter.condition === ConditionType.Enabled) {
-          return isActionButtonEnabled(dataResource, dataValues, resource, attributesMap, permissions, config, constraintData);
+          return isActionButtonEnabled(dataResource, dataValues, resource, attributesMap, attribute.lock, constraintData);
         } else if (filter.condition === ConditionType.Disabled) {
-          return !isActionButtonEnabled(dataResource, dataValues, resource, attributesMap, permissions, config, constraintData);
+          return !isActionButtonEnabled(dataResource, dataValues, resource, attributesMap, attribute.lock, constraintData);
         }
         return false;
       default:
@@ -487,53 +481,82 @@ function dataValuesMeetsFilters(
   });
 }
 
-export interface ActionButtonFiltersStats {
+export interface AttributeLockFiltersStats {
   satisfy?: boolean;
-  filtersStats?: ActionButtonFilterStats[];
-  hasPermissions?: boolean;
+  filtersStats?: AttributeLockFilterStats[];
 }
 
-export interface ActionButtonFilterStats {
+export interface AttributeLockFilterStats {
   satisfy?: boolean;
   filter?: AttributeFilter;
 }
 
-export function actionButtonEnabledStats(
-    dataResource: DataResource,
-    dataValues: Record<string, DataValue>,
-    resource: AttributesResource,
-    attributesMap: Record<string, Attribute>,
-    permissions: AllowedPermissions,
-    config: ActionConstraintConfig,
-    constraintData?: ConstraintData
-): ActionButtonFiltersStats {
+export function computeAttributeLockStats(
+  dataResource: DataResource,
+  resource: AttributesResource,
+  lock: AttributeLock,
+  constraintData?: ConstraintData
+): AttributeLockFiltersStats {
+  if (!dataResource || !resource) {
+    return {};
+  }
+
+  const dataValues = createDataValuesMap(dataResource?.data, resource?.attributes, constraintData);
+  const attributesMap = objectsByIdMap(resource?.attributes);
+
+  return computeAttributeLockStatsInternal(dataResource, dataValues, resource, attributesMap, lock, constraintData);
+}
+
+function computeAttributeLockStatsInternal(
+  dataResource: DataResource,
+  dataValues: Record<string, DataValue>,
+  resource: AttributesResource,
+  attributesMap: Record<string, Attribute>,
+  lock: AttributeLock,
+  constraintData?: ConstraintData
+): AttributeLockFiltersStats {
   if (!dataValues || !attributesMap) {
     return {};
   }
-  const filters = config.equation?.equations?.map(eq => eq.filter) || [];
-  const stats = dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, resource, attributesMap,filters, permissions, constraintData);
-  const hasPermissions = hasRoleByPermissions(config.role, dataResource, resource, permissions, constraintData.currentUser, constraintData);
-  return {
-    ...stats,
-    satisfy: stats.satisfy && hasPermissions,
-    hasPermissions
-  }
+
+  return (lock?.exceptionGroups || []).reduce<AttributeLockFiltersStats>((stats, group) => {
+
+    if (group.type == AttributeLockGroupType.Everyone || (group.type === AttributeLockGroupType.UsersAndTeams && exceptionGroupContainsCurrentUser(group, constraintData))) {
+      const filters = group.equation?.equations?.map(eq => eq.filter) || [];
+      const groupStats = dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, resource, attributesMap, filters, constraintData);
+      if (stats.filtersStats.length === 0) {
+        return groupStats;
+      }
+      return {
+        satisfy: stats.satisfy && groupStats.satisfy,
+        filtersStats: [...stats.filtersStats, ...groupStats.filtersStats]
+      };
+    }
+
+    return stats;
+  }, {satisfy: false, filtersStats: []});
+}
+
+
+function exceptionGroupContainsCurrentUser(group: AttributeLockExceptionGroup, constraintData: ConstraintData): boolean {
+  const userDataValue = new UserDataValue(group.typeValue, {multi: true, type: UserConstraintType.UsersAndTeams}, constraintData);
+  return userDataValue.meetCondition(ConditionType.HasSome, [{type: UserConstraintConditionValue.CurrentUser}]) ||
+    userDataValue.meetCondition(ConditionType.HasSome, [{type: UserConstraintConditionValue.CurrentTeams}]);
 }
 
 function dataValuesMeetsFiltersWithOperatorStats(
-    dataResource: DataResource,
-    dataValues: Record<string, DataValue>,
-    resource: AttributesResource,
-    attributesMap: Record<string, Attribute>,
-    filters: AttributeFilter[],
-    permissions: AllowedPermissions,
-    constraintData: ConstraintData,
-    operator: EquationOperator = EquationOperator.And
-): ActionButtonFiltersStats {
+  dataResource: DataResource,
+  dataValues: Record<string, DataValue>,
+  resource: AttributesResource,
+  attributesMap: Record<string, Attribute>,
+  filters: AttributeFilter[],
+  constraintData: ConstraintData,
+  operator: EquationOperator = EquationOperator.And
+): AttributeLockFiltersStats {
   const definedFilters = filters?.filter(fil => !!attributesMap[fil.attributeId]) || [];
 
-  const filtersStats: ActionButtonFilterStats[] = definedFilters.map(filter => {
-    const meetsFilters = dataValuesMeetsFilters(dataResource, dataValues,resource,  [filter], attributesMap, permissions, constraintData);
+  const filtersStats: AttributeLockFilterStats[] = definedFilters.map(filter => {
+    const meetsFilters = dataValuesMeetsFilters(dataResource, dataValues, resource, [filter], attributesMap, constraintData);
     return {filter, satisfy: meetsFilters};
   });
 
@@ -548,30 +571,14 @@ function dataValuesMeetsFiltersWithOperatorStats(
 }
 
 export function isActionButtonEnabled(
-    dataResource: DataResource,
+  dataResource: DataResource,
   dataValues: Record<string, DataValue>,
   resource: AttributesResource,
   attributesMap: Record<string, Attribute>,
-  permissions: AllowedPermissions,
-  config: ActionConstraintConfig,
+  lock: AttributeLock,
   constraintData?: ConstraintData
 ): boolean {
-  if (!dataValues || !attributesMap) {
-    return false;
-  }
-  const filters = config.equation?.equations?.map(eq => eq.filter) || [];
-  return (
-    dataValuesMeetsFiltersWithOperator(
-        dataResource,
-      dataValues,
-      resource,
-      attributesMap,
-      filters,
-      permissions,
-      constraintData,
-      config.equation?.operator
-    ) && hasRoleByPermissions(config.role, dataResource, resource, permissions, constraintData?.currentUser, constraintData)
-  );
+  return computeAttributeLockStatsInternal(dataResource, dataValues, resource, attributesMap, lock, constraintData).satisfy;
 }
 
 function dataMeetsFulltexts(
@@ -597,14 +604,14 @@ function paginate(documents: DocumentModel[], query: Query) {
 }
 
 function documentChildrenMap(documents: DocumentModel[]): Record<string, DocumentModel[]> {
-    return (documents || []).reduce((map, document) => {
-        if (document.metaData?.parentId) {
-            if(!map[document.metaData.parentId]) {
-                map[document.metaData.parentId] = [];
-            }
-            map[document.metaData.parentId].push(document);
-        }
+  return (documents || []).reduce((map, document) => {
+    if (document.metaData?.parentId) {
+      if (!map[document.metaData.parentId]) {
+        map[document.metaData.parentId] = [];
+      }
+      map[document.metaData.parentId].push(document);
+    }
 
-        return map;
-    }, {});
+    return map;
+  }, {});
 }

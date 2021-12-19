@@ -17,20 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './address';
-export * from './attribute-filter';
-export * from './attribute-lock';
-export * from './attributes-resource';
-export * from './constraint-condition';
-export * from './constraint-config';
-export * from './constraint-type';
-export * from './coordinates';
-export * from './data-resource';
-export * from './language-tag';
-export * from './permissions';
-export * from './query';
-export * from './role';
-export * from './user';
-export * from './team';
-export * from './view';
-export * from './selection-list';
+import {AttributeFilterEquation} from './attribute-filter';
+
+export interface AttributeLock {
+  locked?: boolean;
+  exceptionGroups: AttributeLockExceptionGroup[];
+}
+
+export interface AttributeLockExceptionGroup {
+  type?: AttributeLockGroupType;
+  typeValue?: string[];
+  equation?: AttributeFilterEquation;
+}
+
+export enum AttributeLockGroupType {
+  Everyone = 'everyone',
+  UsersAndTeams = 'usersAndTeams',
+}

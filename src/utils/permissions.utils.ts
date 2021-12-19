@@ -17,22 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {AllowedPermissions, ActionRole, DataResource, AttributesResource, User, DocumentModel, Collection, AttributesResourceType, LinkType, LinkInstance, CollectionPurposeType, ConstraintType} from '../model';
+import {AllowedPermissions, DataResource, AttributesResource, User, DocumentModel, Collection, AttributesResourceType, LinkType, LinkInstance, CollectionPurposeType, ConstraintType} from '../model';
 import {getAttributesResourceType} from './data-resource.utils';
 import {isArray} from './array.utils';
 import {isNotNullOrUndefined} from './common.utils';
 import {ConstraintData, UserConstraint} from '../constraint';
-
-export function hasRoleByPermissions(role: ActionRole, dataResource: DataResource, resource: AttributesResource, permissions: AllowedPermissions, user: User, constraintData: ConstraintData): boolean {
-    switch (role) {
-        case ActionRole.Read:
-            return userCanReadDataResource(dataResource, resource, permissions, user, constraintData);
-        case ActionRole.Write:
-            return userCanEditDataResource(dataResource, resource, permissions, user, constraintData);
-        default:
-            return false;
-    }
-}
 
 export function userCanReadDataResource(
   dataResource: DataResource,
