@@ -17,12 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {AllowedPermissions, Attribute, AttributeFilter, AttributesResource, AttributesResourceType, Collection, ConditionType, ConstraintType, DataResource, DocumentModel, EquationOperator, LanguageTag, LinkInstance, LinkType, Query, QueryStem, Resource, UserConstraintConditionValue, UserConstraintType} from '../model';
+import {AllowedPermissions, Attribute, AttributeFilter, AttributesResource, AttributesResourceType, Collection, ConditionType, ConstraintType, DataResource, DocumentModel, EquationOperator, LanguageTag, LinkInstance, LinkType, Query, QueryStem, Resource, UserConstraintConditionValue, UserConstraintType, AttributeLock, AttributeLockExceptionGroup, AttributeLockGroupType} from '../model';
 import {escapeHtml, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, isNullOrUndefined, mergeDocuments, mergeLinkInstances, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, removeAccentFromString} from '../utils';
 import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes, UnknownConstraint} from '../constraint';
 import {DataValue, UserDataValue} from '../data-value';
 import * as momentTimeZone from 'moment-timezone';
-import {AttributeLock, AttributeLockExceptionGroup, AttributeLockGroupType} from '../model/attribute-lock';
 
 interface FilteredDataResources {
   allDocuments: DocumentModel[];
@@ -523,12 +522,13 @@ function computeAttributeLockStatsInternal(
 
     if (group.type == AttributeLockGroupType.Everyone || (group.type === AttributeLockGroupType.UsersAndTeams && exceptionGroupContainsCurrentUser(group, constraintData))) {
       const filters = group.equation?.equations?.map(eq => eq.filter) || [];
-      const groupStats = dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, resource, attributesMap, filters, constraintData);
+      const operator = group.equation?.equations?.[0]?.operator || EquationOperator.And;
+      const groupStats = dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, resource, attributesMap, filters, constraintData, operator);
       if (stats.filtersStats.length === 0) {
         return groupStats;
       }
       return {
-        satisfy: stats.satisfy && groupStats.satisfy,
+        satisfy: stats.satisfy || groupStats.satisfy,
         filtersStats: [...stats.filtersStats, ...groupStats.filtersStats]
       };
     }
