@@ -91,7 +91,7 @@ export class LinkDataValue implements DataValue {
   }
 
   public isValid(ignoreConfig?: boolean): boolean {
-    return !!this.linkValue;
+    return !this.value || !!this.linkValue;
   }
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {

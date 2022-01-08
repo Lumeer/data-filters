@@ -96,4 +96,11 @@ describe('LinkDataValue', () => {
       expect(new LinkDataValue('http://www.google.sk', config).meetFullTexts(['google'])).toBeTruthy();
     });
   });
+
+  describe('is valid', () => {
+    it('simple', () => {
+      expect(new LinkDataValue('', config).isValid()).toBeTruthy();
+      expect(new LinkDataValue(undefined, config).isValid()).toBeTruthy();
+    });
+  });
 });
