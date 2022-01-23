@@ -70,7 +70,10 @@ export class SelectDataValue implements DataValue {
   }
 
   public editValue(): string {
-    return unescapeHtml(this.format());
+    if (this.config?.multi) {
+      return this.serialize().join(',');
+    }
+    return this.serialize();
   }
 
   public serialize(): any {
