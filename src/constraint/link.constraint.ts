@@ -29,7 +29,6 @@ import {
   uniqueValuesCount,
 } from '../utils';
 import {ConditionType, LinkConstraintConfig, ConstraintType} from '../model';
-import {ConstraintData} from './constraint-data';
 
 export class LinkConstraint implements Constraint {
   public readonly type = ConstraintType.Link;
@@ -46,7 +45,7 @@ export class LinkConstraint implements Constraint {
   }
 
   public conditions(): ConditionType[] {
-    return [ConditionType.Equals, ConditionType.NotEquals, ConditionType.IsEmpty, ConditionType.NotEmpty];
+    return [ConditionType.Contains, ConditionType.NotContains, ConditionType.IsEmpty, ConditionType.NotEmpty];
   }
 
   public avg(values: any[], onlyNumeric?: boolean): any {

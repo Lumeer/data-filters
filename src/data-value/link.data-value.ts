@@ -96,8 +96,8 @@ export class LinkDataValue implements DataValue {
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = (values || []).map(value => new LinkDataValue(value.value, this.config));
-    const formattedValue = this.format().toLowerCase().trim();
-    const otherFormattedValues = dataValues.map(dataValue => dataValue.format().toLowerCase().trim());
+    const formattedValue = this.serialize().toLowerCase().trim();
+    const otherFormattedValues = dataValues.map(dataValue => dataValue.serialize().toLowerCase().trim());
     return dataValuesMeetConditionByText(condition, formattedValue, otherFormattedValues);
   }
 
