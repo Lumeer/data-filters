@@ -38,32 +38,36 @@ describe('LinkDataValue', () => {
   });
 
   describe('meet condition', () => {
-    it('equals', () => {
-      expect(new LinkDataValue('https://www.google.sk', config).meetCondition(ConditionType.Equals, [{value: 'https://www.google.sk    [https://www.google.sk]'}])).toBeTruthy();
+    it('contains', () => {
+      expect(new LinkDataValue('https://www.google.sk', config).meetCondition(ConditionType.Contains, [{value: 'https://www.google.sk    '}])).toBeTruthy();
 
-      expect(new LinkDataValue('https://www.google.sk  ', config).meetCondition(ConditionType.Equals, [{value: '  https://www.google.sk'}])).toBeTruthy();
+      expect(new LinkDataValue('https://www.google.sk  ', config).meetCondition(ConditionType.Contains, [{value: '  https://www.google.sk'}])).toBeTruthy();
 
-      expect(new LinkDataValue('https://www.google.sk [google]', config).meetCondition(ConditionType.Equals, [{value: 'https://www.google.sk'}])).toBeFalsy();
+      expect(new LinkDataValue('https://www.google.sk [google]', config).meetCondition(ConditionType.Contains, [{value: 'google'}])).toBeTruthy();
 
-      expect(new LinkDataValue('https://www.google.sk []', config).meetCondition(ConditionType.Equals, [{value: ''}])).toBeFalsy();
+      expect(new LinkDataValue('https://www.google.sk []', config).meetCondition(ConditionType.Contains, [{value: '[]'}])).toBeFalsy();
 
-      expect(new LinkDataValue('', config).meetCondition(ConditionType.Equals, [{value: ''}])).toBeTruthy();
+      expect(new LinkDataValue('', config).meetCondition(ConditionType.Contains, [{value: ''}])).toBeTruthy();
 
-      expect(new LinkDataValue(null, config).meetCondition(ConditionType.Equals, [{value: ''}])).toBeTruthy();
+      expect(new LinkDataValue(null, config).meetCondition(ConditionType.Contains, [{value: ''}])).toBeTruthy();
 
-      expect(new LinkDataValue('', config).meetCondition(ConditionType.Equals, [{value: undefined}])).toBeTruthy();
+      expect(new LinkDataValue('', config).meetCondition(ConditionType.Contains, [{value: undefined}])).toBeTruthy();
 
-      expect(new LinkDataValue('xzy', config).meetCondition(ConditionType.Equals, [{value: '  xzy  '}])).toBeTruthy();
+      expect(new LinkDataValue('xzy', config).meetCondition(ConditionType.Contains, [{value: '  xzy  '}])).toBeTruthy();
 
-      expect(new LinkDataValue('[google]', config).meetCondition(ConditionType.Equals, [{value: 'google'}])).toBeTruthy();
+      expect(new LinkDataValue('[google]', config).meetCondition(ConditionType.Contains, [{value: 'google'}])).toBeTruthy();
     });
 
-    it('not equals', () => {
-      expect(new LinkDataValue('https://www.google.sk [google]', config).meetCondition(ConditionType.NotEquals, [{value: 'https://www.google.sk'}])).toBeTruthy();
+    it('not contains', () => {
+      expect(new LinkDataValue('https://www.google.sk [google]', config).meetCondition(ConditionType.NotContains, [{value: 'https://www.google.sk'}])).toBeFalsy();
 
-      expect(new LinkDataValue('https://www.google.sk [google]', config).meetCondition(ConditionType.NotEquals, [{value: 'google'}])).toBeTruthy();
+      expect(new LinkDataValue('https://www.google.sk [google]', config).meetCondition(ConditionType.NotContains, [{value: 'google'}])).toBeFalsy();
 
-      expect(new LinkDataValue('[google]', config).meetCondition(ConditionType.NotEquals, [{value: 'google'}])).toBeFalsy();
+      expect(new LinkDataValue('https://www.google.sk [google]', config).meetCondition(ConditionType.NotContains, [{value: '[]'}])).toBeTruthy();
+
+      expect(new LinkDataValue('https://www.google.sk [google]', config).meetCondition(ConditionType.NotContains, [{value: 'abc'}])).toBeTruthy();
+
+      expect(new LinkDataValue('[google]', config).meetCondition(ConditionType.NotContains, [{value: 'google'}])).toBeFalsy();
 
     });
     it('is empty', () => {

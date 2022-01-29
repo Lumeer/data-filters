@@ -89,12 +89,27 @@ describe('UserDataValue', () => {
           {type: UserConstraintConditionValue.CurrentUser},
         ])
       ).toBeTruthy();
+      expect(
+        new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasSome, [
+          {type: UserConstraintConditionValue.CurrentTeams},
+        ])
+      ).toBeTruthy();
     });
 
     it('has some users and teams', () => {
       expect(
         new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasSome, [
           {value: userDataValueCreateTeamValue('1')},
+        ])
+      ).toBeTruthy();
+      expect(
+        new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasSome, [
+          {value: userDataValueCreateTeamValue('2')},
+        ])
+      ).toBeTruthy();
+      expect(
+        new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasSome, [
+          {value: userDataValueCreateTeamValue('3')},
         ])
       ).toBeFalsy();
       expect(
@@ -136,9 +151,14 @@ describe('UserDataValue', () => {
     it('has none of users and teams', () => {
       expect(
         new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [
-          {value: userDataValueCreateTeamValue('1')},
+          {value: userDataValueCreateTeamValue('3')},
         ])
       ).toBeTruthy();
+      expect(
+        new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [
+          {value: userDataValueCreateTeamValue('1')},
+        ])
+      ).toBeFalsy();
       expect(
         new UserDataValue(['one@lmr.com', userDataValueCreateTeamValue('1'), 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [
           {value: userDataValueCreateTeamValue('1')},
@@ -146,19 +166,19 @@ describe('UserDataValue', () => {
       ).toBeFalsy();
       expect(
         new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [
-          {value: [userDataValueCreateTeamValue('1'), 'three@lmr.com']},
+          {value: [userDataValueCreateTeamValue('3'), 'three@lmr.com']},
         ])
       ).toBeTruthy();
       expect(
         new UserDataValue(['one@lmr.com', 'two@lmr.com'], config, constraintData).meetCondition(ConditionType.HasNoneOf, [
           {type: UserConstraintConditionValue.CurrentTeams},
         ])
-      ).toBeTruthy();
+      ).toBeFalsy();
       expect(
-        new UserDataValue(['one@lmr.com', userDataValueCreateTeamValue('1')], config, constraintData).meetCondition(ConditionType.HasNoneOf, [
+        new UserDataValue([userDataValueCreateTeamValue('3')], config, constraintData).meetCondition(ConditionType.HasNoneOf, [
           {type: UserConstraintConditionValue.CurrentTeams},
         ])
-      ).toBeFalsy();
+      ).toBeTruthy();
     });
 
     it('in users and teams', () => {

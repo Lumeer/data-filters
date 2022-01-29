@@ -29,6 +29,8 @@ export class UserDataValue implements DataValue {
   public readonly teamsIds: string[];
   public readonly teamsUsersIds: string[];
   public readonly allUsersIds: string[];
+  public readonly usersTeamsIds: string[];
+  public readonly allTeamsIds: string[];
 
   constructor(
     public readonly value: any,
@@ -44,6 +46,13 @@ export class UserDataValue implements DataValue {
     this.teamsIds = teams.map(team => team.id);
     this.teamsUsersIds = uniqueValues(teams.reduce((ids, team) => [...ids, ...(team.users || [])], []));
     this.allUsersIds = uniqueValues([...this.usersIds, ...this.teamsUsersIds]);
+    this.usersTeamsIds = uniqueValues(users.reduce((ids, user) => [...ids, ...this.userTeamsIds(user)], []));
+    this.allTeamsIds = uniqueValues([...this.teamsIds, ...this.usersTeamsIds]);
+  }
+
+  private userTeamsIds(user: User): string[] {
+    return (this.constraintData?.teams || []).filter(team => team.users?.includes(user.id))
+      .map(team => team.id);
   }
 
   private createUsersAndTeams(value: any, showInvalid: boolean): { users: User[], teams: Team[] } {
@@ -147,34 +156,31 @@ export class UserDataValue implements DataValue {
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = values?.map(value => this.mapQueryConditionValue(value));
-    const otherUsers = (dataValues.length > 0 && dataValues[0].users) || [];
-    const otherTeams = (dataValues.length > 0 && dataValues[0].teams) || [];
+    const dataValue = dataValues?.[0];
+    const allOtherUsersIds = dataValue?.allUsersIds || [];
+    const allOtherTeamsIds = dataValue?.allUsersIds || [];
+    const otherUsersIds = dataValue?.usersIds || [];
+    const otherTeamsIds = dataValue?.teamsIds || [];
 
     switch (condition) {
       case ConditionType.HasSome:
       case ConditionType.Equals:
-        return otherTeams.some(otherTeam => this.teamsIds.includes(otherTeam.id)) ||
-          otherUsers.some(otherUser => this.allUsersIds.includes(otherUser.id));
+        return arrayIntersection(allOtherTeamsIds, this.allTeamsIds).length > 0 ||
+          arrayIntersection(allOtherUsersIds, this.allUsersIds).length > 0;
       case ConditionType.HasNoneOf:
       case ConditionType.NotEquals:
-        return otherTeams.every(otherTeam => !this.teamsIds.includes(otherTeam.id)) &&
-          otherUsers.every(otherUser => !this.allUsersIds.includes(otherUser.id));
+        return arrayIntersection(allOtherTeamsIds, this.allTeamsIds).length === 0 ||
+          arrayIntersection(allOtherUsersIds, this.allUsersIds).length === 0;
       case ConditionType.In:
         return (
           (this.usersIds.length > 0 || this.teamsIds.length > 0) &&
-          this.teamsIds.every(teamId => otherTeams.some(otherTeam => otherTeam.id === teamId)) &&
-          this.usersIds.every(userId => otherUsers.some(otherOption => otherOption.id === userId))
+          this.teamsIds.every(teamId => otherTeamsIds.some(otherId => otherId === teamId)) &&
+          this.usersIds.every(userId => otherUsersIds.some(otherId => otherId === userId))
         );
       case ConditionType.HasAll:
         return (
-          arrayIntersection(
-            otherTeams.map(o => o.id),
-            this.teamsIds
-          ).length === otherTeams.length &&
-          arrayIntersection(
-            otherUsers.map(o => o.id),
-            this.usersIds
-          ).length === otherUsers.length
+          arrayIntersection(otherTeamsIds, this.teamsIds).length === otherTeamsIds.length &&
+          arrayIntersection(otherUsersIds, this.usersIds).length === otherUsersIds.length
         );
       case ConditionType.IsEmpty:
         return this.users.length === 0 && this.teams.length === 0 && this.format().trim().length === 0;
@@ -192,8 +198,7 @@ export class UserDataValue implements DataValue {
     } else if (value.type === UserConstraintConditionValue.CurrentTeams) {
       const currentUser = this.constraintData?.currentUser;
       if (currentUser) {
-        const teams = (this.constraintData?.teams || []).filter(team => team.users?.includes(currentUser.id))
-        const teamsIds = teams.map(team => userDataValueCreateTeamValue(team.id));
+        const teamsIds = this.userTeamsIds(currentUser).map(teamId => userDataValueCreateTeamValue(teamId));
         return new UserDataValue(teamsIds, this.config, this.constraintData);
       }
     }

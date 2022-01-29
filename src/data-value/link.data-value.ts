@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {compareStrings, dataValuesMeetConditionByText, isEmailValid, valueByConditionText, valueMeetFulltexts} from '../utils';
+import {compareStrings, isEmailValid, valueByConditionText, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, LinkConstraintConfig} from '../model';
 
 /*
@@ -96,9 +96,22 @@ export class LinkDataValue implements DataValue {
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = (values || []).map(value => new LinkDataValue(value.value, this.config));
-    const formattedValue = this.serialize().toLowerCase().trim();
-    const otherFormattedValues = dataValues.map(dataValue => dataValue.serialize().toLowerCase().trim());
-    return dataValuesMeetConditionByText(condition, formattedValue, otherFormattedValues);
+    const linkFormatted = this.linkValue?.toLowerCase().trim();
+    const titleFormatted = this.titleValue?.toLowerCase().trim();
+    const otherValues = dataValues.map(dataValue => (dataValue.value || '').toLowerCase().trim());
+
+    switch (condition) {
+      case ConditionType.Contains:
+        return linkFormatted.includes(otherValues[0]) || titleFormatted.includes(otherValues[0]);
+      case ConditionType.NotContains:
+        return !linkFormatted.includes(otherValues[0]) && !titleFormatted.includes(otherValues[0]);
+      case ConditionType.IsEmpty:
+        return !linkFormatted && !titleFormatted;
+      case ConditionType.NotEmpty:
+        return !!linkFormatted || !!titleFormatted;
+      default:
+        return false;
+    }
   }
 
   public meetFullTexts(fulltexts: string[]): boolean {
