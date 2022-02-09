@@ -51,6 +51,8 @@ describe('DurationDataValue', () => {
     it('equals', () => {
       expect(new DurationDataValue('5w', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: 'wwwww'}])).toBeTruthy();
 
+      expect(new DurationDataValue('-5w', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: '-wwwww'}])).toBeFalsy();
+
       expect(new DurationDataValue('5w10d4h300m', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: '7w1d1h'}])).toBeTruthy();
 
       expect(new DurationDataValue('', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: null}])).toBeTruthy();
@@ -62,21 +64,21 @@ describe('DurationDataValue', () => {
       expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.Equals, [{value: 'xyz'}])).toBeTruthy();
     });
 
-      it('empty', () => {
-          expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+    it('empty', () => {
+      expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
 
-          expect(new DurationDataValue(' ', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
+      expect(new DurationDataValue(' ', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeTruthy();
 
-          expect(new DurationDataValue('dd', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
-      });
+      expect(new DurationDataValue('dd', config, {durationUnitsMap}).meetCondition(ConditionType.IsEmpty, [])).toBeFalsy();
+    });
 
-      it('is not empty', () => {
-          expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+    it('is not empty', () => {
+      expect(new DurationDataValue('xyz', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
 
-          expect(new DurationDataValue(' ', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
+      expect(new DurationDataValue(' ', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeFalsy();
 
-          expect(new DurationDataValue('dd', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
-      });
+      expect(new DurationDataValue('dd', config, {durationUnitsMap}).meetCondition(ConditionType.NotEmpty, [])).toBeTruthy();
+    });
   });
 
   describe('format()', () => {
@@ -87,7 +89,7 @@ describe('DurationDataValue', () => {
 
     it('should equals with conversion', () => {
       const dataValue = new DurationDataValue('10w', config, {durationUnitsMap});
-      expect(dataValue.meetCondition(ConditionType.Equals, [{value:'10t'}])).toBeTrue();
+      expect(dataValue.meetCondition(ConditionType.Equals, [{value: '10t'}])).toBeTrue();
     });
 
     it('should format duration value weeks group with days', () => {
@@ -117,6 +119,18 @@ describe('DurationDataValue', () => {
         durationUnitsMap,
       });
       expect(dataValue.format()).toEqual('1s');
+    });
+    it('should format negative number second', () => {
+      const dataValue = new DurationDataValue('-1000', config, {
+        durationUnitsMap,
+      });
+      expect(dataValue.format()).toEqual('-1s');
+    });
+    it('should format negative number second', () => {
+      const dataValue = new DurationDataValue('-93214124', config, {
+        durationUnitsMap,
+      });
+      expect(dataValue.format()).toEqual('-3d1h53m34s');
     });
     it('should format zero value', () => {
       const dataValue = new DurationDataValue('0', config, {
@@ -162,6 +176,11 @@ describe('DurationDataValue', () => {
     it('should parse number by number value', () => {
       const dataValue = new DurationDataValue(3124141, config, {durationUnitsMap});
       expect(dataValue.serialize()).toEqual(3124141);
+    });
+
+    it('should parse number by negative value', () => {
+      const dataValue = new DurationDataValue(-3124141, config, {durationUnitsMap});
+      expect(dataValue.serialize()).toEqual(-3124141);
     });
 
     it('should parse number by weeks only', () => {

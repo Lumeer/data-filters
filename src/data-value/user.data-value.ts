@@ -240,7 +240,7 @@ export class UserDataValue implements DataValue {
 const teamPrefix = '@';
 
 export function userDataValueIsTeamValue(value: string): boolean {
-  return value?.startsWith(teamPrefix);
+  return (value || '').toString().startsWith(teamPrefix);
 }
 
 export function userDataValueCreateTeamValue(teamId: string): string {
@@ -248,5 +248,5 @@ export function userDataValueCreateTeamValue(teamId: string): string {
 }
 
 export function userDataValueParseTeamValue(value: string): string {
-  return value?.substring(teamPrefix.length);
+  return (value || '').toString().substring(teamPrefix.length);
 }

@@ -37,6 +37,7 @@ const formattingTags = [
     'span',
     'p',
     'br',
+    'a'
 ];
 
 export function stripTextHtmlTags(text: string, keepFormattingTags: boolean = true): string {

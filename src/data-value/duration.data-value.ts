@@ -58,7 +58,7 @@ export class DurationDataValue implements NumericDataValue {
   ) {
     const durationUnitsMap = this.constraintData?.durationUnitsMap;
     this.parsedValue = this.inputValue ? parseInputValue(this.inputValue) : value;
-    if (isDurationDataValueValid(this.parsedValue, durationUnitsMap)) {
+    if (isDurationDataValueValid(this.parsedValue, durationUnitsMap, true)) {
       const saveValue = getDurationSaveValue(this.parsedValue, this.config, durationUnitsMap);
       this.number = convertToBig(saveValue);
       this.roundedNumber = roundBigNumber(this.number, config?.decimalPlaces);
@@ -110,7 +110,7 @@ export class DurationDataValue implements NumericDataValue {
     if (isNotNullOrUndefined(this.inputValue)) {
       return this.copy(this.inputValue).isValid(ignoreConfig);
     }
-    return !!this.number || !this.value;
+    return !!this.number && this.number.gte(new Big(0)) || !this.value;
   }
 
   public increment(): DurationDataValue {
@@ -153,7 +153,7 @@ export class DurationDataValue implements NumericDataValue {
 
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = (values || []).map(
-        value => new DurationDataValue(value.value, this.config, this.constraintData)
+      value => new DurationDataValue(value.value, this.config, this.constraintData)
     );
     const otherBigNumbers = dataValues.map(value => value.roundedNumber);
     const otherValues = dataValues.map(value => value.parsedValue);
