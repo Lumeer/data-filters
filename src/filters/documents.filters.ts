@@ -482,7 +482,13 @@ function dataValuesMeetsFilters(
 
 export interface AttributeLockFiltersStats {
   satisfy?: boolean;
-  filtersStats?: AttributeLockFilterStats[];
+  groups?: AttributeLockFiltersStatsGroup[];
+}
+
+export interface AttributeLockFiltersStatsGroup {
+  exceptionGroup?: AttributeLockExceptionGroup;
+  filtersStats: AttributeLockFilterStats[];
+  satisfy: boolean;
 }
 
 export interface AttributeLockFilterStats {
@@ -524,17 +530,15 @@ function computeAttributeLockStatsInternal(
       const filters = group.equation?.equations?.map(eq => eq.filter) || [];
       const operator = group.equation?.equations?.[0]?.operator || EquationOperator.And;
       const groupStats = dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, resource, attributesMap, filters, constraintData, operator);
-      if (stats.filtersStats.length === 0) {
-        return groupStats;
-      }
+
       return {
         satisfy: stats.satisfy || groupStats.satisfy,
-        filtersStats: [...stats.filtersStats, ...groupStats.filtersStats]
+        groups: [...stats.groups, {...groupStats, exceptionGroup: group}]
       };
     }
 
     return stats;
-  }, {satisfy: false, filtersStats: []});
+  }, {satisfy: false, groups: []});
 }
 
 
@@ -552,7 +556,7 @@ function dataValuesMeetsFiltersWithOperatorStats(
   filters: AttributeFilter[],
   constraintData: ConstraintData,
   operator: EquationOperator = EquationOperator.And
-): AttributeLockFiltersStats {
+): AttributeLockFiltersStatsGroup {
   const definedFilters = filters?.filter(fil => !!attributesMap[fil.attributeId]) || [];
 
   const filtersStats: AttributeLockFilterStats[] = definedFilters.map(filter => {
