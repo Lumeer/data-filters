@@ -39,7 +39,7 @@ import {
   getDurationUnitToMillisMap,
   isDurationDataValueValid,
   sortedDurationUnits,
-  roundBigNumber
+  roundBigNumber, emptyDurationUnitsCountsMap
 } from '../utils';
 import {ConditionType, ConditionValue, DurationConstraintConfig, DurationUnit} from '../model';
 import {ConstraintData, DurationUnitsMap} from '../constraint';
@@ -63,6 +63,8 @@ export class DurationDataValue implements NumericDataValue {
       this.number = convertToBig(saveValue);
       this.roundedNumber = roundBigNumber(this.number, config?.decimalPlaces);
       this.unitsCountMap = createDurationUnitsCountsMap(saveValue, this.config);
+    } else {
+      this.unitsCountMap = emptyDurationUnitsCountsMap();
     }
   }
 

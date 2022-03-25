@@ -202,6 +202,10 @@ export function formatDurationDataValue(
   return saveValue;
 }
 
+export function emptyDurationUnitsCountsMap(): Record<DurationUnit | string, number> {
+  return [...sortedDurationUnits].reduce((map, unit) => ({...map, [unit]: 0}), {});
+}
+
 export function createDurationUnitsCountsMap(
   saveValue: any,
   config: DurationConstraintConfig,
