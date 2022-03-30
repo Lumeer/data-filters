@@ -157,20 +157,21 @@ export class UserDataValue implements DataValue {
   public meetCondition(condition: ConditionType, values: ConditionValue[]): boolean {
     const dataValues = values?.map(value => this.mapQueryConditionValue(value));
     const dataValue = dataValues?.[0];
-    const allOtherUsersIds = dataValue?.allUsersIds || [];
-    const allOtherTeamsIds = dataValue?.allUsersIds || [];
     const otherUsersIds = dataValue?.usersIds || [];
     const otherTeamsIds = dataValue?.teamsIds || [];
+    const otherTeamsUsersIds = dataValue?.teamsUsersIds || [];
 
     switch (condition) {
       case ConditionType.HasSome:
       case ConditionType.Equals:
-        return arrayIntersection(allOtherTeamsIds, this.allTeamsIds).length > 0 ||
-          arrayIntersection(allOtherUsersIds, this.allUsersIds).length > 0;
+        return arrayIntersection(otherTeamsIds, this.teamsIds).length > 0 ||
+          arrayIntersection(otherTeamsUsersIds, this.usersIds).length > 0 ||
+          arrayIntersection(otherUsersIds, this.allUsersIds).length > 0;
       case ConditionType.HasNoneOf:
       case ConditionType.NotEquals:
-        return arrayIntersection(allOtherTeamsIds, this.allTeamsIds).length === 0 ||
-          arrayIntersection(allOtherUsersIds, this.allUsersIds).length === 0;
+        return arrayIntersection(otherTeamsIds, this.teamsIds).length === 0 &&
+          arrayIntersection(otherTeamsUsersIds, this.usersIds).length === 0 &&
+          arrayIntersection(otherUsersIds, this.allUsersIds).length === 0;
       case ConditionType.In:
         return (
           (this.usersIds.length > 0 || this.teamsIds.length > 0) &&
@@ -180,7 +181,7 @@ export class UserDataValue implements DataValue {
       case ConditionType.HasAll:
         return (
           arrayIntersection(otherTeamsIds, this.teamsIds).length === otherTeamsIds.length &&
-          arrayIntersection(otherUsersIds, this.usersIds).length === otherUsersIds.length
+          arrayIntersection(otherUsersIds, this.allUsersIds).length === otherUsersIds.length
         );
       case ConditionType.IsEmpty:
         return this.users.length === 0 && this.teams.length === 0 && this.format().trim().length === 0;
