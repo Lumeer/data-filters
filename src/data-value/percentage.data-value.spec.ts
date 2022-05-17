@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConditionType, PercentageConstraintConfig} from '../model';
+import {ConditionType, PercentageConstraintConfig, PercentageDisplayStyle} from '../model';
 import {PercentageDataValue} from './percentage.data-value';
-import {DurationDataValue} from './duration.data-value';
 
 describe('PercentageDataValue', () => {
   const basicPercentage = {} as PercentageConstraintConfig;
+  const progressPercentage = {style: PercentageDisplayStyle.ProgressBar} as PercentageConstraintConfig;
 
   describe('copy()', () => {
     it('should be same after copy', () => {
@@ -91,13 +91,15 @@ describe('PercentageDataValue', () => {
     const dataValue = new PercentageDataValue(undefined, basicPercentage);
     expect(dataValue.format()).toEqual('');
     expect(dataValue.serialize()).toEqual('');
+    expect(dataValue.title()).toEqual('');
     expect(dataValue.isValid()).toEqual(true);
   });
 
-  it('undefined value', () => {
-    const dataValue = new PercentageDataValue(undefined, basicPercentage);
+  it('undefined value by progress style', () => {
+    const dataValue = new PercentageDataValue(undefined, progressPercentage);
     expect(dataValue.format()).toEqual('');
     expect(dataValue.serialize()).toEqual('');
+    expect(dataValue.title()).toEqual('0%');
     expect(dataValue.isValid()).toEqual(true);
   });
 
@@ -105,6 +107,15 @@ describe('PercentageDataValue', () => {
     const dataValue = new PercentageDataValue(null, basicPercentage);
     expect(dataValue.format()).toEqual('');
     expect(dataValue.serialize()).toEqual('');
+    expect(dataValue.title()).toEqual('');
+    expect(dataValue.isValid()).toEqual(true);
+  });
+
+  it('null value by progress style', () => {
+    const dataValue = new PercentageDataValue(null, progressPercentage);
+    expect(dataValue.format()).toEqual('');
+    expect(dataValue.serialize()).toEqual('');
+    expect(dataValue.title()).toEqual('0%');
     expect(dataValue.isValid()).toEqual(true);
   });
 
@@ -112,6 +123,15 @@ describe('PercentageDataValue', () => {
     const dataValue = new PercentageDataValue('', basicPercentage);
     expect(dataValue.format()).toEqual('');
     expect(dataValue.serialize()).toEqual('');
+    expect(dataValue.title()).toEqual('');
+    expect(dataValue.isValid()).toEqual(true);
+  });
+
+  it('empty string value by progress style', () => {
+    const dataValue = new PercentageDataValue('', progressPercentage);
+    expect(dataValue.format()).toEqual('');
+    expect(dataValue.serialize()).toEqual('');
+    expect(dataValue.title()).toEqual('0%');
     expect(dataValue.isValid()).toEqual(true);
   });
 
@@ -119,6 +139,15 @@ describe('PercentageDataValue', () => {
     const dataValue = new PercentageDataValue(0, basicPercentage);
     expect(dataValue.format()).toEqual('0%');
     expect(dataValue.serialize()).toEqual(0);
+    expect(dataValue.title()).toEqual('0%');
+    expect(dataValue.isValid()).toEqual(true);
+  });
+
+  it('zero number value by progress style', () => {
+    const dataValue = new PercentageDataValue(0, progressPercentage);
+    expect(dataValue.format()).toEqual('0%');
+    expect(dataValue.serialize()).toEqual(0);
+    expect(dataValue.title()).toEqual('0%');
     expect(dataValue.isValid()).toEqual(true);
   });
 
@@ -126,6 +155,15 @@ describe('PercentageDataValue', () => {
     const dataValue = new PercentageDataValue('0', basicPercentage);
     expect(dataValue.format()).toEqual('0%');
     expect(dataValue.serialize()).toEqual(0);
+    expect(dataValue.title()).toEqual('0%');
+    expect(dataValue.isValid()).toEqual(true);
+  });
+
+  it('zero string value by progress style', () => {
+    const dataValue = new PercentageDataValue('0', progressPercentage);
+    expect(dataValue.format()).toEqual('0%');
+    expect(dataValue.serialize()).toEqual(0);
+    expect(dataValue.title()).toEqual('0%');
     expect(dataValue.isValid()).toEqual(true);
   });
 
@@ -133,6 +171,7 @@ describe('PercentageDataValue', () => {
     const dataValue = new PercentageDataValue(1, basicPercentage);
     expect(dataValue.format()).toEqual('100%');
     expect(dataValue.serialize()).toEqual(1);
+    expect(dataValue.title()).toEqual('100%');
     expect(dataValue.isValid()).toEqual(true);
   });
 
@@ -140,6 +179,7 @@ describe('PercentageDataValue', () => {
     const dataValue = new PercentageDataValue('1', basicPercentage);
     expect(dataValue.format()).toEqual('100%');
     expect(dataValue.serialize()).toEqual(1);
+    expect(dataValue.title()).toEqual('100%');
     expect(dataValue.isValid()).toEqual(true);
   });
 

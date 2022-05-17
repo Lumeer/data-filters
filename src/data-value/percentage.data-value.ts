@@ -20,8 +20,8 @@
 import Big from 'big.js';
 
 import {NumericDataValue} from './data-value';
-import {compareBigNumbers, convertBigToNumberSafely, createBigWithoutTrailingZeros, isNumeric, toNumber, convertToBig, decimalStoreToUser, decimalUserToStore, formatUnknownDataValue, dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts, escapeHtml, isNotNullOrUndefined, unescapeHtml, roundBigNumber} from '../utils';
-import {ConditionType, ConditionValue, PercentageConstraintConfig} from '../model';
+import {compareBigNumbers, convertBigToNumberSafely, convertToBig, createBigWithoutTrailingZeros, dataValuesMeetConditionByNumber, decimalStoreToUser, decimalUserToStore, escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, isNumeric, roundBigNumber, toNumber, unescapeHtml, valueByConditionNumber, valueMeetFulltexts} from '../utils';
+import {ConditionType, ConditionValue, PercentageConstraintConfig, PercentageDisplayStyle} from '../model';
 
 export class PercentageDataValue implements NumericDataValue {
   public readonly number: Big;
@@ -58,7 +58,12 @@ export class PercentageDataValue implements NumericDataValue {
   }
 
   public title(overrideConfig?: Partial<PercentageConstraintConfig>): string {
-    return unescapeHtml(this.format(overrideConfig));
+    const title = unescapeHtml(this.format(overrideConfig));
+    const style = overrideConfig?.style || this.config?.style || PercentageDisplayStyle.Text;
+    if (title || style === PercentageDisplayStyle.Text) {
+      return title;
+    }
+    return '0%';
   }
 
   public editValue(): string {
