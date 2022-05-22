@@ -198,32 +198,44 @@ export function filterDocumentsAndLinksByStem(
     if (
       dataValuesMeetsFilters(dataResource, dataValues, currentPipeline.resource, currentPipeline.filters, attributesMap, constraintData)
     ) {
-      const searchDocuments = includeChildren
-        ? getDocumentsWithChildren(dataResource as DocumentModel, documentsMap)
-        : [dataResource as DocumentModel];
-      const parentDocumentContainsByDocumentIds = pipelineContainsDocumentByIds(currentPipeline, dataResource as DocumentModel);
-      for (const document of searchDocuments) {
-        if (
-          !pushedIds.has(document.id) &&
-          (checkAndFillDataResources(
-            document,
-            pipeline,
-            filtered,
-            constraintData,
-            1,
-            !currentPipeline.fulltexts.length ||
-            dataMeetsFulltexts(
-              dataResource.data,
-              currentPipeline.fulltexts,
-              currentPipeline.resource?.attributes,
-              constraintData
-            )
-          ) || parentDocumentContainsByDocumentIds || pipelineContainsDocumentByIds(currentPipeline, document))
-        ) {
-          pushedIds.add(document.id);
-          filtered.allDocuments.push(<DocumentModel>document);
-          pushToMatrix(filtered.pipelineDocuments, document, 0);
-        }
+      const document = dataResource as DocumentModel;
+      if (
+        !pushedIds.has(document.id) &&
+        (checkAndFillDataResources(
+          document,
+          pipeline,
+          filtered,
+          constraintData,
+          1,
+          !currentPipeline.fulltexts.length ||
+          dataMeetsFulltexts(
+            dataResource.data,
+            currentPipeline.fulltexts,
+            currentPipeline.resource?.attributes,
+            constraintData
+          )
+        ) || pipelineContainsDocumentByIds(currentPipeline, document))
+      ) {
+
+        filtered.allDocuments.push(document);
+        pushedIds.add(document.id);
+        pushToMatrix(filtered.pipelineDocuments, document, 0);
+
+        const documentChildren = includeChildren ? getDocumentChildren(document, documentsMap) : [];
+        documentChildren.forEach(children => {
+          if (!pushedIds.has(children.id)) {
+            checkAndFillDataResources(children, pipeline, filtered, constraintData, 1, !currentPipeline.fulltexts.length ||
+              dataMeetsFulltexts(
+                children.data,
+                currentPipeline.fulltexts,
+                currentPipeline.resource?.attributes,
+                constraintData
+              ));
+            filtered.allDocuments.push(children);
+            pushedIds.add(children.id);
+            pushToMatrix(filtered.pipelineDocuments, children, 0);
+          }
+        })
       }
     }
   }
@@ -353,23 +365,23 @@ function containsAnyFilterInPipeline(pipeline: FilterPipeline[], fromIndex: numb
   return pipeline.slice(fromIndex, pipeline.length).some(pipe => (pipe.filters || []).length > 0);
 }
 
-function getDocumentsWithChildren(document: DocumentModel, documentsMap: Record<string, DocumentModel[]>): DocumentModel[] {
-  const documentsWithChildren = [];
-  const currentDocumentsIds = new Set();
+function getDocumentChildren(document: DocumentModel, documentsMap: Record<string, DocumentModel[]>): DocumentModel[] {
+  const documentChildrenMap: Record<string, DocumentModel> = {};
 
   const documentsQueue = [document];
   while (documentsQueue.length) {
     const currentDocument = documentsQueue.splice(0, 1)[0];
-    if (currentDocument && !currentDocumentsIds.has(currentDocument.id)) {
-      documentsWithChildren.push(currentDocument);
-      currentDocumentsIds.add(currentDocument.id);
+    if (currentDocument && !documentChildrenMap[currentDocument.id]) {
+      documentChildrenMap[currentDocument.id] = currentDocument;
 
       const childDocuments = documentsMap?.[currentDocument.id] || [];
       documentsQueue.push(...childDocuments);
     }
   }
 
-  return documentsWithChildren;
+  delete documentChildrenMap[document.id];
+
+  return objectValues(documentChildrenMap);
 }
 
 export function someDocumentMeetFulltexts(

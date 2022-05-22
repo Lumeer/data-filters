@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Collection, ConditionType, DateTimeConstraintConfig, DocumentModel, LanguageTag, LinkInstance, LinkType, Query, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
+import {Collection, ConditionType, DateTimeConstraintConfig, DocumentModel, LinkInstance, LinkType, Query, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
 import {ConstraintData, DateTimeConstraint, NumberConstraint, UserConstraint} from '../constraint';
 import {filterDocumentsAndLinksByQuery} from './documents.filters';
 

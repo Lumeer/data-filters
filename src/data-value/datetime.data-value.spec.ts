@@ -70,7 +70,7 @@ describe('DateTimeDataValue', () => {
     const csConfig = {...config, format: 'YYYY.MMMM.DD'};
     const csConstraintData: ConstraintData = {locale: LanguageTag.Czech};
     it('czech', () => {
-      expect(new DateTimeDataValue('2020-04-24T00:00:00.000Z', csConfig, csConstraintData).format()).toEqual('2020.duben.24');
+      expect(new DateTimeDataValue('2020-04-24T00:00:00.000Z', csConfig, csConstraintData).format()).toEqual('2020.dubna.24');
     })
   });
 
