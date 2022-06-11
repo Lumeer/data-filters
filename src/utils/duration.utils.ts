@@ -222,7 +222,7 @@ export function createDurationUnitsCountsMap(
     let durationUnits = [...sortedDurationUnits];
     if (config.maxUnit) {
       const index = durationUnits.indexOf(config.maxUnit);
-      durationUnits = durationUnits.slice(index, index + 2);
+      durationUnits = durationUnits.slice(index);
     }
     const decimalPlaces = overrideConfig?.decimalPlaces || config.decimalPlaces || 0;
 
