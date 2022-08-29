@@ -220,7 +220,7 @@ export function filterDocumentsAndLinksByStem(
   for (const dataResource of currentPipeline.dataResources) {
     const dataValues = createDataValuesMap(dataResource.data, currentPipeline.attributes, constraintData);
     if (
-      dataValuesMeetsFilters(dataResource, dataValues, currentPipeline.filters, attributesMap, constraintData)
+      dataValuesMeetsFilters(dataValues, currentPipeline.filters, attributesMap, constraintData)
     ) {
       const document = dataResource as DocumentModel;
       if (
@@ -455,12 +455,12 @@ function dataValuesMeetsFiltersWithOperator(
       definedFilters.length === 0 ||
       definedFilters.reduce(
         (result, filter) =>
-          result || dataValuesMeetsFilters(dataResource, dataValues, [filter], attributesMap, constraintData),
+          result || dataValuesMeetsFilters(dataValues, [filter], attributesMap, constraintData),
         false
       )
     );
   }
-  return dataValuesMeetsFilters(dataResource, dataValues, definedFilters, attributesMap, constraintData);
+  return dataValuesMeetsFilters(dataValues, definedFilters, attributesMap, constraintData);
 }
 
 function dataMeetsFilters(
@@ -485,7 +485,6 @@ function dataMeetsFilters(
 }
 
 function dataValuesMeetsFilters(
-  dataResource: DataResource,
   dataValues: Record<string, DataValue>,
   filters: AttributeFilter[],
   attributesMap: Record<string, Attribute>,
@@ -504,9 +503,9 @@ function dataValuesMeetsFilters(
     switch (constraintType) {
       case ConstraintType.Action:
         if (filter.condition === ConditionType.Enabled) {
-          return isActionButtonEnabled(dataResource, dataValues, attributesMap, attribute.lock, constraintData);
+          return isActionButtonEnabled(dataValues, attributesMap, attribute.lock, constraintData);
         } else if (filter.condition === ConditionType.Disabled) {
-          return !isActionButtonEnabled(dataResource, dataValues, attributesMap, attribute.lock, constraintData);
+          return !isActionButtonEnabled(dataValues, attributesMap, attribute.lock, constraintData);
         }
         return false;
       default:
@@ -544,11 +543,10 @@ export function computeAttributeLockStats(
   const dataValues = createDataValuesMap(dataResource?.data, resource?.attributes, constraintData);
   const attributesMap = objectsByIdMap(resource?.attributes);
 
-  return computeAttributeLockStatsByDataValues(dataResource, dataValues, attributesMap, lock, constraintData);
+  return computeAttributeLockStatsByDataValues(dataValues, attributesMap, lock, constraintData);
 }
 
 export function computeAttributeLockStatsByDataValues(
-  dataResource: DataResource,
   dataValues: Record<string, DataValue>,
   attributesMap: Record<string, Attribute>,
   lock: AttributeLock,
@@ -563,7 +561,7 @@ export function computeAttributeLockStatsByDataValues(
     if (group.type == AttributeLockGroupType.Everyone || (group.type === AttributeLockGroupType.UsersAndTeams && exceptionGroupContainsCurrentUser(group, constraintData))) {
       const filters = group.equation?.equations?.map(eq => eq.filter) || [];
       const operator = group.equation?.equations?.[0]?.operator || EquationOperator.And;
-      const groupStats = dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, attributesMap, filters, constraintData, operator);
+      const groupStats = dataValuesMeetsFiltersWithOperatorStats(dataValues, attributesMap, filters, constraintData, operator);
 
       return {
         satisfy: stats.satisfy || groupStats.satisfy,
@@ -576,7 +574,6 @@ export function computeAttributeLockStatsByDataValues(
 }
 
 export function dataValuesSatisfyEquation(
-  dataResource: DataResource,
   dataValues: Record<string, DataValue>,
   attributesMap: Record<string, Attribute>,
   equation: AttributeFilterEquation,
@@ -588,7 +585,7 @@ export function dataValuesSatisfyEquation(
 
   const filters = equation?.equations?.map(eq => eq.filter) || [];
   const operator = equation?.equations?.[0]?.operator || EquationOperator.And;
-  return dataValuesMeetsFiltersWithOperatorStats(dataResource, dataValues, attributesMap, filters, constraintData, operator).satisfy;
+  return dataValuesMeetsFiltersWithOperatorStats(dataValues, attributesMap, filters, constraintData, operator).satisfy;
 }
 
 function exceptionGroupContainsCurrentUser(group: AttributeLockExceptionGroup, constraintData: ConstraintData): boolean {
@@ -598,7 +595,6 @@ function exceptionGroupContainsCurrentUser(group: AttributeLockExceptionGroup, c
 }
 
 function dataValuesMeetsFiltersWithOperatorStats(
-  dataResource: DataResource,
   dataValues: Record<string, DataValue>,
   attributesMap: Record<string, Attribute>,
   filters: AttributeFilter[],
@@ -608,7 +604,7 @@ function dataValuesMeetsFiltersWithOperatorStats(
   const definedFilters = filters?.filter(fil => !!attributesMap[fil.attributeId]) || [];
 
   const filtersStats: AttributeLockFilterStats[] = definedFilters.map(filter => {
-    const meetsFilters = dataValuesMeetsFilters(dataResource, dataValues, [filter], attributesMap, constraintData);
+    const meetsFilters = dataValuesMeetsFilters(dataValues, [filter], attributesMap, constraintData);
     return {filter, satisfy: meetsFilters};
   });
 
@@ -623,13 +619,12 @@ function dataValuesMeetsFiltersWithOperatorStats(
 }
 
 export function isActionButtonEnabled(
-  dataResource: DataResource,
   dataValues: Record<string, DataValue>,
   attributesMap: Record<string, Attribute>,
   lock: AttributeLock,
   constraintData?: ConstraintData
 ): boolean {
-  return computeAttributeLockStatsByDataValues(dataResource, dataValues, attributesMap, lock, constraintData).satisfy;
+  return computeAttributeLockStatsByDataValues(dataValues, attributesMap, lock, constraintData).satisfy;
 }
 
 function dataMeetsFulltexts(
