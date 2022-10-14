@@ -18,7 +18,7 @@
  */
 
 import {DataValue} from './data-value';
-import {compareStrings, isEmailValid, valueByConditionText, valueMeetFulltexts} from '../utils';
+import {compareStrings, isEmailValid, isNotNullOrUndefined, valueByConditionText, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, LinkConstraintConfig} from '../model';
 
 /*
@@ -35,7 +35,7 @@ export class LinkDataValue implements DataValue {
     public readonly config: LinkConstraintConfig,
     public readonly inputValue?: string
   ) {
-    const {link: rawLink, title: rawTitle} = parseLinkValue(inputValue || value || '');
+    const {link: rawLink, title: rawTitle} = parseLinkValue(isNotNullOrUndefined(inputValue) ? inputValue : (value || ''));
     this.rawLinkValue = rawLink || '';
     this.rawTitleValue = rawTitle || '';
     const {link, title}  = this.checkLinkValue(this.rawLinkValue, this.rawTitleValue);
