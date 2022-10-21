@@ -207,6 +207,13 @@ describe('NumberDataValue', () => {
       expect(new NumberDataValue(10, emptyConfig, constraintData, '10').serialize()).toBe('10');
     });
 
+    it('Compact mode', () => {
+      expect(new NumberDataValue('500m', {compact: true}, constraintData).format()).toBe('500m');
+      expect(new NumberDataValue('800m', {compact: true}, constraintData).format()).toBe('800m');
+      expect(new NumberDataValue('950m', {compact: true}, constraintData).format()).toBe('950m');
+      expect(new NumberDataValue('999m', {compact: true}, constraintData).format()).toBe('999m');
+    });
+
     const thousandSeparatedConfig: NumberConstraintConfig = {separated: true};
     const thousandSeparatedConfig2: NumberConstraintConfig = {decimals: 3, separated: true};
     it('Thousand separated config', () => {

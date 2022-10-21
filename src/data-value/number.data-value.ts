@@ -184,6 +184,9 @@ function parseNumbroConfig(
     numbroConfig.spaceSeparatedCurrency = numbro.languageData().currencyFormat.spaceSeparatedCurrency || false;
   }
   numbroConfig.average = overrideConfig?.compact || config.compact || false;
+  if (numbroConfig.average) {
+    numbroConfig.lowPrecision = false;
+  }
 
   if (overrideConfig?.negative || config.negative) {
     numbroConfig.negative = 'parenthesis';
