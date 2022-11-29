@@ -36,6 +36,9 @@ describe('PercentageDataValue', () => {
     it('range', () => {
       const dataValue = new PercentageDataValue('0.01', rangePercentage);
       expect(dataValue.isValid()).toEqual(true);
+
+      const dataValue2 = new PercentageDataValue('5', rangePercentage, '5');
+      expect(dataValue2.isValid()).toEqual(true);
     });
   });
 

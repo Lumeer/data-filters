@@ -80,10 +80,6 @@ export class PercentageDataValue implements NumericDataValue {
   }
 
   public isValid(ignoreConfig?: boolean): boolean {
-    if (isNotNullOrUndefined(this.inputValue)) {
-      return this.copy(this.inputValue).isValid(ignoreConfig);
-    }
-
     if (!this.value) {
       return true;
     }
