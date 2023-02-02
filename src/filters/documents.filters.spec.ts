@@ -108,6 +108,22 @@ const documents: DocumentModel[] = [
       a2: 'music@lumeer.io',
     },
   },
+  {
+    collectionId: 'c2',
+    id: 'd9',
+    data: {
+      a1: 'Without l1',
+      a2: 'email@lumeer.io',
+    },
+  },
+  {
+    collectionId: 'c2',
+    id: 'd10',
+    data: {
+      a1: 'Without l2',
+      a2: 'email@lumeer.io',
+    },
+  },
 ];
 
 const collections: Collection[] = [
@@ -474,6 +490,38 @@ describe('Document filters', () => {
         true
       ).documents.map(document => document.id)
     ).toEqual(['d2', 'd3']);
+  });
+
+  it('should filter with not linked documents', () => {
+    const result = filterDocumentsAndLinksByQuery(
+        documents,
+        collections,
+        linkTypes,
+        linkInstances,
+        {
+          stems: [
+            {
+              collectionId: 'c1',
+              linkTypeIds: ['lt1'],
+              filters: [
+                {
+                  collectionId: 'c2',
+                  attributeId: 'a1',
+                  condition: ConditionType.Contains,
+                  conditionValues: [{value: 'Without l'}],
+                },
+              ],
+            },
+          ],
+        },
+        {},
+        {},
+        undefined,
+        false,
+        true
+    );
+    expect(result.documents.map(document => document.id)).toEqual(['d9', 'd10']);
+    expect(result.linkInstances.map(linkInstance => linkInstance.id)).toEqual([]);
   });
 
   it('should filter documents from both collections by fulltext', () => {

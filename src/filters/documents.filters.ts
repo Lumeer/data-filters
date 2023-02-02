@@ -75,12 +75,13 @@ export function filterDocumentsAndLinksIdsFromJson(json: string): { documentsIds
   const linkTypePermissions = jsObject.linkTypePermissions as Record<string, AllowedPermissions>;
   const constraintData = jsObject.constraintData as ConstraintData;
   const includeChildren = jsObject.includeChildren as boolean;
+  const includeNonLinkedDocuments = jsObject.includeNonLinkedDocuments as boolean;
   const language = jsObject.language as LanguageTag;
 
   const collectionsWithConstraints = createConstraintsInCollections(collections, language);
   const linkTypesWithConstraints = createConstraintsInLinkTypes(linkTypes, language);
 
-  const {documents: filteredDocuments, linkInstances: filteredLinkInstances} = filterDocumentsAndLinksByQuery(documents, collectionsWithConstraints, linkTypesWithConstraints, linkInstances, query, collectionsPermissions, linkTypePermissions, constraintData, includeChildren);
+  const {documents: filteredDocuments, linkInstances: filteredLinkInstances} = filterDocumentsAndLinksByQuery(documents, collectionsWithConstraints, linkTypesWithConstraints, linkInstances, query, collectionsPermissions, linkTypePermissions, constraintData, includeChildren, includeNonLinkedDocuments);
   return {
     documentsIds: filteredDocuments.map(document => document.id),
     linkInstancesIds: filteredLinkInstances.map(linkInstance => linkInstance.id),
@@ -96,9 +97,10 @@ export function filterDocumentsAndLinksByQuery(
   collectionsPermissions: Record<string, AllowedPermissions>,
   linkTypePermissions: Record<string, AllowedPermissions>,
   constraintData: ConstraintData,
-  includeChildren?: boolean
+  includeChildren?: boolean,
+  includeNonLinkedDocuments?: boolean,
 ): { documents: DocumentModel[]; linkInstances: LinkInstance[] } {
-  const {uniqueDocuments, uniqueLinkInstances} = filterDocumentsAndLinksDataByQuery(documents, collections, linkTypes, linkInstances, query, collectionsPermissions, linkTypePermissions, constraintData, includeChildren);
+  const {uniqueDocuments, uniqueLinkInstances} = filterDocumentsAndLinksDataByQuery(documents, collections, linkTypes, linkInstances, query, collectionsPermissions, linkTypePermissions, constraintData, includeChildren, includeNonLinkedDocuments);
   return {documents: uniqueDocuments, linkInstances: uniqueLinkInstances};
 }
 
@@ -123,7 +125,8 @@ export function filterDocumentsAndLinksDataByQuery(
   collectionsPermissions: Record<string, AllowedPermissions>,
   linkTypePermissions: Record<string, AllowedPermissions>,
   constraintData: ConstraintData,
-  includeChildren?: boolean
+  includeChildren?: boolean,
+  includeNonLinkedDocuments?: boolean,
 ): DocumentsAndLinksData {
   if (!query || queryIsEmptyExceptPagination(query)) {
     return {uniqueDocuments: paginate(documents, query), uniqueLinkInstances: linkInstances};
@@ -157,7 +160,8 @@ export function filterDocumentsAndLinksDataByQuery(
       constraintData,
       stem,
       escapedFulltexts,
-      includeChildren
+      includeChildren,
+      includeNonLinkedDocuments,
     );
 
     dataByStems.push({stem, documents: allDocuments, linkInstances: allLinkInstances});
@@ -178,7 +182,8 @@ export function filterDocumentsAndLinksByStem(
   constraintData: ConstraintData,
   stem: QueryStem,
   fulltexts: string[] = [],
-  includeChildren?: boolean
+  includeChildren?: boolean,
+  includeNonLinkedDocuments?: boolean,
 ): FilteredDataResources {
   const filtered: FilteredDataResources = {
     allDocuments: [],
@@ -213,8 +218,9 @@ export function filterDocumentsAndLinksByStem(
     return filtered;
   }
 
-  const pushedIds = new Set();
+  const pushedIds = pipeline.map(() => new Set<string>());
   const currentPipeline = pipeline[0];
+  const currentPushedIds = pushedIds[0];
   const attributesMap = objectsByIdMap(currentPipeline.resource?.attributes);
   const documentsMap = includeChildren ? documentChildrenMap(currentPipeline.dataResources as DocumentModel[]) : {};
   for (const dataResource of currentPipeline.dataResources) {
@@ -224,12 +230,13 @@ export function filterDocumentsAndLinksByStem(
     ) {
       const document = dataResource as DocumentModel;
       if (
-        !pushedIds.has(document.id) &&
+        !currentPushedIds.has(document.id) &&
         (checkAndFillDataResources(
           document,
           pipeline,
           filtered,
           constraintData,
+          pushedIds,
           1,
           !currentPipeline.fulltexts.length ||
           dataMeetsFulltexts(
@@ -242,13 +249,13 @@ export function filterDocumentsAndLinksByStem(
       ) {
 
         filtered.allDocuments.push(document);
-        pushedIds.add(document.id);
+        currentPushedIds.add(document.id);
         pushToMatrix(filtered.pipelineDocuments, document, 0);
 
         const documentChildren = includeChildren ? getDocumentChildren(document, documentsMap) : [];
         documentChildren.forEach(children => {
-          if (!pushedIds.has(children.id)) {
-            checkAndFillDataResources(children, pipeline, filtered, constraintData, 1, !currentPipeline.fulltexts.length ||
+          if (!currentPushedIds.has(children.id)) {
+            checkAndFillDataResources(children, pipeline, filtered, constraintData, pushedIds,1, !currentPipeline.fulltexts.length ||
               dataMeetsFulltexts(
                 children.data,
                 currentPipeline.fulltexts,
@@ -256,10 +263,24 @@ export function filterDocumentsAndLinksByStem(
                 constraintData
               ));
             filtered.allDocuments.push(children);
-            pushedIds.add(children.id);
+            currentPushedIds.add(children.id);
             pushToMatrix(filtered.pipelineDocuments, children, 0);
           }
         })
+      }
+    }
+  }
+
+  if (includeNonLinkedDocuments) {
+    for (let i = 2; i < pipeline.length; i+=2) {
+      const attributesMap = objectsByIdMap(pipeline[i].resource?.attributes);
+      for (const dataResource of pipeline[i].dataResources) {
+        const dataValues = createDataValuesMap(dataResource.data, pipeline[i].attributes, constraintData);
+        if (!pushedIds[i].has(dataResource.id) && dataValuesMeetsFilters(dataValues, pipeline[i].filters, attributesMap, constraintData)) {
+          filtered.allDocuments.push(dataResource as DocumentModel);
+          pushedIds[i].add(dataResource.id);
+          pushToMatrix(filtered.pipelineDocuments, dataResource, i);
+        }
       }
     }
   }
@@ -279,6 +300,7 @@ function checkAndFillDataResources(
   pipeline: FilterPipeline[],
   filtered: FilteredDataResources,
   constraintData: ConstraintData,
+  pushedIds: Set<string>[],
   pipelineIndex: number,
   fulltextFound: boolean
 ): boolean {
@@ -315,6 +337,7 @@ function checkAndFillDataResources(
           pipeline,
           filtered,
           constraintData,
+          pushedIds,
           pipelineIndex + 1,
           fulltextFound ||
           dataMeetsFulltexts(
@@ -358,6 +381,7 @@ function checkAndFillDataResources(
           pipeline,
           filtered,
           constraintData,
+          pushedIds,
           pipelineIndex + 1,
           fulltextFound ||
           dataMeetsFulltexts(
@@ -369,7 +393,10 @@ function checkAndFillDataResources(
         ) || pipelineContainsDocumentByIds(currentPipeline, linkedDocument)
       ) {
         someDocumentPassed = true;
-        filtered.allDocuments.push(linkedDocument);
+        if (!pushedIds[pipelineIndex].has(linkedDocument.id)) {
+          filtered.allDocuments.push(linkedDocument)
+          pushedIds[pipelineIndex].add(linkedDocument.id)
+        }
         pushToMatrix(filtered.pipelineDocuments, linkedDocument, Math.floor(pipelineIndex / 2));
       }
     }
