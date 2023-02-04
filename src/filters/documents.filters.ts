@@ -276,7 +276,7 @@ export function filterDocumentsAndLinksByStem(
       const attributesMap = objectsByIdMap(pipeline[i].resource?.attributes);
       for (const dataResource of pipeline[i].dataResources) {
         const dataValues = createDataValuesMap(dataResource.data, pipeline[i].attributes, constraintData);
-        if (!pushedIds[i].has(dataResource.id) && dataValuesMeetsFilters(dataValues, pipeline[i].filters, attributesMap, constraintData)) {
+        if (!pushedIds[i].has(dataResource.id) && dataValuesMeetsFilters(dataValues, pipeline[i].filters, attributesMap, constraintData) && (!pipeline[i].fulltexts.length || dataMeetsFulltexts(dataResource.data, pipeline[i].fulltexts, pipeline[i].attributes, constraintData))) {
           filtered.allDocuments.push(dataResource as DocumentModel);
           pushedIds[i].add(dataResource.id);
           pushToMatrix(filtered.pipelineDocuments, dataResource, i);
