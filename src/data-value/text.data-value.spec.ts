@@ -18,7 +18,7 @@
  */
 
 import {TextDataValue} from './text.data-value';
-import {ConditionType, ConditionValue, CaseStyle, TextConstraintConfig} from '../model';
+import {CaseStyle, ConditionType, ConditionValue, TextConstraintConfig} from '../model';
 
 describe('TextDataValue', () => {
   const config: TextConstraintConfig = {minLength: 2, maxLength: 4, caseStyle: CaseStyle.SentenceCase};
@@ -122,6 +122,14 @@ describe('TextDataValue', () => {
       expect(
         new TextDataValue('<p>some other words</p></br>', config).meetFullTexts(['the', 'wor', 'meo'])
       ).toBeFalsy();
+    });
+  });
+
+  describe('case style', () => {
+    it('sentence', () => {
+      const config: TextConstraintConfig = {caseStyle: CaseStyle.SentenceCase};
+      const dataValue = new TextDataValue('Spotř. čistícího materiálu', config);
+      expect(dataValue.format()).toEqual('Spotř. Čistícího materiálu')
     });
   });
 });

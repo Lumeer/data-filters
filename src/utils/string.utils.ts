@@ -83,7 +83,7 @@ export function transformTextBasedOnCaseStyle(text: string, caseStyle: CaseStyle
 }
 
 export function transformTextToTitleCase(text: string): string {
-    return text && text.length > 0 ? text.replace(/\w\S*/g, word => word[0].toLocaleUpperCase() + word.substr(1)) : '';
+    return text && text.length > 0 ? text.replace(/\w\S*/g, word => word[0].toLocaleUpperCase() + word.substring(1)) : '';
 }
 
 export function transformTextToSentenceCase(text: string): string {
@@ -97,10 +97,14 @@ export function transformTextToSentenceCase(text: string): string {
             const words = sentence
                 .trim()
                 .split(' ')
-                .reduce((allWords, word, index) => allWords.concat(index === 0 ? transformTextToTitleCase(word) : word), []);
+                .reduce((allWords, word, index) => allWords.concat(index === 0 ? transformSentenceTextToTitleCase(word) : word), []);
             return previousSentences.concat(words.join(' '));
         }, '')
         .trim();
+}
+
+function transformSentenceTextToTitleCase(text: string): string {
+    return text && text.length > 0 ? (text[0].toLocaleUpperCase() + text.substring(1)) : '';
 }
 
 export function setCharAt(value: string, position: number, char: string): string {
