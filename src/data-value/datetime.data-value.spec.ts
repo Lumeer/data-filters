@@ -585,5 +585,10 @@ describe('DateTimeDataValue', () => {
     it('parse week config', () => {
       expect(new DateTimeDataValue(null, weekConfig).parseInput('22.2020').format()).toEqual('22.2020');
     });
+
+    it('parse time', () => {
+      const config: DateTimeConstraintConfig = {format: 'HH:mm', asUtc: true};
+      expect(new DateTimeDataValue('1970-01-01T14:00:00.000Z', config, null, '8').serialize()).toEqual('1970-01-01T08:00:00.000Z');
+    });
   });
 });

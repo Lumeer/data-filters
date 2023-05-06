@@ -21,7 +21,7 @@ import moment from 'moment';
 
 import {DataValue} from './data-value';
 import {DateTimeConstraintConfig, ConstraintConditionValue, DateTimeConstraintConditionValue, ConditionType, ConditionValue, LanguageTag, languageTagToLocale} from '../model';
-import {conditionTypeNumberOfInputs, createRange, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, valueMeetFulltexts, getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek, formatUnknownDataValue} from '../utils';
+import {conditionTypeNumberOfInputs, createRange, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, valueMeetFulltexts, getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek, formatUnknownDataValue, hasOnlyTimeFormat} from '../utils';
 import {ConstraintData} from '../constraint';
 
 export class DateTimeDataValue implements DataValue {
@@ -39,7 +39,7 @@ export class DateTimeDataValue implements DataValue {
     this.locale = languageTagToLocale(constraintData?.locale || LanguageTag.USA);
     if (inputValue) {
       const inputValueMatchFormat = inputValue.trim().length === this.config?.format?.length;
-      const parsedValue = inputValueMatchFormat ? inputValue : value;
+      const parsedValue = inputValueMatchFormat || hasOnlyTimeFormat(this.config?.format) ? inputValue : value;
       this.momentDate = parseMomentDate(parsedValue, this.config?.format, this.isUtc);
     } else if (isDateValid(this.value)) {
       this.momentDate = this.parseMoment(offsetTime(this.value, this.isUtc), this.isUtc);

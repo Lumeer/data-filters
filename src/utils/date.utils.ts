@@ -20,7 +20,7 @@
 import moment from 'moment';
 import {DurationInputArg2} from 'moment';
 
-import {createDateTimeOptions} from './date-time-options';
+import {createDateTimeOptions, hasDateOption, hasTimeOption} from './date-time-options';
 import {DurationUnit} from '../model';
 
 import 'moment/locale/en-gb';
@@ -88,6 +88,11 @@ export function resetUnusedMomentPart(date: moment.Moment, format: string): mome
   }
 
   return dateCopy;
+}
+
+export function hasOnlyTimeFormat(format: string): boolean {
+  const dateTimeOptions = createDateTimeOptions(format);
+  return hasTimeOption(dateTimeOptions) && !hasDateOption(dateTimeOptions)
 }
 
 function resetYear(date: moment.Moment, keepDayOfWeek = false): moment.Moment {
