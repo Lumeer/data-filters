@@ -70,7 +70,7 @@ function median(values: number[], onlyNumeric?: boolean): number {
   return valuesSorted[middle];
 }
 
-export function sumNumericValues(values: any[], onlyNumeric: boolean): any {
+export function sumNumericValues(values: any[], onlyNumeric: boolean): number | null {
   const bigValues = transformToBigValues(values);
   if (bigValues.length === 0) {
     return onlyNumeric ? null : values[0];
@@ -83,12 +83,12 @@ function transformToBigValues(values: any[]): Big[] {
   return values.map(value => convertToBig(value)).filter(value => !!value);
 }
 
-export function sumAnyValues(values: any[], onlyNumeric): any {
+export function sumAnyValues(values: any[], onlyNumeric: boolean): number | string | null {
   const nonZeroValues = values.filter(val => val !== 0 && val !== '0');
   const containsOnlyPercentValues = nonZeroValues.length > 0 && nonZeroValues.every(val => isPercentageValue(val));
   if (containsOnlyPercentValues && !onlyNumeric) {
     const percentageNumericValues = mapPercentageValues(nonZeroValues);
-    const percentSum = percentageNumericValues.reduce((sum, value) => sum + toNumber(value), 0);
+    const percentSum = sumNumericValues(percentageNumericValues, true);
     return `${percentSum}%`;
   }
 
@@ -97,7 +97,7 @@ export function sumAnyValues(values: any[], onlyNumeric): any {
     return onlyNumeric ? null : values[0] || 0;
   }
 
-  return numericValues.reduce((sum, value) => sum + toNumber(value), 0);
+  return sumNumericValues(numericValues, true) || 0;
 }
 
 function isPercentageValue(value: any): boolean {

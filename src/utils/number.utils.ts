@@ -29,8 +29,11 @@ export function isNumeric(value: any): boolean {
 }
 
 export function toNumber(value: any): number {
-    const val = value && value.toString().replace(/\s/g, '').replace(',', '.');
+    if (typeof value === 'number'){
+        return value;
+    }
 
+    const val = value && value.toString().replace(/\s/g, '').replace(',', '.');
     return Number(val);
 }
 
