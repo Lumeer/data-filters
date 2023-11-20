@@ -8,6 +8,8 @@ export interface Resource {
 
 export interface Collection extends Resource {
     purpose?: CollectionPurpose;
+    color?: string;
+    icon?: string;
 }
 
 interface CollectionPurpose {

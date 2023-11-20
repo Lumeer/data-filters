@@ -17,7 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {Query} from './query';
+
 export interface View {
     id?: string;
     name: string;
+    color?: string;
+    query?: Query;
 }
