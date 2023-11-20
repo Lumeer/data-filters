@@ -18,8 +18,9 @@
  */
 
 import {DataValue} from './data-value';
-import {deepObjectsEquals, isNotNullOrUndefined, unescapeHtml, dataValuesMeetConditionByText, valueMeetFulltexts, formatUnknownDataValue, formatCoordinates, parseCoordinates} from '../utils';
+import {dataValuesMeetConditionByText, valueMeetFulltexts, formatCoordinates, parseCoordinates} from '../utils';
 import {ConditionType, ConditionValue, MapCoordinates, CoordinatesConstraintConfig, CoordinatesFormat} from '../model';
+import {deepObjectsEquals, formatUnknownDataValue, isNotNullOrUndefined, unescapeHtml} from '@lumeer/utils';
 
 export class CoordinatesDataValue implements DataValue {
   public readonly coordinates: MapCoordinates;

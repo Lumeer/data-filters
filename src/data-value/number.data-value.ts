@@ -17,14 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Big, {RoundingMode} from 'big.js';
+import Big from 'big.js';
 import numbro from 'numbro';
 
 import {NumericDataValue} from './data-value';
-import {compareBigNumbers, convertToBig, dataValuesMeetConditionByNumber, decimalStoreToUser, decimalUserToStore, escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, isNullOrUndefined, isNumeric, removeNonNumberCharacters, roundBigNumber, toNumber, unescapeHtml, valueByConditionNumber, valueMeetFulltexts} from '../utils';
+import {dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, LanguageTag, NumberConstraintConfig} from '../model';
 import {registerAndSetLanguage} from '../state/language-state';
 import {ConstraintData} from '../constraint';
+import {compareBigNumbers, convertToBig, decimalStoreToUser, decimalUserToStore, escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, isNullOrUndefined, isNumeric, removeNonNumberCharacters, roundBigNumber, toNumber, unescapeHtml} from '@lumeer/utils';
 
 export class NumberDataValue implements NumericDataValue {
   public readonly number: Big;

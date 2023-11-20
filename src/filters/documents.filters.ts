@@ -42,10 +42,11 @@ import {
   AttributeLockGroupType,
   AttributeFilterEquation
 } from '../model';
-import {escapeHtml, filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, isNullOrUndefined, mergeDocuments, mergeLinkInstances, objectsByIdMap, objectValues, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder, removeAccentFromString} from '../utils';
+import {filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, mergeDocuments, mergeLinkInstances, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder} from '../utils';
 import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes, UnknownConstraint} from '../constraint';
 import {DataValue, UserDataValue} from '../data-value';
 import * as momentTimeZone from 'moment-timezone';
+import {escapeHtml, isNullOrUndefined, objectsByIdMap, objectValues, removeAccentFromString} from '@lumeer/utils';
 
 interface FilteredDataResources {
   allDocuments: DocumentModel[];

@@ -20,8 +20,9 @@
 import Big from 'big.js';
 
 import {NumericDataValue} from './data-value';
-import {compareBigNumbers, convertBigToNumberSafely, convertToBig, createBigWithoutTrailingZeros, dataValuesMeetConditionByNumber, decimalStoreToUser, decimalUserToStore, escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, isNumeric, roundBigNumber, toNumber, unescapeHtml, valueByConditionNumber, valueMeetFulltexts} from '../utils';
+import {dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, PercentageConstraintConfig, PercentageDisplayStyle} from '../model';
+import {compareBigNumbers, convertBigToNumberSafely, convertToBig, createBigWithoutTrailingZeros, decimalStoreToUser, decimalUserToStore, escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, isNumeric, roundBigNumber, toNumber, unescapeHtml} from '@lumeer/utils';
 
 export class PercentageDataValue implements NumericDataValue {
   public readonly number: Big;

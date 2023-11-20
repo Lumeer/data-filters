@@ -18,8 +18,9 @@
  */
 
 import {DataValue} from './data-value';
-import {formatUnknownDataValue, dataValuesMeetConditionByText, valueByConditionText, escapeHtml, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings, isNumeric, toNumber} from '../utils';
+import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue} from '../model';
+import {compareStrings, escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, isNumeric, toNumber, unescapeHtml} from '@lumeer/utils';
 
 export class UnknownDataValue implements DataValue {
   public readonly config: any = {};

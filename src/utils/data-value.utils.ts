@@ -21,10 +21,8 @@ import Big from 'big.js';
 import {NumericDataValue} from '../data-value';
 import {Constraint} from '../constraint';
 import {ConditionType, ConditionValue, ConstraintType} from '../model';
-import {removeAccentFromString, setCharAt} from './string.utils';
-import {isNotNullOrUndefined, isNullOrUndefined} from './common.utils';
 import {conditionTypeNumberOfInputs} from './query.util';
-import {createRange} from './array.utils';
+import {createRange, isNotNullOrUndefined, isNullOrUndefined, removeAccentFromString, setCharAt} from '@lumeer/utils';
 
 export function dataValuesMeetConditionByText(condition: ConditionType, value: string, otherValues: string[]): boolean {
   switch (condition) {

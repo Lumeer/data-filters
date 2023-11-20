@@ -20,10 +20,8 @@
 import Big from 'big.js';
 import numbro from 'numbro';
 import {DurationUnitsMap} from '../constraint';
-import {isNumeric, toNumber} from './number.utils';
-import {convertToBig} from './data.utils';
-import {objectValues} from './common.utils';
 import {DurationConstraintConfig, DurationType, DurationUnit, smallestDurationUnit} from '../model';
+import {convertToBig, isNumeric, objectValues, toNumber} from '@lumeer/utils';
 
 export const sortedDurationUnits = [
   DurationUnit.Weeks,

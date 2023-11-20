@@ -18,9 +18,7 @@
  */
 
 import Big from 'big.js';
-import {isNumeric, toNumber} from './number.utils';
-import {convertToBig} from './data.utils';
-import {uniqueValues} from './array.utils';
+import {convertToBig, isNumeric, toNumber, uniqueValues} from '@lumeer/utils';
 
 export function medianInNumericValues(values: any[], onlyNumeric: boolean): any {
   const bigValues = transformToBigValues(values).sort((a, b) => a.cmp(b));
