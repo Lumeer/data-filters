@@ -30,3 +30,4 @@ export * from './query.util';
 export * from './string.utils';
 export * from './valid-data-colors';
 export * from './data-value.utils';
+export * from './view.utils';

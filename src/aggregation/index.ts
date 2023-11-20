@@ -17,9 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './aggregation';
-export * from './constraint';
-export * from './data-value';
-export * from './filters';
-export * from './model';
-export * from './utils';
+export * from './data-aggregation';
+export * from './data-aggregator';
+export * from './data-object-aggregator';

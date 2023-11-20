@@ -17,10 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const enum Role {
+export const enum RoleType {
   Read = 'Read',
+  Manage = 'Manage',
+
   DataRead = 'DataRead',
   DataWrite = 'DataWrite',
   DataDelete = 'DataDelete',
   DataContribute = 'DataContribute',
+
+  ViewContribute = 'ViewContribute',
+  CollectionContribute = 'CollectionContribute',
+  LinkContribute = 'LinkContribute',
+  ProjectContribute = 'ProjectContribute',
+  CommentContribute = 'CommentContribute',
+
+  AttributeEdit = 'AttributeEdit',
+  UserConfig = 'UserConfig',
+  TechConfig = 'TechConfig',
+  PerspectiveConfig = 'PerspectiveConfig',
+  QueryConfig = 'QueryConfig',
 }

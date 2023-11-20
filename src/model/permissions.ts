@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Role} from './role';
+import {RoleType} from './role';
 
 export interface AllowedPermissions {
-    roles?: Record<Role, boolean>
-    rolesWithView?: Record<Role, boolean>
+    roles?: Record<RoleType, boolean>
+    rolesWithView?: Record<RoleType, boolean>
 }
 
 export type AllowedPermissionsMap = Record<string, AllowedPermissions>;
