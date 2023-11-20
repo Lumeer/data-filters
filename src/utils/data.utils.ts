@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Big, {RoundingMode} from 'big.js';
+import Big from 'big.js';
 
 import {isNotNullOrUndefined} from './common.utils';
 
@@ -90,7 +90,7 @@ export function convertToBig(value: any, defaultValue?: number): Big {
 
 export function roundBigNumber(big: Big, decimalPlaces: number): Big {
     if (big && isNotNullOrUndefined(decimalPlaces) && decimalPlaces >= 0) {
-        return big.round(decimalPlaces, RoundingMode.RoundHalfUp);
+        return big.round(decimalPlaces, Big.roundHalfUp);
     }
     return big;
 }

@@ -78,7 +78,7 @@ describe('AddressDataValue', () => {
     });
   });
 
-  describe('meet fultexts', () => {
+  describe('meet fulltexts', () => {
     it('single', () => {
       expect(new AddressDataValue('address 1', config, constraintData).meetFullTexts(['kosice'])).toBeTruthy();
 
