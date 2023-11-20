@@ -23,3 +23,10 @@ export interface AllowedPermissions {
     roles?: Record<Role, boolean>
     rolesWithView?: Record<Role, boolean>
 }
+
+export type AllowedPermissionsMap = Record<string, AllowedPermissions>;
+
+export interface ResourcesPermissions {
+    collections: AllowedPermissionsMap;
+    linkTypes: AllowedPermissionsMap;
+}

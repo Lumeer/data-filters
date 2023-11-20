@@ -19,8 +19,9 @@
 
 import {ConstraintData} from '../constraint';
 import {DataValue} from './data-value';
-import {formatUnknownDataValue, isEmailValid, arrayIntersection, isArray, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, compareStrings, uniqueValues, isNullOrUndefined} from '../utils';
+import {valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, Team, User, UserConstraintConditionValue, UserConstraintConfig} from '../model';
+import {arrayIntersection, compareStrings, formatUnknownDataValue, isArray, isEmailValid, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, uniqueValues} from '@lumeer/utils';
 
 export class UserDataValue implements DataValue {
   public readonly users: User[];

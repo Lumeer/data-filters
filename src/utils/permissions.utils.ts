@@ -19,9 +19,8 @@
 
 import {AllowedPermissions, DataResource, AttributesResource, User, DocumentModel, Collection, AttributesResourceType, LinkType, LinkInstance, CollectionPurposeType, ConstraintType} from '../model';
 import {getAttributesResourceType} from './data-resource.utils';
-import {isArray} from './array.utils';
-import {isNotNullOrUndefined} from './common.utils';
 import {ConstraintData, UserConstraint} from '../constraint';
+import {isArray, isNotNullOrUndefined} from '@lumeer/utils';
 
 export function userCanReadDataResource(
   dataResource: DataResource,

@@ -18,9 +18,10 @@
  */
 
 import {DataValue} from './data-value';
-import {arrayIntersection, isArray, formatUnknownDataValue, isNotNullOrUndefined, unescapeHtml, valueMeetFulltexts, isNullOrUndefined} from '../utils';
+import {valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, SelectConstraintConfig, SelectConstraintOption} from '../model';
 import {ConstraintData} from '../constraint';
+import {arrayIntersection, formatUnknownDataValue, isArray, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml} from '@lumeer/utils';
 
 export class SelectDataValue implements DataValue {
   public readonly options: SelectConstraintOption[];

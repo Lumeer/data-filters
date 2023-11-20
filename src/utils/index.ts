@@ -17,17 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export * from './attribute.utils';
 export * from './aggregation.utils';
 export * from './color.utils';
-export * from './array.utils';
-export * from './common.utils';
 export * from './coordinates.utils';
 export * from './currency.utils';
 export * from './date.utils';
-export * from './data.utils';
 export * from './data-resource.utils';
 export * from './duration.utils';
-export * from './number.utils';
 export * from './permissions.utils';
 export * from './query.util';
 export * from './string.utils';

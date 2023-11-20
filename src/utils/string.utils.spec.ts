@@ -17,24 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function uniqueValues<T>(array: T[]): T[] {
-  return Array.from(new Set(array));
-}
+import {transformTextToSentenceCase, transformTextToTitleCase} from './string.utils';
 
-export function isArray<T>(input?: any): input is T[] {
-  return Array.isArray(input);
-}
+describe('transformTextToTitleCase()', () => {
+  it('should change only first letters of words', () => {
+    expect(transformTextToTitleCase('hTC desire sV')).toEqual('HTC Desire SV');
+  });
+  it('should not modify digits', () => {
+    expect(transformTextToTitleCase('nokia 7.1')).toEqual('Nokia 7.1');
+  });
+});
 
-export function arrayIntersection<T>(array1: T[], array2: T[]): T[] {
-  const a = array1 || [];
-  const b = array2 || [];
-  return a.filter(x => b.includes(x));
-}
+describe('transformTextToSentenceCase()', () => {
+  it('should change only first character of first word', () => {
+    expect(transformTextToSentenceCase('hello world')).toEqual('Hello world');
+  });
 
-export function createRange(from: number, to: number): number[] {
-  const range = [];
-  for (let i = from; i < to ; i++) {
-    range.push(i);
-  }
-  return range;
-}
+  it('should properly format sentences', () => {
+    expect(transformTextToSentenceCase('hello!how are you?')).toEqual('Hello! How are you?');
+  });
+});

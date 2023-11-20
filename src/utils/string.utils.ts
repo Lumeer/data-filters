@@ -17,51 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import unorm from 'unorm';
-
 import {CaseStyle} from '../model/';
-
-export function compareStrings(a: string, b: string): number {
-    return (a || '').localeCompare(b || '', undefined, {sensitivity: 'base'});
-}
-
-export function completeStringWithCharacter(value: string, num: number, character: string): string {
-    let text = value || '';
-    while (text.length < num) {
-        text = character + text;
-    }
-    return text;
-}
-
-export function removeTrailingZeroesFromString(value: string): string {
-    if (!value) {
-        return value;
-    }
-
-    const [integerPart, fractionalPart] = String(value).split('.');
-    if (!fractionalPart) {
-        return integerPart;
-    }
-
-    const fractionalDigits = fractionalPart
-        .split('')
-        .reverse()
-        .reduce((reversedPart, digit) => (digit === '0' && !reversedPart ? '' : reversedPart + digit), '')
-        .split('')
-        .reverse()
-        .join('');
-
-    return fractionalDigits ? `${integerPart}.${fractionalDigits}` : integerPart;
-}
-
-
-export function removeAccentFromString(value: string, lowerCase = true): string {
-    return unorm.nfd(lowerCase ? (value || '').toString().toLowerCase() : value || '').replace(/[\u0300-\u036f]/g, '');
-}
-
-export function escapeStringForRegex(text: string): string {
-    return text.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-}
 
 export function transformTextBasedOnCaseStyle(text: string, caseStyle: CaseStyle | string): string {
     if (!text) {
@@ -105,12 +61,4 @@ export function transformTextToSentenceCase(text: string): string {
 
 function transformSentenceTextToTitleCase(text: string): string {
     return text && text.length > 0 ? (text[0].toLocaleUpperCase() + text.substring(1)) : '';
-}
-
-export function setCharAt(value: string, position: number, char: string): string {
-    return value.substring(0, position) + char + value.substring(position + 1, value.length);
-}
-
-export function replaceNbspFromString(value: string): string {
-    return (value || '').replace(/&nbsp;/g, ' ');
 }

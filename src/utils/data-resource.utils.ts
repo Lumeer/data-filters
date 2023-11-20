@@ -18,7 +18,7 @@
  */
 
 import {ConstraintType, Attribute, AttributesResource, AttributesResourceType, LinkType, DocumentModel, LinkInstance, AttributeFilter, AttributeLock} from '../model';
-import {objectsByIdMap, objectValues} from './common.utils';
+import {objectsByIdMap, objectValues} from '@lumeer/utils';
 
 export function groupDocumentsByCollection(documents: DocumentModel[]): Record<string, DocumentModel[]> {
     return (documents || []).reduce((map, document) => {

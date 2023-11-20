@@ -18,10 +18,11 @@
  */
 
 import {DataValue} from './data-value';
-import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts, deepObjectsEquals, escapeHtml, isNotNullOrUndefined, isObject, unescapeHtml, compareStrings} from '../utils';
+import {dataValuesMeetConditionByText, valueByConditionText, valueMeetFulltexts} from '../utils';
 import {Address, AddressField, AddressConstraintConfig} from '../model';
 import {ConditionType, ConditionValue} from '../model';
 import {ConstraintData} from '../constraint';
+import {compareStrings, deepObjectsEquals, escapeHtml, isNotNullOrUndefined, isObject, unescapeHtml} from '@lumeer/utils';
 
 export class AddressDataValue implements DataValue {
   public readonly address: Address;

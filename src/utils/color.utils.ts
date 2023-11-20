@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {completeStringWithCharacter} from './string.utils';
+import {completeStringWithCharacter} from '@lumeer/utils';
 
 export function prolongShortHexColor(shortHex: string): string {
     if (!shortHex) {

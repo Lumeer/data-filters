@@ -17,13 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Big, {Comparison, RoundingMode} from 'big.js';
+import Big from 'big.js';
 import numbro from 'numbro';
 import {DurationUnitsMap} from '../constraint';
-import {isNumeric, toNumber} from './number.utils';
-import {convertToBig} from './data.utils';
-import {objectValues} from './common.utils';
 import {DurationConstraintConfig, DurationType, DurationUnit, smallestDurationUnit} from '../model';
+import {convertToBig, isNumeric, objectValues, toNumber} from '@lumeer/utils';
 
 export const sortedDurationUnits = [
   DurationUnit.Weeks,
@@ -237,7 +235,7 @@ export function createDurationUnitsCountsMap(
 
         const unitToMillisBig = new Big(unitToMillis);
         const numUnits = currentDuration.div(unitToMillisBig);
-        let numUnitsRounded = numUnits.round(decimalPlaces, RoundingMode.RoundDown);
+        let numUnitsRounded = numUnits.round(decimalPlaces, Big.roundDown);
 
         if (numUnits.lt(new Big(1))) {
           // rounded up for last unit if greater than 0
@@ -247,7 +245,7 @@ export function createDurationUnitsCountsMap(
 
         currentDuration = currentDuration.sub(numUnitsRounded.times(unitToMillisBig));
 
-        if (usedNumUnits + 1 === maximumUnits && currentDuration.cmp(unitToMillisBig.div(2)) === Comparison.GT) {
+        if (usedNumUnits + 1 === maximumUnits && currentDuration.gt(unitToMillisBig.div(2))) {
           numUnitsRounded = numUnitsRounded.add(1);
         }
         result[unit] = toNumber(numUnitsRounded.toFixed(decimalPlaces)) * multiplier;
@@ -269,10 +267,10 @@ export function durationCountsMapToString(
   let minusSignAdded = false;
   return [...sortedDurationUnits].reduce((result, unit) => {
     const numUnits = new Big(durationCountsMap[unit] || 0);
-    if (numUnits.cmp(new Big(0)) === Comparison.GT) {
+    if (numUnits.gt(new Big(0))) {
       const unitString = durationUnitsMap?.[unit] || unit;
       return result + parseResultUnitsString(numUnits, decimalPlaces) + unitString;
-    } else if (numUnits.cmp(new Big(0)) === Comparison.LT) {
+    } else if (numUnits.lt(new Big(0))) {
       const unitString = durationUnitsMap?.[unit] || unit;
       const numUnitsAbsolute = minusSignAdded ? numUnits.times(new Big(-1)) : numUnits;
       minusSignAdded = true;

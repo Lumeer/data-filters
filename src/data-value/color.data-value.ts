@@ -18,8 +18,9 @@
  */
 
 import {DataValue} from './data-value';
-import {dataValuesMeetConditionByText, valueMeetFulltexts, validDataColors, formatUnknownDataValue, escapeHtml, isNotNullOrUndefined, objectValues, unescapeHtml, convertHslColorToHex, convertRgbColorToHex, prolongShortHexColor} from '../utils';
+import {dataValuesMeetConditionByText, valueMeetFulltexts, validDataColors, convertHslColorToHex, convertRgbColorToHex, prolongShortHexColor} from '../utils';
 import {ConditionType, ConditionValue, ColorConstraintConfig} from '../model';
+import {escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, objectValues, unescapeHtml} from '@lumeer/utils';
 
 export class ColorDataValue implements DataValue {
   public readonly hexCode: string;

@@ -18,9 +18,8 @@
  */
 
 import Coordinates from 'coordinate-parser';
-import {isNumeric} from './number.utils';
-import {isNotNullOrUndefined} from './common.utils';
 import {MapCoordinates, CoordinatesFormat} from '../model';
+import {isNotNullOrUndefined, isNumeric} from '@lumeer/utils';
 
 export function parseCoordinates(value: any): MapCoordinates {
   if (value && isNotNullOrUndefined(value.lat) && isNotNullOrUndefined(value.lng)) {

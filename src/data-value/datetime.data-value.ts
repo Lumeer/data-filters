@@ -21,8 +21,9 @@ import moment from 'moment';
 
 import {DataValue} from './data-value';
 import {DateTimeConstraintConfig, ConstraintConditionValue, DateTimeConstraintConditionValue, ConditionType, ConditionValue, LanguageTag, languageTagToLocale} from '../model';
-import {conditionTypeNumberOfInputs, createRange, isNotNullOrUndefined, isNullOrUndefined, unescapeHtml, valueMeetFulltexts, getSmallestDateUnit, isDateValid, parseMomentDate, resetUnusedMomentPart, resetWeek, formatUnknownDataValue, hasOnlyTimeFormat} from '../utils';
+import {conditionTypeNumberOfInputs, valueMeetFulltexts} from '../utils';
 import {ConstraintData} from '../constraint';
+import {isNullOrUndefined, isNotNullOrUndefined, unescapeHtml, parseMomentDate, hasOnlyTimeFormat, isDateValid, resetUnusedMomentPart, formatUnknownDataValue, getSmallestDateUnit, createRange, resetWeek} from '@lumeer/utils';
 
 export class DateTimeDataValue implements DataValue {
   public readonly momentDate: moment.Moment;
