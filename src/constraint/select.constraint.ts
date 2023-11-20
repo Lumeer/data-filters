@@ -21,7 +21,7 @@ import {SelectDataValue} from '../data-value';
 import {Constraint} from './constraint';
 import {
   avgAnyValues,
-  countValues, isArray, isNotNullOrUndefined,
+  countValues,
   maxInAnyValues,
   medianInAnyValues,
   minInAnyValues,
@@ -30,6 +30,7 @@ import {
 } from '../utils';
 import {ConditionType, SelectConstraintConfig, ConstraintType} from '../model';
 import {ConstraintData} from './constraint-data';
+import {isArray, isNotNullOrUndefined} from '@lumeer/utils';
 
 export class SelectConstraint implements Constraint {
   public readonly type = ConstraintType.Select;

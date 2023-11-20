@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TeamDataValue, UserDataValue} from '../data-value';
+import {TeamDataValue} from '../data-value';
 import {Constraint} from './constraint';
 import {
     avgAnyValues,
-    countValues, isArray, isNotNullOrUndefined,
+    countValues,
     maxInAnyValues,
     medianInAnyValues,
     minInAnyValues,
@@ -30,6 +30,7 @@ import {
 } from '../utils';
 import {ConditionType, ConstraintType, TeamConstraintConfig} from '../model';
 import {ConstraintData} from './constraint-data';
+import {isArray, isNotNullOrUndefined} from '@lumeer/utils';
 
 export class TeamConstraint implements Constraint {
   public readonly type = ConstraintType.Team;

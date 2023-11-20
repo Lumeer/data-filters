@@ -21,7 +21,7 @@ import {UserDataValue, userDataValueIsTeamValue} from '../data-value';
 import {Constraint} from './constraint';
 import {
     avgAnyValues,
-    countValues, isArray, isNotNullOrUndefined,
+    countValues,
     maxInAnyValues,
     medianInAnyValues,
     minInAnyValues,
@@ -30,6 +30,7 @@ import {
 } from '../utils';
 import {ConditionType, UserConstraintConfig, ConstraintType} from '../model';
 import {ConstraintData} from './constraint-data';
+import {isArray, isNotNullOrUndefined} from '@lumeer/utils';
 
 export class UserConstraint implements Constraint {
   public readonly type = ConstraintType.User;
