@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ConstraintType, Attribute, AttributesResource, AttributesResourceType, LinkType, DocumentModel, LinkInstance, AttributeFilter, AttributeLock} from '../model';
+import {ConstraintType, Attribute, DocumentModel, LinkInstance, AttributeFilter, AttributeLock} from '../model';
 import {objectsByIdMap, objectValues} from '@lumeer/utils';
 
 export function groupDocumentsByCollection(documents: DocumentModel[]): Record<string, DocumentModel[]> {
@@ -57,13 +57,6 @@ export function mergeLinkInstances(linkInstancesA: LinkInstance[], linkInstances
     const documentsAIds = new Set(linkInstancesA.map(collection => collection.id));
     const documentsBToAdd = linkInstancesB.filter(collection => !documentsAIds.has(collection.id));
     return linkInstancesA.concat(documentsBToAdd);
-}
-
-export function getAttributesResourceType(attributesResource: AttributesResource): AttributesResourceType {
-    if (<LinkType>attributesResource && (<LinkType>attributesResource).collectionIds) {
-        return AttributesResourceType.LinkType;
-    }
-    return AttributesResourceType.Collection;
 }
 
 export function filterAttributesByFilters(attributes: Attribute[], filters: AttributeFilter[]): Attribute[] {

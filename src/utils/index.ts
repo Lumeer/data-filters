@@ -25,6 +25,7 @@ export * from './currency.utils';
 export * from './date.utils';
 export * from './data-resource.utils';
 export * from './duration.utils';
+export * from './resource.utils';
 export * from './permissions.utils';
 export * from './query.util';
 export * from './string.utils';
