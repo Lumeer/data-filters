@@ -19,9 +19,9 @@
 
 import {ConstraintData} from '../constraint';
 import {DataValue} from './data-value';
-import {valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, Team, TeamConstraintConfig, TeamConstraintConditionValue} from '../model';
 import {arrayIntersection, compareStrings, formatUnknownDataValue, isArray, isNotNullOrUndefined, unescapeHtml} from '@lumeer/utils';
+import {valueMeetFulltexts} from './data-value.utils';
 
 export class TeamDataValue implements DataValue {
   public readonly teams: Team[];

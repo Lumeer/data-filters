@@ -18,9 +18,10 @@
  */
 
 import {DataValue} from './data-value';
-import {transformTextBasedOnCaseStyle, dataValuesMeetConditionByText, valueByConditionText} from '../utils';
+import {transformTextBasedOnCaseStyle} from '../utils';
 import {ConditionType, ConditionValue, TextConstraintConfig} from '../model';
 import {compareStrings, formatUnknownDataValue, isNotNullOrUndefined, removeAccentFromString, replaceNbspFromString, stripTextHtmlTags, unescapeHtml} from '@lumeer/utils';
+import {dataValuesMeetConditionByText, valueByConditionText} from './data-value.utils';
 
 export class TextDataValue implements DataValue {
   constructor(

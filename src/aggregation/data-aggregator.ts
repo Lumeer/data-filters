@@ -18,8 +18,8 @@
  */
 
 import {AttributesResource, AttributesResourceType, Collection, DataResource, DocumentModel, LinkInstance, LinkType, QueryStem} from '../model';
-import {Constraint, ConstraintData, UnknownConstraint} from '../constraint';
-import {findAttributeConstraint, queryStemAttributesResourcesOrder} from '../utils';
+import {Constraint, ConstraintData, findAttributeConstraint, UnknownConstraint} from '../constraint';
+import {queryStemAttributesResourcesOrder} from '../utils';
 import {isArray, isNotNullOrUndefined, isNullOrUndefined, objectValues} from '@lumeer/utils';
 
 type DataResourceWithLinks = DataResource & {from: DataResource[]; to: DataResource[]};

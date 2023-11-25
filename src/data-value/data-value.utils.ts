@@ -18,11 +18,9 @@
  */
 
 import Big from 'big.js';
-import {NumericDataValue} from '../data-value';
-import {Constraint} from '../constraint';
-import {ConditionType, ConditionValue, ConstraintType} from '../model';
-import {conditionTypeNumberOfInputs} from './query.util';
-import {createRange, isNotNullOrUndefined, isNullOrUndefined, removeAccentFromString, setCharAt} from '@lumeer/utils';
+import {NumericDataValue} from './data-value';
+import {isNotNullOrUndefined, isNullOrUndefined, removeAccentFromString, setCharAt} from '@lumeer/utils';
+import {ConditionType, ConditionValue} from '../model';
 
 export function dataValuesMeetConditionByText(condition: ConditionType, value: string, otherValues: string[]): boolean {
   switch (condition) {
@@ -180,16 +178,17 @@ export function valueMeetFulltexts(value: string, fulltexts: string[]): boolean 
     .every(fulltext => formattedValue.includes(fulltext));
 }
 
-export function initialConditionType(constraint: Constraint): ConditionType {
-  return constraint.conditions()[0];
-}
-
-export function initialConditionValues(condition: ConditionType, constraint: Constraint): ConditionValue[] {
-  const numInputs = conditionTypeNumberOfInputs(condition);
-  switch (constraint.type) {
-    case ConstraintType.Boolean:
-      return createRange(0, numInputs).map(() => ({value: true}));
+export function conditionTypeNumberOfInputs(condition: ConditionType): number {
+  switch (condition) {
+    case ConditionType.IsEmpty:
+    case ConditionType.NotEmpty:
+    case ConditionType.Enabled:
+    case ConditionType.Disabled:
+      return 0;
+    case ConditionType.Between:
+    case ConditionType.NotBetween:
+      return 2;
     default:
-      return createRange(0, numInputs).map(() => ({}));
+      return 1;
   }
 }

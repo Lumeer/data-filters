@@ -29,7 +29,6 @@ import {
   uniqueValuesCount,
 } from '../utils';
 import {ConditionType, ConstraintType} from '../model';
-import {ConstraintData} from './constraint-data';
 
 export class FilesConstraint implements Constraint {
   public readonly type = ConstraintType.Files;

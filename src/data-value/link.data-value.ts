@@ -18,9 +18,9 @@
  */
 
 import {DataValue} from './data-value';
-import {valueByConditionText, valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, LinkConstraintConfig} from '../model';
 import {compareStrings, isEmailValid, isNotNullOrUndefined} from '@lumeer/utils';
+import {valueByConditionText, valueMeetFulltexts} from './data-value.utils';
 
 /*
  * Saved value is formatted as 'Link [Text]'

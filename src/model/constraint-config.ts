@@ -18,7 +18,8 @@
  */
 
 import Big from 'big.js';
-import {LanguageTag, AddressField} from './index';
+import {AddressField} from './address';
+import {LanguageTag} from './language-tag';
 
 export interface AddressConstraintConfig {
   fields: AddressField[];

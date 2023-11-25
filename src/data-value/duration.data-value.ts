@@ -21,9 +21,6 @@ import Big from 'big.js';
 
 import {NumericDataValue} from './data-value';
 import {
-  dataValuesMeetConditionByNumber,
-  valueByConditionNumber,
-  valueMeetFulltexts,
   createDurationUnitsCountsMap,
   formatDurationDataValue,
   getDurationSaveValue,
@@ -35,6 +32,7 @@ import {
 import {ConditionType, ConditionValue, DurationConstraintConfig, DurationUnit} from '../model';
 import {ConstraintData, DurationUnitsMap} from '../constraint';
 import {compareBigNumbers, convertBigToNumberSafely, convertToBig, escapeHtml, formatUnknownDataValue, isNotNullOrUndefined, isNumeric, roundBigNumber, toNumber, unescapeHtml} from '@lumeer/utils';
+import {dataValuesMeetConditionByNumber, valueByConditionNumber, valueMeetFulltexts} from './data-value.utils';
 
 export class DurationDataValue implements NumericDataValue {
   public readonly number: Big;

@@ -18,9 +18,9 @@
  */
 
 import {DataValue} from './data-value';
-import {valueMeetFulltexts} from '../utils';
 import {FilesConstraintConfig, ConditionType, ConditionValue} from '../model';
 import {compareStrings, escapeHtml, unescapeHtml} from '@lumeer/utils';
+import {valueMeetFulltexts} from './data-value.utils';
 
 export class FilesDataValue implements DataValue {
 

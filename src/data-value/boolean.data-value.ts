@@ -18,9 +18,9 @@
  */
 
 import {DataValue} from './data-value';
-import {valueMeetFulltexts} from '../utils';
 import {BooleanConstraintConfig, ConditionType, ConditionValue} from '../model';
 import {isArray} from '@lumeer/utils';
+import {valueMeetFulltexts} from './data-value.utils';
 
 const truthyValues = [true, 'true', 'yes', 'ja', 'ano', 'áno', 'sí', 'si', 'sim', 'да', '是', 'はい', 'vâng', 'כן'];
 

@@ -18,8 +18,8 @@
  */
 
 import {DataValue} from './data-value';
-import {valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, ActionConstraintConfig} from '../model';
+import {valueMeetFulltexts} from './data-value.utils';
 
 export class ActionDataValue implements DataValue {
   public readonly value = null;

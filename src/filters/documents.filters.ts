@@ -21,32 +21,22 @@ import {
   AllowedPermissions,
   Attribute,
   AttributeFilter,
-  AttributesResource,
   AttributesResourceType,
   Collection,
-  ConditionType,
-  ConstraintType,
   DataResource,
   DocumentModel,
-  EquationOperator,
   LanguageTag,
   LinkInstance,
   LinkType,
   Query,
   QueryStem,
   Resource,
-  UserConstraintConditionValue,
-  UserConstraintType,
-  AttributeLock,
-  AttributeLockExceptionGroup,
-  AttributeLockGroupType,
-  AttributeFilterEquation
 } from '../model';
 import {filterAttributesByFilters, getAttributesResourceType, groupDocumentsByCollection, groupLinkInstancesByLinkTypes, mergeDocuments, mergeLinkInstances, queryIsEmptyExceptPagination, queryStemAttributesResourcesOrder} from '../utils';
-import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes, UnknownConstraint} from '../constraint';
-import {DataValue, UserDataValue} from '../data-value';
+import {ConstraintData, createConstraintsInCollections, createConstraintsInLinkTypes} from '../constraint';
 import * as momentTimeZone from 'moment-timezone';
 import {escapeHtml, isNullOrUndefined, objectsByIdMap, objectValues, removeAccentFromString} from '@lumeer/utils';
+import {createDataValuesMap, dataMeetsFilters, dataMeetsFulltexts, dataValuesMeetsFilters} from '../aggregation';
 
 interface FilteredDataResources {
   allDocuments: DocumentModel[];
@@ -450,224 +440,6 @@ export function someDocumentMeetFulltexts(
   return false;
 }
 
-export function createDataValuesMap(
-  data: Record<string, any>,
-  attributes: Attribute[],
-  constraintData: ConstraintData
-): Record<string, DataValue> {
-  return (attributes || []).reduce(
-    (map, attribute) => ({
-      ...map,
-      [attribute.id]: (attribute.constraint || new UnknownConstraint()).createDataValue(
-        data?.[attribute.id],
-        constraintData
-      ),
-    }),
-    {}
-  );
-}
-
-function dataValuesMeetsFiltersWithOperator(
-  dataResource: DataResource,
-  dataValues: Record<string, DataValue>,
-  resource: AttributesResource,
-  attributesMap: Record<string, Attribute>,
-  filters: AttributeFilter[],
-  constraintData: ConstraintData,
-  operator: EquationOperator = EquationOperator.And
-): boolean {
-  const definedFilters = filters?.filter(fil => !!attributesMap[fil.attributeId]);
-  if (operator === EquationOperator.Or) {
-    return (
-      !definedFilters ||
-      definedFilters.length === 0 ||
-      definedFilters.reduce(
-        (result, filter) =>
-          result || dataValuesMeetsFilters(dataValues, [filter], attributesMap, constraintData),
-        false
-      )
-    );
-  }
-  return dataValuesMeetsFilters(dataValues, definedFilters, attributesMap, constraintData);
-}
-
-function dataMeetsFilters(
-  dataResource: DataResource,
-  data: Record<string, any>,
-  resource: AttributesResource,
-  attributes: Attribute[],
-  filters: AttributeFilter[],
-  constraintData: ConstraintData,
-  operator: EquationOperator = EquationOperator.And
-): boolean {
-  const dataValues = createDataValuesMap(data, attributes, constraintData);
-  return dataValuesMeetsFiltersWithOperator(
-    dataResource,
-    dataValues,
-    resource,
-    objectsByIdMap(attributes),
-    filters,
-    constraintData,
-    operator
-  );
-}
-
-function dataValuesMeetsFilters(
-  dataValues: Record<string, DataValue>,
-  filters: AttributeFilter[],
-  attributesMap: Record<string, Attribute>,
-  constraintData?: ConstraintData
-): boolean {
-  if (!filters || filters.length === 0) {
-    return true;
-  }
-  return filters.every(filter => {
-    if (!dataValues[filter.attributeId]) {
-      return false;
-    }
-
-    const attribute = attributesMap[filter.attributeId];
-    const constraintType = attribute?.constraint?.type || ConstraintType.Unknown;
-    switch (constraintType) {
-      case ConstraintType.Action:
-        if (filter.condition === ConditionType.Enabled) {
-          return isActionButtonEnabled(dataValues, attributesMap, attribute.lock, constraintData);
-        } else if (filter.condition === ConditionType.Disabled) {
-          return !isActionButtonEnabled(dataValues, attributesMap, attribute.lock, constraintData);
-        }
-        return false;
-      default:
-        return dataValues[filter.attributeId].meetCondition(filter.condition, filter.conditionValues);
-    }
-  });
-}
-
-export interface AttributeLockFiltersStats {
-  satisfy?: boolean;
-  groups?: AttributeLockFiltersStatsGroup[];
-}
-
-export interface AttributeLockFiltersStatsGroup {
-  exceptionGroup?: AttributeLockExceptionGroup;
-  filtersStats: AttributeLockFilterStats[];
-  satisfy: boolean;
-}
-
-export interface AttributeLockFilterStats {
-  satisfy?: boolean;
-  filter?: AttributeFilter;
-}
-
-export function computeAttributeLockStats(
-  dataResource: DataResource,
-  resource: AttributesResource,
-  lock: AttributeLock,
-  constraintData?: ConstraintData
-): AttributeLockFiltersStats {
-  if (!dataResource || !resource) {
-    return {};
-  }
-
-  const dataValues = createDataValuesMap(dataResource?.data, resource?.attributes, constraintData);
-  const attributesMap = objectsByIdMap(resource?.attributes);
-
-  return computeAttributeLockStatsByDataValues(dataValues, attributesMap, lock, constraintData);
-}
-
-export function computeAttributeLockStatsByDataValues(
-  dataValues: Record<string, DataValue>,
-  attributesMap: Record<string, Attribute>,
-  lock: AttributeLock,
-  constraintData?: ConstraintData
-): AttributeLockFiltersStats {
-  if (!dataValues || !attributesMap) {
-    return {};
-  }
-
-  return (lock?.exceptionGroups || []).reduce<AttributeLockFiltersStats>((stats, group) => {
-
-    if (group.type == AttributeLockGroupType.Everyone || (group.type === AttributeLockGroupType.UsersAndTeams && exceptionGroupContainsCurrentUser(group, constraintData))) {
-      const filters = group.equation?.equations?.map(eq => eq.filter) || [];
-      const operator = group.equation?.equations?.[0]?.operator || EquationOperator.And;
-      const groupStats = dataValuesMeetsFiltersWithOperatorStats(dataValues, attributesMap, filters, constraintData, operator);
-
-      return {
-        satisfy: stats.satisfy || groupStats.satisfy,
-        groups: [...stats.groups, {...groupStats, exceptionGroup: group}]
-      };
-    }
-
-    return stats;
-  }, {satisfy: false, groups: []});
-}
-
-export function dataValuesSatisfyEquation(
-  dataValues: Record<string, DataValue>,
-  attributesMap: Record<string, Attribute>,
-  equation: AttributeFilterEquation,
-  constraintData?: ConstraintData
-): boolean {
-  if (!dataValues || !attributesMap) {
-    return false;
-  }
-
-  const filters = equation?.equations?.map(eq => eq.filter) || [];
-  const operator = equation?.equations?.[0]?.operator || EquationOperator.And;
-  return dataValuesMeetsFiltersWithOperatorStats(dataValues, attributesMap, filters, constraintData, operator).satisfy;
-}
-
-function exceptionGroupContainsCurrentUser(group: AttributeLockExceptionGroup, constraintData: ConstraintData): boolean {
-  const userDataValue = new UserDataValue(group.typeValue, {multi: true, type: UserConstraintType.UsersAndTeams}, constraintData);
-  return userDataValue.meetCondition(ConditionType.HasSome, [{type: UserConstraintConditionValue.CurrentUser}]) ||
-    userDataValue.meetCondition(ConditionType.HasSome, [{type: UserConstraintConditionValue.CurrentTeams}]);
-}
-
-function dataValuesMeetsFiltersWithOperatorStats(
-  dataValues: Record<string, DataValue>,
-  attributesMap: Record<string, Attribute>,
-  filters: AttributeFilter[],
-  constraintData: ConstraintData,
-  operator: EquationOperator = EquationOperator.And
-): AttributeLockFiltersStatsGroup {
-  const definedFilters = filters?.filter(fil => !!attributesMap[fil.attributeId]) || [];
-
-  const filtersStats: AttributeLockFilterStats[] = definedFilters.map(filter => {
-    const meetsFilters = dataValuesMeetsFilters(dataValues, [filter], attributesMap, constraintData);
-    return {filter, satisfy: meetsFilters};
-  });
-
-  let satisfy: boolean;
-  if (operator === EquationOperator.Or) {
-    satisfy = filtersStats.length === 0 || filtersStats.some(stats => stats.satisfy);
-  } else {
-    satisfy = filtersStats.length === 0 || filtersStats.every(stats => stats.satisfy);
-  }
-
-  return {filtersStats, satisfy};
-}
-
-export function isActionButtonEnabled(
-  dataValues: Record<string, DataValue>,
-  attributesMap: Record<string, Attribute>,
-  lock: AttributeLock,
-  constraintData?: ConstraintData
-): boolean {
-  return computeAttributeLockStatsByDataValues(dataValues, attributesMap, lock, constraintData).satisfy;
-}
-
-function dataMeetsFulltexts(
-  data: Record<string, any>,
-  fulltexts: string[],
-  attributes: Attribute[],
-  constraintData: ConstraintData
-): boolean {
-  if (!fulltexts || fulltexts.length === 0) {
-    return true;
-  }
-
-  const dataValues = createDataValuesMap(data, attributes, constraintData);
-  return fulltexts.some(fulltext => objectValues(dataValues).some(dataValue => dataValue.meetFullTexts([fulltext])));
-}
 
 function paginate(documents: DocumentModel[], query: Query) {
   if (!query || isNullOrUndefined(query.page) || isNullOrUndefined(query.pageSize) || (!query.page && !query.pageSize)) {

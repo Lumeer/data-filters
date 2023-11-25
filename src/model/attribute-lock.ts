@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {AttributeFilterEquation} from './attribute-filter';
+import {AttributeFilter, AttributeFilterEquation} from './attribute-filter';
 
 export interface AttributeLock {
   locked?: boolean;
@@ -33,4 +33,20 @@ export interface AttributeLockExceptionGroup {
 export enum AttributeLockGroupType {
   Everyone = 'everyone',
   UsersAndTeams = 'usersAndTeams',
+}
+
+export interface AttributeLockFiltersStats {
+  satisfy?: boolean;
+  groups?: AttributeLockFiltersStatsGroup[];
+}
+
+export interface AttributeLockFiltersStatsGroup {
+  exceptionGroup?: AttributeLockExceptionGroup;
+  filtersStats: AttributeLockFilterStats[];
+  satisfy: boolean;
+}
+
+export interface AttributeLockFilterStats {
+  satisfy?: boolean;
+  filter?: AttributeFilter;
 }

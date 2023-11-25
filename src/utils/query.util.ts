@@ -19,21 +19,6 @@
 
 import {ConditionType, Query, QueryStem, AttributesResource, Collection, LinkType} from '../model';
 
-export function conditionTypeNumberOfInputs(condition: ConditionType): number {
-  switch (condition) {
-    case ConditionType.IsEmpty:
-    case ConditionType.NotEmpty:
-    case ConditionType.Enabled:
-    case ConditionType.Disabled:
-      return 0;
-    case ConditionType.Between:
-    case ConditionType.NotBetween:
-      return 2;
-    default:
-      return 1;
-  }
-}
-
 export function queryIsNotEmptyExceptPagination(query: Query): boolean {
   return (query.stems && query.stems.length > 0) || (query.fulltexts && query.fulltexts.length > 0);
 }

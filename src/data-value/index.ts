@@ -18,6 +18,7 @@
  */
 
 export * from './data-value';
+export * from './data-value.utils';
 export * from './action.data-value';
 export * from './address.data-value';
 export * from './boolean.data-value';

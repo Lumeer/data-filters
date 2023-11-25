@@ -125,7 +125,7 @@ export function avgNumericValues(values: any[], onlyNumeric: boolean): any {
   );
 }
 
-export function avgAnyValues(values: any[], onlyNumeric): any {
+export function avgAnyValues(values: any[], onlyNumeric: boolean): any {
   const nonZeroValues = values.filter(val => val !== 0 && val !== '0');
   const containsOnlyPercentValues = nonZeroValues.length > 0 && nonZeroValues.every(val => isPercentageValue(val));
   if (containsOnlyPercentValues && !onlyNumeric) {

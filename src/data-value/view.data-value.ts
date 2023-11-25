@@ -19,9 +19,9 @@
 
 import {ConstraintData} from '../constraint';
 import {DataValue} from './data-value';
-import {valueMeetFulltexts} from '../utils';
 import {ConditionType, ConditionValue, View, ViewConstraintConfig} from '../model';
 import {arrayIntersection, compareStrings, isArray, isNotNullOrUndefined, unescapeHtml} from '@lumeer/utils';
+import {valueMeetFulltexts} from './data-value.utils';
 
 export class ViewDataValue implements DataValue {
   public readonly views: View[];

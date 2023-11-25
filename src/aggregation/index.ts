@@ -20,3 +20,4 @@
 export * from './data-aggregation';
 export * from './data-aggregator';
 export * from './data-object-aggregator';
+export * from './data-aggregation.utils';

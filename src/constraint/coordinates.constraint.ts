@@ -21,7 +21,6 @@ import {CoordinatesDataValue} from '../data-value';
 import {Constraint} from './constraint';
 import {avgAnyValues, countValues, medianInAnyValues, sumAnyValues, uniqueValuesCount} from '../utils';
 import {ConditionType, CoordinatesConstraintConfig, ConstraintType} from '../model';
-import {ConstraintData} from './constraint-data';
 
 export class CoordinatesConstraint implements Constraint {
   public readonly type = ConstraintType.Coordinates;

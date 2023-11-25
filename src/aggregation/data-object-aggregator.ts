@@ -24,11 +24,11 @@ import {
   DataAggregatorAttribute,
   DataResourceChain,
 } from './data-aggregator';
-import {AllowedPermissions, AttributesResource, AttributesResourceType, Collection, ConstraintType, DataResource, DocumentModel, LinkInstance, LinkType, Query, QueryAttribute, queryAttributePermissions, QueryStem, ResourcesPermissions, View} from '../model';
+import {AllowedPermissions, AttributesResource, AttributesResourceType, Collection, ConstraintType, DataResource, DocumentModel, LinkInstance, LinkType, Query, QueryAttribute, QueryStem, ResourcesPermissions, View} from '../model';
 import {deepObjectCopy, objectsByIdMap} from '@lumeer/utils';
-import {ColorConstraint, Constraint, ConstraintData, PercentageConstraint, SelectConstraint, UnknownConstraint, ViewConstraint} from '../constraint';
-import {findAttribute, findAttributeConstraint, isAttributeEditable} from '../utils';
-import {getViewColor} from '../utils/view.utils';
+import {ColorConstraint, Constraint, ConstraintData, PercentageConstraint, SelectConstraint, UnknownConstraint, ViewConstraint, findAttribute, findAttributeConstraint} from '../constraint';
+import {getViewColor, queryAttributePermissions} from '../utils';
+import {isAttributeEditable} from './data-aggregation.utils';
 
 export interface DataObjectInfo<T> {
   objectDataResources: Record<DataObjectInfoKey, DataResource>;
