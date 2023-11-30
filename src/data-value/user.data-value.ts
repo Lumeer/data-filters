@@ -208,7 +208,7 @@ export class UserDataValue implements DataValue {
   }
 
   public meetFullTexts(fulltexts: string[]): boolean {
-    return valueMeetFulltexts(this.format(), fulltexts);
+    return valueMeetFulltexts(this.format(false), fulltexts) || valueMeetFulltexts(this.format(true), fulltexts);
   }
 
   public valueByCondition(condition: ConditionType, values: ConditionValue[]): any {
